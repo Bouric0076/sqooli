@@ -20,11 +20,13 @@ import {
   ChevronDown,
   ChevronLeft,
 } from "lucide-react";
+import { useAuthStore } from "@/app/store/useAuthStore";
 
 export default function Sidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
+  const { user, activeSchool } = useAuthStore();
 
   const isActive = (link: string) => {
     if (link === "/school") {
@@ -131,12 +133,14 @@ export default function Sidebar() {
             </svg>
           </div>
           <div>
-            <div className="font-semibold text-sm text-gray-900">Swift</div>
             <div className="font-semibold text-sm text-gray-900">
-              Code Academy
+              {activeSchool?.name}
+            </div>
+            <div className="font-semibold text-sm text-gray-900">
+              {activeSchool?.code}
             </div>
             <div className="bg-purple-600 text-white text-[10px] px-2 py-0.5 rounded-full mt-1 inline-block">
-              Online School
+              {activeSchool?.schoolTypeName} School
             </div>
           </div>
         </div>

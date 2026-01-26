@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
 type RegisterForm = {
   firstName: string;
@@ -24,20 +25,53 @@ export default function Registerpage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const router = useRouter();
+
   const password = watch("password");
 
-  const onSubmit = (data: RegisterForm) => {
-    console.log("Form data:", data);
-    alert("Registration successful ✅");
+  const onSubmit = async (data: RegisterForm) => {
+    setLoading(true);
+    setApiError(null);
+    setSuccessMessage(null);
+
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        throw new Error(result.message || "Registration failed");
+      }
+
+      setSuccessMessage(
+        "Your account has been created successfully. Please check your email to continue."
+      );
+
+      // Optional auto-hide after 5 seconds
+      setTimeout(() => {
+        setSuccessMessage(null);
+        router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
+      }, 5000);
+    } catch (error: any) {
+      setApiError(error.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // 🔴 INLINE border override (fixes Tailwind + CSS conflict)
   const inputStyle = (hasError?: boolean) =>
     hasError ? { borderColor: "#dc2626" } : {};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-xl bg-white rounded-lg shadow-md p-8">
+      <div className="w-full max-w-xl bg-white rounded-lg shadow-md p-3">
         <h1 className="text-2xl font-bold text-center text-gray-800">
           Create an Account
         </h1>
@@ -65,13 +99,26 @@ export default function Registerpage() {
           onSubmit={handleSubmit(onSubmit)}
           className="grid grid-cols-1 md:grid-cols-2 gap-4"
         >
+          {/* API Error */}
+          {apiError && (
+            <div className="md:col-span-2 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm">
+              {apiError}
+            </div>
+          )}
+
+          {/* Success message */}
+          {successMessage && (
+            <div className="md:col-span-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded text-sm flex items-start gap-2">
+              <span className="text-green-600 font-semibold">✓</span>
+              <span>{successMessage}</span>
+            </div>
+          )}
+
           {/* First Name */}
           <div>
             <input
               placeholder="First name"
-              {...register("firstName", {
-                required: "First name is required",
-              })}
+              {...register("firstName", { required: "First name is required" })}
               className="input"
               style={inputStyle(!!errors.firstName)}
             />
@@ -84,9 +131,7 @@ export default function Registerpage() {
           <div>
             <input
               placeholder="Last name"
-              {...register("lastName", {
-                required: "Last name is required",
-              })}
+              {...register("lastName", { required: "Last name is required" })}
               className="input"
               style={inputStyle(!!errors.lastName)}
             />
@@ -117,28 +162,11 @@ export default function Registerpage() {
           <div>
             <input
               placeholder="+254 7XX XXX XXX"
-              {...register("phone", {
-                required: "Phone number is required",
-              })}
+              {...register("phone", { required: "Phone number is required" })}
               className="input"
               style={inputStyle(!!errors.phone)}
             />
             {errors.phone && <p className="error">{errors.phone.message}</p>}
-          </div>
-
-          {/* Username */}
-          <div>
-            <input
-              placeholder="Username"
-              {...register("username", {
-                required: "Username is required",
-              })}
-              className="input"
-              style={inputStyle(!!errors.username)}
-            />
-            {errors.username && (
-              <p className="error">{errors.username.message}</p>
-            )}
           </div>
 
           {/* Password */}
@@ -148,10 +176,7 @@ export default function Registerpage() {
               placeholder="Password (min 8 chars)"
               {...register("password", {
                 required: "Password is required",
-                minLength: {
-                  value: 8,
-                  message: "Password must be at least 8 characters",
-                },
+                minLength: { value: 8, message: "Min 8 characters" },
               })}
               className="input pr-10"
               style={inputStyle(!!errors.password)}
@@ -169,14 +194,13 @@ export default function Registerpage() {
           </div>
 
           {/* Confirm Password */}
-          <div className="relative md:col-span-2">
+          <div className="relative">
             <input
               type={showConfirmPassword ? "text" : "password"}
               placeholder="Confirm password"
               {...register("confirmPassword", {
                 required: "Please confirm your password",
-                validate: (value) =>
-                  value === password || "Passwords do not match",
+                validate: (v) => v === password || "Passwords do not match",
               })}
               className="input pr-10"
               style={inputStyle(!!errors.confirmPassword)}
@@ -195,8 +219,14 @@ export default function Registerpage() {
 
           {/* Submit */}
           <div className="md:col-span-2">
-            <button className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">
-              Register
+            <button
+              disabled={loading}
+              className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {loading && (
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              )}
+              {loading ? "Registering..." : "Register"}
             </button>
           </div>
         </form>

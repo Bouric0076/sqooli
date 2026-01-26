@@ -37,7 +37,7 @@ export default function RootLayout({
             <TopMenu />
 
             {/* Page Content */}
-            <main className="flex-1 overflow-auto bg-gray-50 relative h-screen">
+            <main className="flex-1 overflow-auto bg-white relative h-screen">
               {children}
             </main>
           </div>

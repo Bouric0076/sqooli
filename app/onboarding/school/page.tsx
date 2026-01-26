@@ -1,13 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { useOnboardingStore } from "@/app/store/useOnboardingStore";
 
-const curriculums = [
-  {
-    id: "private",
-    title: "Private",
+const schoolTypeUIMap: Record<
+  string,
+  { bgColor: string; icon: React.ReactNode }
+> = {
+  Private: {
+    bgColor: "bg-yellow-100",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -20,11 +23,9 @@ const curriculums = [
         <path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2h-3v-6H8v6H5a2 2 0 0 1-2-2V10z" />
       </svg>
     ),
-    bgColor: "bg-yellow-100",
   },
-  {
-    id: "public",
-    title: "Public",
+  Public: {
+    bgColor: "bg-pink-100",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -38,11 +39,9 @@ const curriculums = [
         <path d="M8 16h8M12 8v8" />
       </svg>
     ),
-    bgColor: "bg-pink-100",
   },
-  {
-    id: "online",
-    title: "Online",
+  Online: {
+    bgColor: "bg-green-100",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -56,55 +55,69 @@ const curriculums = [
         <path d="M8 21h8M12 7v14" />
       </svg>
     ),
-    bgColor: "bg-green-100",
   },
-];
+};
+
+type ApiSchoolType = {
+  id: number;
+  name: string;
+  description: string;
+  schoolCount: number;
+};
+
+type UISchoolType = {
+  id: number;
+  title: string;
+  bgColor: string;
+  icon: React.ReactNode;
+};
 
 export default function SchoolSelection() {
-  // CHANGED: State is now a single string or null
-  const [selectedId, setSelectedId] = useState<string | null>(null);
   const router = useRouter();
+  const { schoolEnrollment, setSchoolEnrollment } = useOnboardingStore();
 
-  // CHANGED: Logic now sets the specific ID or clears it
-  const handleSelection = (id: string) => {
-    setSelectedId((prev) => (prev === id ? null : id));
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [schoolTypes, setSchoolTypes] = useState<UISchoolType[]>([]);
+
+  // Load school types from API
+  useEffect(() => {
+    const loadSchoolTypes = async () => {
+      const res = await fetch("/api/school-types");
+      if (!res.ok) return;
+
+      const json = await res.json();
+      const items: ApiSchoolType[] = json.data.items;
+
+      const mapped: UISchoolType[] = items.map((item) => ({
+        id: item.id,
+        title: item.name,
+        bgColor: schoolTypeUIMap[item.name]?.bgColor ?? "bg-gray-100",
+        icon: schoolTypeUIMap[item.name]?.icon ?? null,
+      }));
+
+      setSchoolTypes(mapped);
+    };
+
+    loadSchoolTypes();
+  }, []);
+
+  // Initialize selectedId from store
+  useEffect(() => {
+    if (schoolEnrollment.schoolTypeId) {
+      setSelectedId(schoolEnrollment.schoolTypeId);
+    }
+  }, [schoolEnrollment.schoolTypeId]);
+
+  const handleSelection = (id: number) => {
+    const newId = selectedId === id ? null : id;
+    setSelectedId(newId);
+    setSchoolEnrollment({ schoolTypeId: newId }); // ✅ use setSchoolEnrollment
   };
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center py-12 px-4">
-      {/* Logo Section */}
-      <div className="flex gap-1 mb-6">
-        {["s", "q", "o", "o", "l", "i"].map((char, i) => {
-          const letterColors = [
-            "bg-[#477ec3]",
-            "bg-[#8db2e6]",
-            "bg-[#4d9fe4]",
-            "bg-[#4d9fe4]",
-            "bg-[#51739d]",
-            "bg-[#264a73]",
-          ];
-          const borderColors = [
-            "border-[#3d6eb7]",
-            "border-[#7a9fd3]",
-            "border-[#3d6eb7]",
-            "border-[#3d6eb7]",
-            "border-[#3e5f8e]",
-            "border-[#1d3759]",
-          ];
-          const scores = [16, 9, 8, 8, 3, 10];
-
-          return (
-            <div
-              key={i}
-              className={`w-12 h-12 rounded-md flex items-center justify-center text-white font-extrabold text-xl relative border-b-4 ${borderColors[i]} ${letterColors[i]}`}
-            >
-              <span className="absolute -top-2 left-1 text-[8px] opacity-70 font-semibold drop-shadow-sm">
-                {scores[i]}
-              </span>
-              {char}
-            </div>
-          );
-        })}
+      <div>
+        <img src="/logo.svg" alt="Sqooli Logo" className="h-12 mb-6" />
       </div>
 
       <h1 className="text-3xl font-extrabold text-gray-900 mb-1">
@@ -115,8 +128,7 @@ export default function SchoolSelection() {
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-4xl">
-        {curriculums.map(({ id, title, icon, bgColor }) => {
-          // CHANGED: Single ID comparison
+        {schoolTypes.map(({ id, title, icon, bgColor }) => {
           const isSelected = selectedId === id;
 
           return (
@@ -163,8 +175,7 @@ export default function SchoolSelection() {
         </button>
 
         <button
-          // CHANGED: Check for truthy string instead of array length
-          onClick={() => router.push("/onboarding/curriculum")} // ADD THIS LINE
+          onClick={() => router.push("/onboarding/curriculum")}
           disabled={!selectedId}
           className={`flex items-center gap-2 px-10 py-3 rounded-full font-bold shadow-md transition-colors ${
             selectedId

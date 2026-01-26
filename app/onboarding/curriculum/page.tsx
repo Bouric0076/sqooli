@@ -1,66 +1,85 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-const curriculums = [
-  { id: "cbc", title: "CBC", icon: "📑", bgColor: "bg-blue-50" },
-  {
-    id: "844",
-    title: "8-4-4",
-    icon: "8-4-4",
-    bgColor: "bg-orange-50",
-    isTextIcon: true,
-  },
-  { id: "cambridge", title: "Cambridge", icon: "🛡️", bgColor: "bg-red-50" },
-];
+import { useOnboardingStore } from "@/app/store/useOnboardingStore";
+
+type ApiCurriculum = {
+  id: number;
+  name: string;
+};
+
+type UICurriculum = {
+  id: number;
+  title: string;
+  icon: string;
+  bgColor: string;
+  isTextIcon?: boolean;
+};
+
+const curriculumUIMap: Record<
+  string,
+  { icon: string; bgColor: string; isTextIcon?: boolean }
+> = {
+  CBC: { icon: "📑", bgColor: "bg-blue-50" },
+  "8-4-4": { icon: "8-4-4", bgColor: "bg-orange-50", isTextIcon: true },
+  Cambridge: { icon: "🛡️", bgColor: "bg-red-50" },
+};
 
 export default function CurriculumSelection() {
-  const [selectedIds, setSelectedIds] = useState([]);
   const router = useRouter();
+  const { schoolEnrollment, setSchoolEnrollment } = useOnboardingStore();
 
-  const toggleSelection = (id) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
+  const [curriculums, setCurriculums] = useState<UICurriculum[]>([]);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+
+  // ✅ Initialize selectedIds from persisted store
+  useEffect(() => {
+    if (schoolEnrollment?.curriculumIds) {
+      setSelectedIds(schoolEnrollment.curriculumIds);
+    }
+  }, [schoolEnrollment?.curriculumIds]);
+
+  // ✅ Load curriculums from API
+  useEffect(() => {
+    const loadCurriculums = async () => {
+      const res = await fetch("/api/curriculums");
+      if (!res.ok) return;
+
+      const json = await res.json();
+
+      const mapped = json.data.items.map((item: ApiCurriculum) => ({
+        id: item.id,
+        title: item.name,
+        icon: curriculumUIMap[item.name]?.icon ?? "📘",
+        bgColor: curriculumUIMap[item.name]?.bgColor ?? "bg-gray-50",
+        isTextIcon: curriculumUIMap[item.name]?.isTextIcon,
+      }));
+
+      setCurriculums(mapped);
+    };
+
+    loadCurriculums();
+  }, []);
+
+  // ✅ Only update store on toggle (event handler)
+  const toggleSelection = (id: number) => {
+    setSelectedIds((prev) => {
+      const updated = prev.includes(id)
+        ? prev.filter((i) => i !== id)
+        : [...prev, id];
+
+      setSchoolEnrollment({ curriculumIds: updated });
+      return updated;
+    });
   };
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center py-12 px-4">
-      {/* Logo Section */}
-      <div className="flex gap-1 mb-6">
-        {["s", "q", "o", "o", "l", "i"].map((char, i) => {
-          const letterColors = [
-            "bg-blue-600",
-            "bg-blue-400",
-            "bg-blue-500",
-            "bg-blue-500",
-            "bg-blue-700",
-            "bg-blue-900",
-          ];
-          const borderColors = [
-            "border-blue-700",
-            "border-blue-500",
-            "border-blue-700",
-            "border-blue-700",
-            "border-blue-800",
-            "border-blue-950",
-          ];
-          const scores = [16, 9, 8, 8, 3, 10];
-
-          return (
-            <div
-              key={i}
-              className={`w-12 h-12 rounded-md flex items-center justify-center text-white font-extrabold text-xl relative border-b-4 ${borderColors[i]} ${letterColors[i]}`}
-            >
-              <span className="absolute -top-2 left-1 text-xs opacity-70 font-semibold">
-                {scores[i]}
-              </span>
-              {char}
-            </div>
-          );
-        })}
+      <div>
+        <img src="/logo.svg" alt="Sqooli Logo" className="h-12 mb-6" />
       </div>
       <h1 className="text-2xl font-semibold text-gray-900 mb-2">
         What curriculums do you offer?
@@ -92,7 +111,6 @@ export default function CurriculumSelection() {
               </div>
               <span className="text-lg font-bold text-gray-900">{title}</span>
 
-              {/* Checkmark */}
               <div
                 className={`absolute top-4 right-4 h-7 w-7 rounded-full border-2 flex items-center justify-center transition-all ${
                   isSelected
@@ -109,7 +127,6 @@ export default function CurriculumSelection() {
         })}
       </div>
 
-      {/* Footer buttons */}
       <div className="mt-16 flex gap-4">
         <button
           onClick={() => router.back()}
@@ -119,7 +136,7 @@ export default function CurriculumSelection() {
         </button>
 
         <button
-          onClick={() => router.push("/onboarding/school/school-details")} // ADD THIS LINE
+          onClick={() => router.push("/onboarding/school/school-details")}
           disabled={selectedIds.length === 0}
           className={`flex items-center gap-2 px-10 py-3 rounded-full font-bold shadow-md transition-all ${
             selectedIds.length > 0
