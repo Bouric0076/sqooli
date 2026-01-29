@@ -58,6 +58,8 @@ export default function AddLessonModal() {
     (state) => state.activeCurriculum
   );
 
+  const { clearActiveCurriculum, clearActiveLesson } = useCurriculumStore();
+
   const {
     register,
     handleSubmit,
@@ -194,9 +196,10 @@ export default function AddLessonModal() {
         <button
           type="button"
           //   onClick={() => setOpen(true)}
-          onClick={() =>
-            router.push("/school/curriculum/cbc/lessons/create-lesson")
-          }
+          onClick={() => {
+            clearActiveLesson();
+            router.push("/school/curriculum/cbc/lessons/create-lesson");
+          }}
           className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-md flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />

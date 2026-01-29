@@ -1,5 +1,7 @@
 "use client";
 
+import { useCurriculumStore } from "@/app/store/useCurriculumStore";
+
 type LessonMenuProps = {
   steps: string[];
   currentStep: number;
@@ -13,9 +15,13 @@ export default function LessonMenu({
   lessonId,
   onStepClick,
 }: LessonMenuProps) {
+  const { activeLesson } = useCurriculumStore();
+
   return (
     <div className="w-1/ bg-white border-r border-gray-200 p-6">
-      <h2 className="text-lg font-bold mb-4">Create Lesson</h2>
+      <h2 className="text-lg font-bold mb-4">
+        {activeLesson?.id ? "Update" : "Create"} Lesson
+      </h2>
 
       <ol className="space-y-4">
         {steps.map((label, index) => {

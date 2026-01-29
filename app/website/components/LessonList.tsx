@@ -1,14 +1,20 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import LessonsHeader from "./components/LessonsHeader";
-import LessonCard, { Lesson, ViewMode } from "./components/LessonCard";
+
 import Breadcrumb from "@/app/components/ui/navigation/Breadcrumb";
 import PageHeader from "@/app/components/ui/navigation/PageHeader";
-import AddLessonModal from "./partials/AddLessonModal";
-import { getLessons } from "@/app/helpers/lookups";
 
-export default function LessonsPage() {
+import { getLessons } from "@/app/helpers/lookups";
+import { Lesson } from "@/app/store/useCurriculumStore";
+import LessonCard, {
+  ViewMode,
+} from "@/app/(main)/school/curriculum/cbc/lessons/components/LessonCard";
+import LessonsHeader from "@/app/(main)/school/curriculum/cbc/lessons/components/LessonsHeader";
+import AddLessonModal from "@/app/(main)/school/curriculum/cbc/lessons/partials/AddLessonModal";
+import LessonCardWeb from "./LessonCardWeb";
+
+export default function LessonsList() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -42,34 +48,24 @@ export default function LessonsPage() {
   }, [lessons, search, status]);
 
   return (
-    <div className="h-screen">
-      <Breadcrumb />
-
-      <PageHeader
-        title="Competence-Based Curriculum"
-        description="Manage lessons about this curriculum"
-      />
-
+    <div className="h-screen w-full">
       <div className="bg-white border-b border-gray-200 px-6 py-3">
-        <AddLessonModal />
-        <LessonsHeader
-          onSearchChange={setSearch}
-          onViewModeChange={setViewMode}
-          onStatusChange={setStatus}
-        />
-
         {loading ? (
           <p className="text-gray-500 py-4">Loading lessons...</p>
         ) : (
           <div
             className={
               viewMode === "grid"
-                ? "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+                ? "grid grid-cols-1 gap-8  grid-cols-3 sm:grid-cols-2 lg:grid-cols-3"
                 : "flex flex-col gap-4"
             }
           >
             {filteredLessons.map((lesson) => (
-              <LessonCard key={lesson.id} lesson={lesson} viewMode={viewMode} />
+              <LessonCardWeb
+                key={lesson.id}
+                lessonId={lesson.id}
+                viewMode={viewMode}
+              />
             ))}
           </div>
         )}

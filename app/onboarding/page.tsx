@@ -14,19 +14,19 @@ export default function OnboardingStep1() {
       id: "Student",
       title: "Student",
       description: "I want to learn and grow on the platform",
-      path: "/onboarding/interests",
+      path: "/onboarding/curriculum",
     },
     {
       id: "Parent",
       title: "Parent",
       description: "I want to track and support my child's progress",
-      path: "/onboarding/interests",
+      path: "/onboarding/profile/parent",
     },
     {
       id: "Teacher",
       title: "Tutor",
       description: "I want to teach and share my knowledge",
-      path: "/onboarding/interests",
+      path: "/onboarding/curriculum",
     },
     {
       id: "SchoolAdmin",

@@ -21,15 +21,18 @@ import {
 import { useCurriculumStore } from "@/app/store/useCurriculumStore";
 import { AddLessonForm } from "../page";
 import { log } from "console";
+import { getLessonBasicInfo } from "@/app/lib/lessonContent";
 
 type Props = {
   form: UseFormReturn<AddLessonForm>;
+  lessonId?: number | null;
   onNext: (lessonId: number) => void;
   setLessonId: (lessonId: number) => void;
 };
 
 export default function BasicInformationStep({
   form,
+  lessonId,
   setLessonId,
   onNext,
 }: Props) {
@@ -46,6 +49,7 @@ export default function BasicInformationStep({
     (state) => state.activeCurriculum
   );
 
+  const [lesson, setLesson] = useState([]);
   const [lessonTypes, setLessonTypes] = useState<any[]>([]);
   const [programs, setPrograms] = useState<any[]>([]);
   const [educationLevels, setEducationLevels] = useState<any[]>([]);
@@ -54,10 +58,32 @@ export default function BasicInformationStep({
   const [topics, setTopics] = useState<any[]>([]);
   const [teachers, setTeachers] = useState<any[]>([]);
   const [message, setMessage] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const educationLevelId = watch("educationLevelId");
   const gradeLevelId = watch("gradeLevelId");
   const subjectId = watch("subjectId");
+
+  useEffect(() => {
+    if (!lessonId) return;
+
+    setLoading(true);
+    getLessonBasicInfo(lessonId)
+      .then((res) => {
+        setLesson(res.data);
+        form.setValue("name", res.data.name);
+        form.setValue("description", res.data.description);
+        form.setValue("lessonTypeId", res.data.lessonTypeId);
+        form.setValue("programId", res.data.programId);
+        form.setValue("educationLevelId", res.data.educationLevelId);
+        form.setValue("gradeLevelId", res.data.gradeLevelId);
+        form.setValue("subjectId", res.data.subjectId);
+        form.setValue("topicId", res.data.topicId);
+        form.setValue("start", res.data.start.slice(0, 16));
+        form.setValue("end", res.data.end.slice(0, 16));
+      })
+      .finally(() => setLoading(false));
+  }, [lessonId]);
 
   /* ---------------- BASE LOOKUPS ---------------- */
 
@@ -125,6 +151,7 @@ export default function BasicInformationStep({
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        lessonId: lessonId || null,
         lessonTypeId: data.lessonTypeId,
         curriculumId: activeCurriculum?.id,
         subjectId: data.subjectId,
@@ -144,13 +171,13 @@ export default function BasicInformationStep({
     console.log(result);
 
     setMessage(result?.message);
-    const lessonId = result?.data?.id;
+    const lessonId_new = result?.data?.id;
 
     // ✅ HARD GUARD
     // if (!lessonId || Number.isNaN(lessonId)) {
     //   throw new Error("Lesson ID not returned from server");
     // }
-    setLessonId(lessonId);
+    setLessonId(lessonId_new);
     // ✅ Only now do we move forward
     onNext(2);
   };

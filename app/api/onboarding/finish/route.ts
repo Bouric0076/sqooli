@@ -64,7 +64,7 @@ export async function POST(req: Request) {
       { status: 200 }
     );
   } catch (error: any) {
-    console.error("Finish onboarding error:", error.response || error);
+    console.error("Finish onboarding error:", error.response.data || error.message);
 
     if (error.response) {
       return NextResponse.json(

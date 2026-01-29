@@ -4,6 +4,8 @@ import "../globals.css";
 import Sidebar from "../components/menu/sidebar";
 import TopMenu from "../components/menu/topmenu";
 import AuthWrapper from "../components/auth/AuthWrapper";
+import StudentSidebar from "../components/menu/studentSidebar";
+import StudentTopmenu from "../components/menu/studentTopmenu";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,12 +32,12 @@ export default function RootLayout({
       <body>
         <div className="flex h-screen bg-gray-100 relative">
           {/* Toggle button - always visible, positioned independently */}
-          <Sidebar />
+          <StudentSidebar />
 
           {/* Main Content */}
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Header */}
-            <TopMenu />
+            <StudentTopmenu />
 
             {/* Page Content */}
             <main className="flex-1 overflow-auto bg-white relative h-screen">

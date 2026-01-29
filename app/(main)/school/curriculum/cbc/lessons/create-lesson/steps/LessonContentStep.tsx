@@ -1,3 +1,5 @@
+"use client";
+
 import { UseFormReturn } from "react-hook-form";
 import { AddLessonForm } from "../page";
 import { useCurriculumStore } from "@/app/store/useCurriculumStore";
@@ -9,7 +11,12 @@ import {
   ArrowLeft,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import {
+  LessonSection,
+  getLessonContent,
+  saveLessonContent,
+} from "@/app/lib/lessonContent";
 
 type Props = {
   form: UseFormReturn<AddLessonForm>;
@@ -18,10 +25,9 @@ type Props = {
   onBack: (lessonId: number) => void;
 };
 
-export function LessonContentStep({ form, lessonId, onNext }: Props) {
+export function LessonContentStep({ form, lessonId, onNext, onBack }: Props) {
   const {
     register,
-
     control,
     watch,
     setValue,
@@ -32,71 +38,70 @@ export function LessonContentStep({ form, lessonId, onNext }: Props) {
   const activeCurriculum = useCurriculumStore(
     (state) => state.activeCurriculum
   );
-  const [sections, setSections] = useState([
-    {
-      id: 1,
-      title: "Introduction",
-      lectures: [
-        {
-          id: 1,
-          title: "Introduction",
-          description:
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-          quizzes: ["Quiz 1", "Quiz 2"],
-          assignments: [],
-        },
-      ],
-    },
-  ]);
+
+  const [sections, setSections] = useState<LessonSection[]>([]);
+  const [loading, setLoading] = useState(false);
 
   /* ================= MODAL STATE ================= */
-
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState(""); // quizzes | assignments | editSection | editLecture
   const [modalValue, setModalValue] = useState("");
-  const [currentSectionId, setCurrentSectionId] = useState(null);
-  const [currentLectureId, setCurrentLectureId] = useState(null);
+  const [currentSectionIndex, setCurrentSectionIndex] = useState<number | null>(
+    null
+  );
+  const [currentLectureIndex, setCurrentLectureIndex] = useState<number | null>(
+    null
+  );
+
+  /* ================= LOAD LESSON CONTENT ================= */
+  useEffect(() => {
+    if (!lessonId) return;
+
+    setLoading(true);
+    getLessonContent(lessonId)
+      .then((res) => {
+        setSections(res.sections);
+      })
+      .finally(() => setLoading(false));
+  }, [lessonId]);
 
   /* ================= SECTION ACTIONS ================= */
-
   const addSection = () => {
     setSections([
       ...sections,
       {
-        id: Date.now(),
         title: `Section ${sections.length + 1}`,
+        order: sections.length + 1,
         lectures: [],
       },
     ]);
   };
 
-  const deleteSection = (id) => {
-    setSections(sections.filter((s) => s.id !== id));
+  const deleteSection = (index: number) => {
+    setSections(sections.filter((_, i) => i !== index));
   };
 
-  const editSection = (id) => {
+  const editSection = (index: number) => {
     setModalType("editSection");
-    setCurrentSectionId(id);
-    setModalValue("");
+    setCurrentSectionIndex(index);
+    setModalValue(sections[index].title);
     setModalOpen(true);
   };
 
   /* ================= LECTURE ACTIONS ================= */
-
-  const addLecture = (sectionId) => {
+  const addLecture = (sectionIndex: number) => {
     setSections(
-      sections.map((s) =>
-        s.id === sectionId
+      sections.map((s, i) =>
+        i === sectionIndex
           ? {
               ...s,
               lectures: [
                 ...s.lectures,
                 {
-                  id: Date.now(),
                   title: "New Lecture",
-                  description: "Enter description...",
-                  quizzes: [],
-                  assignments: [],
+                  description: "",
+                  order: s.lectures.length + 1,
+                  items: [],
                 },
               ],
             }
@@ -105,49 +110,53 @@ export function LessonContentStep({ form, lessonId, onNext }: Props) {
     );
   };
 
-  const deleteLecture = (sectionId, lectureId) => {
+  const deleteLecture = (sectionIndex: number, lectureIndex: number) => {
     setSections(
-      sections.map((s) =>
-        s.id === sectionId
+      sections.map((s, i) =>
+        i === sectionIndex
           ? {
               ...s,
-              lectures: s.lectures.filter((l) => l.id !== lectureId),
+              lectures: s.lectures.filter((_, li) => li !== lectureIndex),
             }
           : s
       )
     );
   };
 
-  const editLecture = (sectionId, lectureId) => {
+  const editLecture = (sectionIndex: number, lectureIndex: number) => {
     setModalType("editLecture");
-    setCurrentSectionId(sectionId);
-    setCurrentLectureId(lectureId);
-    setModalValue("");
+    setCurrentSectionIndex(sectionIndex);
+    setCurrentLectureIndex(lectureIndex);
+    setModalValue(sections[sectionIndex].lectures[lectureIndex].title);
     setModalOpen(true);
   };
 
   /* ================= ITEM ACTIONS ================= */
-
-  const addItem = (sectionId, lectureId, type) => {
-    setModalType(type); // quizzes or assignments
-    setCurrentSectionId(sectionId);
-    setCurrentLectureId(lectureId);
+  const addItem = (
+    sectionIndex: number,
+    lectureIndex: number,
+    type: "Quiz" | "Assignment" | "Exam" | "Resource"
+  ) => {
+    setModalType(type.toLowerCase()); // "quiz" | "assignment" | "exam" | "resource"
+    setCurrentSectionIndex(sectionIndex);
+    setCurrentLectureIndex(lectureIndex);
     setModalValue("");
     setModalOpen(true);
   };
 
-  const deleteItem = (sectionId, lectureId, type, index) => {
+  const deleteItem = (
+    sectionIndex: number,
+    lectureIndex: number,
+    itemIndex: number
+  ) => {
     setSections(
-      sections.map((s) =>
-        s.id === sectionId
+      sections.map((s, si) =>
+        si === sectionIndex
           ? {
               ...s,
-              lectures: s.lectures.map((l) =>
-                l.id === lectureId
-                  ? {
-                      ...l,
-                      [type]: l[type].filter((_, i) => i !== index),
-                    }
+              lectures: s.lectures.map((l, li) =>
+                li === lectureIndex
+                  ? { ...l, items: l.items.filter((_, ii) => ii !== itemIndex) }
                   : l
               ),
             }
@@ -157,26 +166,29 @@ export function LessonContentStep({ form, lessonId, onNext }: Props) {
   };
 
   /* ================= MODAL SUBMIT ================= */
-
   const handleModalSubmit = () => {
     if (!modalValue) return;
 
-    if (modalType === "editSection") {
+    if (modalType === "editSection" && currentSectionIndex !== null) {
       setSections(
-        sections.map((s) =>
-          s.id === currentSectionId ? { ...s, title: modalValue } : s
+        sections.map((s, i) =>
+          i === currentSectionIndex ? { ...s, title: modalValue } : s
         )
       );
     }
 
-    if (modalType === "editLecture") {
+    if (
+      modalType === "editLecture" &&
+      currentSectionIndex !== null &&
+      currentLectureIndex !== null
+    ) {
       setSections(
-        sections.map((s) =>
-          s.id === currentSectionId
+        sections.map((s, si) =>
+          si === currentSectionIndex
             ? {
                 ...s,
-                lectures: s.lectures.map((l) =>
-                  l.id === currentLectureId ? { ...l, title: modalValue } : l
+                lectures: s.lectures.map((l, li) =>
+                  li === currentLectureIndex ? { ...l, title: modalValue } : l
                 ),
               }
             : s
@@ -184,17 +196,30 @@ export function LessonContentStep({ form, lessonId, onNext }: Props) {
       );
     }
 
-    if (modalType === "quizzes" || modalType === "assignments") {
+    if (
+      ["quiz", "assignment", "exam", "resource"].includes(modalType) &&
+      currentSectionIndex !== null &&
+      currentLectureIndex !== null
+    ) {
+      const typeCapitalized =
+        modalType.charAt(0).toUpperCase() + modalType.slice(1);
       setSections(
-        sections.map((s) =>
-          s.id === currentSectionId
+        sections.map((s, si) =>
+          si === currentSectionIndex
             ? {
                 ...s,
-                lectures: s.lectures.map((l) =>
-                  l.id === currentLectureId
+                lectures: s.lectures.map((l, li) =>
+                  li === currentLectureIndex
                     ? {
                         ...l,
-                        [modalType]: [...l[modalType], modalValue],
+                        items: [
+                          ...l.items,
+                          {
+                            title: modalValue,
+                            type: typeCapitalized,
+                            order: l.items.length + 1,
+                          },
+                        ],
                       }
                     : l
                 ),
@@ -210,15 +235,19 @@ export function LessonContentStep({ form, lessonId, onNext }: Props) {
   const closeModal = () => {
     setModalOpen(false);
     setModalValue("");
-    setCurrentLectureId(null);
-    setCurrentSectionId(null);
+    setCurrentLectureIndex(null);
+    setCurrentSectionIndex(null);
   };
 
+  /* ================= SAVE ================= */
   const submitContent = async () => {
-    onNext(5);
+    if (!lessonId) return alert("lessonid missing");
+    await saveLessonContent({ lessonId, sections });
+    onNext(lessonId);
   };
 
   /* ================= UI ================= */
+  if (loading) return <div className="p-6">Loading lesson content...</div>;
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -230,10 +259,9 @@ export function LessonContentStep({ form, lessonId, onNext }: Props) {
 
         {sections.map((section, sectionIndex) => (
           <div
-            key={section.id}
+            key={sectionIndex}
             className="border border-gray-300 rounded-lg p-4 mb-4 bg-gray-50"
           >
-            {/* Section Header */}
             <div className="flex justify-between mb-4">
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold text-sm">
@@ -241,59 +269,53 @@ export function LessonContentStep({ form, lessonId, onNext }: Props) {
                 </h3>
                 <Pencil
                   size={14}
-                  onClick={() => editSection(section.id)}
+                  onClick={() => editSection(sectionIndex)}
                   className="cursor-pointer"
                 />
                 <Trash2
                   size={14}
-                  onClick={() => deleteSection(section.id)}
+                  onClick={() => deleteSection(sectionIndex)}
                   className="cursor-pointer text-red-500"
                 />
               </div>
               <GripHorizontal size={18} />
             </div>
 
-            {/* Lectures */}
             {section.lectures.map((lecture, lectureIndex) => (
               <div
-                key={lecture.id}
+                key={lectureIndex}
                 className="border border-gray-300 rounded-lg p-4 mb-4 bg-white"
               >
-                {/* Lecture Header */}
                 <div className="flex justify-between mb-2">
                   <div className="flex items-center gap-2 text-sm font-medium">
                     Lecture {lectureIndex + 1} | {lecture.title}
                     <Pencil
                       size={14}
-                      onClick={() => editLecture(section.id, lecture.id)}
+                      onClick={() => editLecture(sectionIndex, lectureIndex)}
                       className="cursor-pointer"
                     />
                     <Trash2
                       size={14}
-                      onClick={() => deleteLecture(section.id, lecture.id)}
+                      onClick={() => deleteLecture(sectionIndex, lectureIndex)}
                       className="cursor-pointer text-red-500"
                     />
                   </div>
                   <GripHorizontal size={18} />
                 </div>
 
-                {/* Description */}
                 <p className="text-xs text-gray-500 mb-2">Description</p>
                 <textarea
                   className="w-full border border-gray-300 rounded-md p-2 text-sm mb-3"
                   value={lecture.description}
                   onChange={(e) =>
                     setSections(
-                      sections.map((s) =>
-                        s.id === section.id
+                      sections.map((s, si) =>
+                        si === sectionIndex
                           ? {
                               ...s,
-                              lectures: s.lectures.map((l) =>
-                                l.id === lecture.id
-                                  ? {
-                                      ...l,
-                                      description: e.target.value,
-                                    }
+                              lectures: s.lectures.map((l, li) =>
+                                li === lectureIndex
+                                  ? { ...l, description: e.target.value }
                                   : l
                               ),
                             }
@@ -303,64 +325,35 @@ export function LessonContentStep({ form, lessonId, onNext }: Props) {
                   }
                 />
 
-                {/* Quizzes */}
-                <p className="text-xs text-gray-500 mb-1">Quiz(es)</p>
+                <p className="text-xs text-gray-500 mb-1">Items</p>
                 <div className="flex flex-wrap gap-2 mb-3">
-                  {lecture.quizzes.map((q, i) => (
+                  {lecture.items.map((item, itemIndex) => (
                     <Chip
-                      key={i}
-                      label={q}
+                      key={itemIndex}
+                      label={`${item.type}: ${item.title}`}
                       onDelete={() =>
-                        deleteItem(section.id, lecture.id, "quizzes", i)
+                        deleteItem(sectionIndex, lectureIndex, itemIndex)
                       }
                     />
                   ))}
                 </div>
 
-                {/* Assignments */}
-                <p className="text-xs text-gray-500 mb-1">Assignment(s)</p>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {lecture.assignments.map((a, i) => (
-                    <Chip
-                      key={i}
-                      label={a}
-                      onDelete={() =>
-                        deleteItem(section.id, lecture.id, "assignments", i)
-                      }
-                    />
-                  ))}
-                </div>
-
-                {/* Buttons */}
                 <div className="flex gap-2">
-                  <ActionButton
-                    text="Quiz"
-                    onClick={() => addItem(section.id, lecture.id, "quizzes")}
-                  />
-                  <ActionButton
-                    text="Assignment"
-                    onClick={() =>
-                      addItem(section.id, lecture.id, "assignments")
-                    }
-                  />
-                  <ActionButton
-                    text="Exam"
-                    onClick={() =>
-                      addItem(section.id, lecture.id, "assignments")
-                    }
-                  />
-                  <ActionButton
-                    text="Other Resources"
-                    onClick={() =>
-                      addItem(section.id, lecture.id, "assignments")
-                    }
-                  />
+                  {["Quiz", "Assignment", "Exam", "Resource"].map((type) => (
+                    <ActionButton
+                      key={type}
+                      text={type}
+                      onClick={() =>
+                        addItem(sectionIndex, lectureIndex, type as any)
+                      }
+                    />
+                  ))}
                 </div>
               </div>
             ))}
 
             <button
-              onClick={() => addLecture(section.id)}
+              onClick={() => addLecture(sectionIndex)}
               className="w-full border border-gray-300 rounded-md py-2 text-sm flex items-center justify-center gap-2"
             >
               <Plus size={14} /> Add Lecture
@@ -368,7 +361,6 @@ export function LessonContentStep({ form, lessonId, onNext }: Props) {
           </div>
         ))}
 
-        {/* Add Section */}
         <button
           onClick={addSection}
           className="w-full border border-gray-300 rounded-md py-2 text-sm flex items-center justify-center gap-2"
@@ -376,9 +368,11 @@ export function LessonContentStep({ form, lessonId, onNext }: Props) {
           <Plus size={14} /> Add Section
         </button>
 
-        {/* Footer */}
         <div className="flex justify-between mt-6">
-          <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md text-sm">
+          <button
+            onClick={() => onBack(lessonId!)}
+            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md text-sm"
+          >
             <ArrowLeft size={16} /> Back
           </button>
 
@@ -391,26 +385,24 @@ export function LessonContentStep({ form, lessonId, onNext }: Props) {
         </div>
       </div>
 
-      {/* ================= MODAL ================= */}
+      {/* MODAL */}
       {modalOpen && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl w-[420px] p-6 shadow-lg">
-            {/* Header */}
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-semibold text-lg capitalize">
                 {modalType === "editSection" && "Edit Section"}
                 {modalType === "editLecture" && "Edit Lecture"}
-                {(modalType === "quizzes" || modalType === "assignments") &&
-                  `Add ${modalType.slice(0, -1)}`}
+                {["quiz", "assignment", "exam", "resource"].includes(
+                  modalType
+                ) &&
+                  `Add ${
+                    modalType.charAt(0).toUpperCase() + modalType.slice(1)
+                  }`}
               </h3>
               <X className="cursor-pointer" onClick={closeModal} />
             </div>
 
-            <p className="text-sm text-gray-500 mb-3">
-              Select item to add to this lesson
-            </p>
-
-            {/* Input */}
             <input
               type="text"
               placeholder="Type to search"
@@ -419,7 +411,6 @@ export function LessonContentStep({ form, lessonId, onNext }: Props) {
               className="w-full border rounded-md p-2 mb-4"
             />
 
-            {/* Footer */}
             <div className="flex justify-end gap-3">
               <button
                 onClick={closeModal}
@@ -427,7 +418,6 @@ export function LessonContentStep({ form, lessonId, onNext }: Props) {
               >
                 Cancel
               </button>
-
               <button
                 onClick={handleModalSubmit}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md"
@@ -443,8 +433,7 @@ export function LessonContentStep({ form, lessonId, onNext }: Props) {
 }
 
 /* ================= COMPONENTS ================= */
-
-function Chip({ label, onDelete }) {
+function Chip({ label, onDelete }: { label: string; onDelete: () => void }) {
   return (
     <div className="flex items-center gap-1 px-3 py-1 border border-gray-300 rounded-full text-xs bg-gray-100">
       {label}
@@ -457,7 +446,13 @@ function Chip({ label, onDelete }) {
   );
 }
 
-function ActionButton({ text, onClick }) {
+function ActionButton({
+  text,
+  onClick,
+}: {
+  text: string;
+  onClick: () => void;
+}) {
   return (
     <button
       onClick={onClick}

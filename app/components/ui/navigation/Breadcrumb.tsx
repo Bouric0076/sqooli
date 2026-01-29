@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { Layers } from "lucide-react";
+import { useCurriculumStore } from "@/app/store/useCurriculumStore";
 
 type BreadcrumbMap = {
   [key: string]: string;
@@ -10,13 +11,16 @@ type BreadcrumbMap = {
 export default function Breadcrumb() {
   const pathname = usePathname();
 
+  const { activeLesson, activeCurriculum } = useCurriculumStore();
+
+  // alert(activeCurriculum?.name);
   /**
    * Map route segments to labels
    * Extend this freely without touching UI
    */
   const labelMap: BreadcrumbMap = {
     curriculum: "Curriculum & Subjects",
-    cbc: "CBC",
+    cbc: activeCurriculum?.name || "CBC",
     teachers: "Teachers",
     students: "Students",
     lessons: "Lessons",
@@ -52,7 +56,8 @@ export default function Breadcrumb() {
                       isLast ? "text-blue-600 font-semibold" : "text-gray-600"
                     }
                   >
-                    {labelMap[segment]}
+                    {labelMap[segment]}{" "}
+                    {activeLesson && isLast ? `> ${activeLesson.title}` : ""}
                   </span>
                 </>
               )}

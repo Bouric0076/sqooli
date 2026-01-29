@@ -1,8 +1,16 @@
 import { useCurriculumStore } from "@/app/store/useCurriculumStore";
 import { UseFormReturn } from "react-hook-form";
 import { AddLessonForm } from "../page";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { X } from "lucide-react";
+
+/* ================= Types ================= */
+
+type RevenueShare = {
+  user: string;
+  commissionType: string;
+  value: string | number;
+};
 
 type Props = {
   form: UseFormReturn<AddLessonForm>;
@@ -13,12 +21,7 @@ type Props = {
 
 export function PricingStep({ form, lessonId, onNext }: Props) {
   const {
-    register,
-    control,
-    watch,
-    setValue,
-    handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
   } = form;
 
   const activeCurriculum = useCurriculumStore(
@@ -27,7 +30,8 @@ export function PricingStep({ form, lessonId, onNext }: Props) {
 
   const [rate, setRate] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [revenueShares, setRevenueShares] = useState([]);
+  const [revenueShares, setRevenueShares] = useState<RevenueShare[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const serviceFeeRate = 0.2;
 
@@ -38,6 +42,66 @@ export function PricingStep({ form, lessonId, onNext }: Props) {
   const youReceive = useMemo(() => {
     return rate ? Number(rate) - serviceFee : 0;
   }, [rate, serviceFee]);
+
+  /* ================= LOAD PRICING ================= */
+
+  useEffect(() => {
+    if (!lessonId) return;
+
+    const loadPricing = async () => {
+      try {
+        setLoading(true);
+
+        const res = await fetch(
+          `/api/lesson/revenue-share?lessonId=${lessonId}`
+        );
+
+        const data = await res.json();
+
+        setRate(String(data?.price ?? ""));
+        setRevenueShares(
+          Array.isArray(data?.revenueShares) ? data.revenueShares : []
+        );
+      } catch (err) {
+        console.error("Failed to load lesson pricing", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPricing();
+  }, [lessonId]);
+
+  /* ================= SAVE PRICING ================= */
+
+  const savePricing = async () => {
+    if (!lessonId) return;
+    form.setValue("price", rate ? Number(rate) : 0);
+
+    try {
+      setLoading(true);
+
+      await fetch("/api/lesson/revenue-share", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lessonId,
+          price: Number(rate),
+          revenueShares: revenueShares.map((r) => ({
+            userId: r.user,
+            commissionType: r.commissionType,
+            value: Number(r.value),
+          })),
+        }),
+      });
+
+      onNext(lessonId);
+    } catch (err) {
+      console.error("Failed to save pricing", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="max-w-3xl mx-auto bg-white p-8 rounded-xl border border-gray-200 mt-8">
@@ -110,8 +174,12 @@ export function PricingStep({ form, lessonId, onNext }: Props) {
       {/* Footer */}
       <div className="flex justify-between items-center mt-12">
         <button className="text-sm text-gray-600">← Back</button>
-        <button className="bg-gray-900 text-white px-6 py-2 rounded-full text-sm">
-          Save & Submit →
+        <button
+          onClick={savePricing}
+          disabled={loading || isSubmitting}
+          className="bg-gray-900 text-white px-6 py-2 rounded-full text-sm"
+        >
+          {loading ? "Saving..." : "Save & Submit →"}
         </button>
       </div>
 
@@ -119,7 +187,7 @@ export function PricingStep({ form, lessonId, onNext }: Props) {
       <AddRevenueShareModal
         open={showModal}
         onClose={() => setShowModal(false)}
-        onSave={(data) => {
+        onSave={(data: RevenueShare) => {
           setRevenueShares([...revenueShares, data]);
           setShowModal(false);
         }}
@@ -128,9 +196,9 @@ export function PricingStep({ form, lessonId, onNext }: Props) {
   );
 }
 
-/* ---------------- Modal ---------------- */
+/* ================= Modal ================= */
 
-function AddRevenueShareModal({ open, onClose, onSave }) {
+function AddRevenueShareModal({ open, onClose, onSave }: any) {
   const [user, setUser] = useState("");
   const [commissionType, setCommissionType] = useState("Fixed Value");
   const [value, setValue] = useState("");
@@ -204,9 +272,9 @@ function AddRevenueShareModal({ open, onClose, onSave }) {
   );
 }
 
-/* ---------------- Small UI Helpers ---------------- */
+/* ================= Small UI Helpers ================= */
 
-function PricingRow({ label, description, children }) {
+function PricingRow({ label, description, children }: any) {
   return (
     <div className="flex justify-between items-center">
       <div>
@@ -218,7 +286,7 @@ function PricingRow({ label, description, children }) {
   );
 }
 
-function CurrencyInput({ value, onChange }) {
+function CurrencyInput({ value, onChange }: any) {
   return (
     <div className="flex items-center gap-2 bg-gray-100 border border-gray-300 rounded-full px-4 py-2 w-40">
       <span className="text-xs text-gray-500">KES</span>
@@ -233,7 +301,7 @@ function CurrencyInput({ value, onChange }) {
   );
 }
 
-function CurrencyPill({ value }) {
+function CurrencyPill({ value }: any) {
   return (
     <div className="flex items-center gap-2 bg-gray-100 border border-gray-300 rounded-full px-4 py-2 w-40 justify-end">
       <span className="text-xs text-gray-500">KES</span>

@@ -48,6 +48,7 @@ export function LearningObjectivesStep({
     const loadObjectives = async () => {
       try {
         const loaded = await getLessonObjectives(lessonId);
+        console.log("Loaded objectives:", loaded);
         setObjectives(loaded.length ? loaded : ["", ""]);
       } catch (err) {
         console.error("Failed to load objectives", err);
@@ -67,6 +68,8 @@ export function LearningObjectivesStep({
         .map((o) => o.trim())
         .filter((o) => o.length > 0);
       if (!cleanedObjectives.length) return;
+
+      form.setValue("objectives", cleanedObjectives);
 
       await bulkReplaceLessonObjectives(lessonId, cleanedObjectives);
       onNext(lessonId);

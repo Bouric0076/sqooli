@@ -1,14 +1,14 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-type Enrollment = {
+export type Enrollment = {
   curriculumId: number;
   gradeLevelId: number;
   schoolId: number | null;
   subjectIds: number[];
 };
 
-type SchoolEnrollment = {
+export type SchoolEnrollment = {
   schoolTypeId: number | null;
   address: string | null;
   logoUrl: string | null;
@@ -21,7 +21,7 @@ type SchoolEnrollment = {
   curriculumIds: number[];
 };
 
-type OnboardingState = {
+export type OnboardingState = {
   email: string;
   role: string;
   firstName: string;
@@ -31,6 +31,7 @@ type OnboardingState = {
   nationalId: string | null;
   schoolTypeId: number | null;
   certificateLevelId: number | null;
+  gender: string;
 
   teacherEnrollments: Enrollment[];
   studentEnrollments: Enrollment[];
@@ -50,6 +51,7 @@ export const useOnboardingStore = create<OnboardingState>()(
     (set) => ({
       email: "",
       role: "",
+      gender: "", 
       firstName: "",
       lastName: "",
       phone: null,
@@ -72,17 +74,18 @@ export const useOnboardingStore = create<OnboardingState>()(
       },
 
       // Actions
-      setBasicInfo: (data) =>
-        set((state) => ({ ...state, ...data })),
+      setBasicInfo: (data) => set((state) => ({ ...state, ...data })),
 
       addTeacherEnrollment: (e) =>
-        set((state) => ({
-          teacherEnrollments: [...state.teacherEnrollments, e],
+        set(() => ({
+          // Single enrollment per teacher
+          teacherEnrollments: [e],
         })),
 
       addStudentEnrollment: (e) =>
-        set((state) => ({
-          studentEnrollments: [...state.studentEnrollments, e],
+        set(() => ({
+          // Single enrollment per student
+          studentEnrollments: [e],
         })),
 
       setSchoolEnrollment: (data) =>
@@ -116,8 +119,8 @@ export const useOnboardingStore = create<OnboardingState>()(
         }),
     }),
     {
-      name: "onboarding-storage", // key in localStorage
-      storage: createJSONStorage(() => localStorage), // ✅ ensures proper JSON storage
+      name: "onboarding-storage",
+      storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         email: state.email,
         role: state.role,

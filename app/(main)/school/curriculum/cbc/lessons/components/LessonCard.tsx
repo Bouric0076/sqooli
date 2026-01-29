@@ -1,5 +1,7 @@
+import { useCurriculumStore } from "@/app/store/useCurriculumStore";
 import { MoreVertical } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export type LessonStatus = "Active" | "Inactive";
 export type ViewMode = "grid" | "list";
@@ -20,6 +22,17 @@ interface LessonCardProps {
 }
 
 export default function LessonCard({ lesson, viewMode }: LessonCardProps) {
+  const { activeLesson, setActiveLesson, clearActiveLesson } =
+    useCurriculumStore();
+  const router = useRouter();
+
+  const handleViewLesson = (lesson: Lesson) => {
+    clearActiveLesson();
+    setActiveLesson({ id: lesson.id, title: lesson.title });
+
+    router.push(`/school/curriculum/cbc/lessons/create-lesson`);
+  };
+
   if (viewMode === "list") {
     return (
       <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
@@ -46,7 +59,10 @@ export default function LessonCard({ lesson, viewMode }: LessonCardProps) {
         </div>
 
         <div className="flex items-center gap-3">
-          <button className="rounded-md border px-3 py-1 text-xs hover:bg-gray-100">
+          <button
+            onClick={() => handleViewLesson(lesson)}
+            className="rounded-md border px-3 py-1 text-xs hover:bg-gray-100"
+          >
             View
           </button>
           <MoreVertical className="h-5 w-5 text-gray-400" />
@@ -84,7 +100,10 @@ export default function LessonCard({ lesson, viewMode }: LessonCardProps) {
           <p>Last Updated: {lesson.updatedAt}</p>
         </div>
 
-        <button className="rounded-md border px-3 py-1 font-medium hover:bg-gray-100">
+        <button
+          onClick={() => handleViewLesson(lesson)}
+          className="rounded-md border px-3 py-1 font-medium hover:bg-gray-100"
+        >
           View
         </button>
       </div>

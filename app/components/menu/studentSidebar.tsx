@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/app/store/useAuthStore";
 
-export default function StudentSidebar() {
+export default function Sidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
@@ -39,48 +39,43 @@ export default function StudentSidebar() {
   // school menu items (UNCHANGED)
   const menuItems = {
     "CORE ACADEMICS": [
-      { icon: Home, label: "Dashboard", link: "/school" },
+      { icon: Home, label: "Home", link: "/student" },
       {
         icon: BookOpen,
-        label: "Curriculum & Subjects",
-        link: "/school/curriculum",
+        label: "Assignments",
+        link: "/student/assignments",
       },
       {
         icon: Calendar,
-        label: "Lesson Scheduling",
-        link: "/school/scheduling",
+        label: "Lessons",
+        link: "/student/lessons",
       },
       {
         icon: FolderOpen,
-        label: "Resource Management",
-        link: "/school/resources",
+        label: "Programs",
+        link: "/student/programs",
       },
       {
         icon: CheckSquare,
-        label: "Attendance Management",
-        link: "/school/attendance",
+        label: "Calendar",
+        link: "/student/calendar",
       },
-      { icon: Grid, label: "Programs", link: "/school/programs" },
+      { icon: Grid, label: "Groups", link: "/student/teachers" },
       {
         icon: Users,
-        label: "Extra Curricula",
-        link: "/school/extra-curricula",
+        label: "Teachers",
+        link: "/student/teachers",
       },
     ],
     ADMINISTRATION: [
-      { icon: Users, label: "Students", link: "/school/students" },
-      { icon: User, label: "Teacher Management", link: "/school/teachers" },
-      { icon: CreditCard, label: "Payments", link: "/school/payments" },
-    ],
-    MANAGEMENT: [
-      { icon: User, label: "User Management", link: "/school/users" },
-      { icon: Users, label: "Partners", link: "/school/partners" },
-      { icon: BarChart3, label: "Reports", link: "/school/reports" },
+      { icon: Users, label: "Resource Centre", link: "/student/resources" },
+      { icon: BarChart3, label: "Performance", link: "/student/performance" },
+      { icon: CreditCard, label: "Wallet", link: "/school/wallet" },
     ],
   };
 
   return (
-    <div>
+    <div className="h-full flex">
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
         className={`fixed top-20 z-50 text-blue-500 hover:bg-gray-200 bg-gray-100 p-2 rounded-full transition-all duration-300 shadow-sm border border-gray-200 ${

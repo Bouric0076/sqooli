@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { use, useEffect, useState } from "react";
+import { set, useForm } from "react-hook-form";
 
 import LessonMenu from "../components/LessonMenu";
 import Breadcrumb from "@/app/components/ui/navigation/Breadcrumb";
@@ -12,6 +12,8 @@ import { LessonRequirementsStep } from "./steps/LessonRequirementsStep";
 import { LessonContentStep } from "./steps/LessonContentStep";
 import { PricingStep } from "./steps/PricingStep";
 import { ReviewPublishStep } from "./steps/ReviewPublishStep";
+import { LessonSection } from "@/app/lib/lessonContent";
+import { useCurriculumStore } from "@/app/store/useCurriculumStore";
 
 export type AddLessonForm = {
   name: string;
@@ -20,17 +22,30 @@ export type AddLessonForm = {
   lessonTypeId: number | null;
   programId: number | null;
   subjectId: number | null;
+  teacherId: number | null;
   topicId: number | null;
   educationLevelId: number | null;
   gradeLevelId: number | null;
   start: string;
   end: string;
+  price: number;
+  objectives: string[];
+  lessonContent: LessonSection[];
 };
 
 export default function CreateLessonPage() {
   const [step, setStep] = useState(1);
-  const [lessonId, setLessonId] = useState<number | null>(null);
+  const { activeLesson } = useCurriculumStore();
 
+  const [lessonId, setLessonId] = useState<number | null>(
+    activeLesson?.id ?? null
+  );
+
+  useEffect(() => {
+    setLessonId(activeLesson?.id ?? null);
+  }, [activeLesson?.id]);
+
+  // alert(activeLesson?.id);
   const form = useForm<AddLessonForm>({
     defaultValues: {
       lessonTypeId: null,
@@ -73,10 +88,9 @@ export default function CreateLessonPage() {
         return (
           <BasicInformationStep
             form={form}
+            lessonId={activeLesson?.id}
             setLessonId={setLessonId}
-            onNext={(id: number) => {
-              goToStep(2);
-            }}
+            onNext={goToStep}
           />
         );
 
