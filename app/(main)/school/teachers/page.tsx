@@ -8,7 +8,7 @@ export default function SchoolTeachersPage() {
       <NotFoundItem
         title="You have no teacher`s "
         description="Setup teachers for your school to manage classes and students."
-        link="/school/teachers/new"
+        link="/school/curriculum"
       />
     </div>
   );

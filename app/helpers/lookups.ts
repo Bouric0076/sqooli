@@ -58,6 +58,23 @@ export interface Teacher {
     image?: string; // optional, if available later
   }
 
+  export interface Student {
+    id: number;
+    fullName: string;
+    phone: string;
+    email: string;
+    certificateLevelId: number;
+    certificateLevelName: string;
+    subjectCount: number;
+    ratingsCount: number;
+    averageRating: number;
+    lessonCount: number;
+    attendanceRating: number;
+    pendingLessonCount: number;
+    enrollments: Enrollment[];
+    image?: string; // optional, if available later
+  }
+
   export interface LessonObjective {
     id: number;
     objective: string;
@@ -112,3 +129,15 @@ export const getTeachers = (filters?: LookupFilters) =>
   
 export const getLessons = (filters?: LookupFilters) =>
   lookupFetcher<LookupItem>("/api/lookups/lessons", filters);
+
+export const getBookingLessons = (filters?: LookupFilters) =>
+  lookupFetcher<LookupItem>("/api/lesson/bookings", filters);
+
+export const getStudents = (filters?: LookupFilters) =>
+  lookupFetcher<Student>("/api/lookups/students", filters);
+
+export const getAllAssignments = (type:string,filters?: LookupFilters) =>
+  lookupFetcher<LookupItem>(`/api/assignment?type=${type}`, filters);
+
+export const getAllUploadResources = (type:string,filters?: LookupFilters) =>
+  lookupFetcher<LookupItem>(`/api/resource/uploads?type=${type}`, filters);

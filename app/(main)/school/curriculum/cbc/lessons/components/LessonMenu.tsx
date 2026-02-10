@@ -6,6 +6,7 @@ type LessonMenuProps = {
   steps: string[];
   currentStep: number;
   lessonId: number | null;
+  title: string;
   onStepClick: (step: number) => void;
 };
 
@@ -14,14 +15,13 @@ export default function LessonMenu({
   currentStep,
   lessonId,
   onStepClick,
+  title,
 }: LessonMenuProps) {
   const { activeLesson } = useCurriculumStore();
 
   return (
     <div className="w-1/ bg-white border-r border-gray-200 p-6">
-      <h2 className="text-lg font-bold mb-4">
-        {activeLesson?.id ? "Update" : "Create"} Lesson
-      </h2>
+      <h2 className="text-lg font-bold mb-4">{title}</h2>
 
       <ol className="space-y-4">
         {steps.map((label, index) => {

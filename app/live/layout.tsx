@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
+import StudentTopmenu from "../components/menu/studentTopmenu";
+import LiveTopMenu from "../components/menu/liveTopMenu";
+import AuthWrapper from "../components/auth/AuthWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,9 +33,10 @@ export default function RootLayout({
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Header */}
 
+            <LiveTopMenu />
             {/* Page Content */}
             <main className="flex-1 overflow-auto bg-white relative h-screen">
-              {children}
+              <AuthWrapper>{children}</AuthWrapper>
             </main>
           </div>
         </div>

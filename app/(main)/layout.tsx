@@ -5,6 +5,13 @@ import Sidebar from "../components/menu/sidebar";
 import TopMenu from "../components/menu/topmenu";
 import AuthWrapper from "../components/auth/AuthWrapper";
 
+import { Roboto } from "next/font/google";
+
+const roboto = Roboto({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+});
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -27,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className={roboto.className}>
         <div className="flex h-screen bg-gray-100 relative">
           {/* Toggle button - always visible, positioned independently */}
           <Sidebar />

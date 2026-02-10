@@ -33,9 +33,15 @@ export default function LessonCard({ lesson, viewMode }: LessonCardProps) {
     router.push(`/school/curriculum/cbc/lessons/create-lesson`);
   };
 
+  const joinMetting = (lesson: Lesson) => () => {
+    clearActiveLesson();
+    setActiveLesson({ id: lesson.id, title: lesson.title });
+    router.push(lesson.subtitle);
+  };
+
   if (viewMode === "list") {
     return (
-      <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+      <div className="flex items-center justify-between rounded-lg  bg-white p-4 shadow-sm">
         <div className="flex items-center gap-4">
           <div className="h-16 w-24 overflow-hidden rounded-md border-2 border-[#f4c430]">
             <Image
@@ -73,13 +79,20 @@ export default function LessonCard({ lesson, viewMode }: LessonCardProps) {
 
   /* GRID VIEW (default) */
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+    <div className="rounded-xl border  p-4 shadow-sm">
       <div className="mb-3 flex items-start justify-between">
         <div>
           <h3 className="text-sm font-semibold text-gray-800">
             {lesson.title}
           </h3>
-          <p className="text-xs text-gray-500">{lesson.subtitle}</p>
+          {/* <p className="text-xs text-gray-500">{lesson.subtitle}</p> */}
+
+          <button
+            onClick={joinMetting(lesson)}
+            className="rounded-md border px-3 py-1 text-xs bg-blue-500 text-white hover:bg-blue-700"
+          >
+            Join Lecture
+          </button>
         </div>
         <MoreVertical className="h-5 w-5 text-gray-400" />
       </div>

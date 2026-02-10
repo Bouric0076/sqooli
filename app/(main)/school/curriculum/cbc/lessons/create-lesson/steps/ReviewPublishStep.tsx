@@ -114,7 +114,22 @@ export function ReviewPublishStep({ form, lessonId }: Props) {
       setAssigning(true);
       var resp = await assignTeacherToLesson(lessonId, teacherId);
       // Assuming the API returns the assigned teacher info on success:
-      setAssignedTeacher(teachers.find((t) => t.id === teacherId) || null);
+      const teacher = teachers.find((t) => t.id === teacherId);
+
+      setAssignedTeacher(teacher || null);
+
+      setLesson((prev: any) => ({
+        ...prev,
+        assignedTeachers: [
+          ...(prev?.assignedTeachers || []),
+          {
+            teacherId: teacher?.id,
+            name: teacher?.fullName,
+            email: teacher?.email,
+          },
+        ],
+      }));
+
       setNotification({
         type: "success",
         message: "Teacher assigned successfully",
@@ -245,7 +260,7 @@ export function ReviewPublishStep({ form, lessonId }: Props) {
 
       {/* Main Content */}
       <div className="w-full mx-auto px-6 py-8">
-        <div className="bg-linear-to-r from-blue-400 via-blue-300 to-blue-200  py-8 ">
+        <div className="bg-linear-to-r from-blue-400 via-blue-300 to-blue-200  p-8 ">
           <div className="w-full mx-auto flex flex-row justify-between">
             <h1 className="text-2xl font-semibold text-gray-800 mb-2 sm:mb-0">
               {lesson?.subject}

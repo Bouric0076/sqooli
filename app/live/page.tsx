@@ -3,5 +3,5 @@
 import LiveClassroom from "@/components/LiveClassroom";
 
 export default function LiveClassPage() {
-  return <LiveClassroom />;
+  return <a />;
 }

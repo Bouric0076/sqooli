@@ -21,6 +21,7 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import { useAuthStore } from "@/app/store/useAuthStore";
+import { useCurriculumStore } from "@/app/store/useCurriculumStore";
 
 export default function StudentSidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -36,6 +37,7 @@ export default function StudentSidebar() {
     return pathname === link || pathname.startsWith(link + "/");
   };
 
+  const { clearActiveCurriculum } = useCurriculumStore();
   // school menu items (UNCHANGED)
   const menuItems = {
     "CORE ACADEMICS": [
@@ -160,7 +162,11 @@ export default function StudentSidebar() {
                 return (
                   <button
                     key={idx}
-                    onClick={() => router.push(item.link)}
+                    onClick={() => {
+                      clearActiveCurriculum();
+
+                      router.push(item.link);
+                    }}
                     className={`w-full flex items-center gap-3 px-4 py-3 text-[14px] font-normal rounded-full
                       transition-all duration-200
                       ${

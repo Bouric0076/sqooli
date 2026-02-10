@@ -124,6 +124,14 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
         </div>
       )}
 
+      {/* <button className="mt-6 w-full flex items-center justify-center gap-3 border border-gray-300 rounded-md py-2 hover:bg-gray-50">
+        <img
+          src="https://www.svgrepo.com/show/475656/google-color.svg"
+          className="w-5 h-5"
+        />
+        Continue with Google
+      </button> */}
+
       {/* Google Login Button */}
       <div className={`mt-5 w-full max-w-md ${className}`}>
         <GoogleLogin

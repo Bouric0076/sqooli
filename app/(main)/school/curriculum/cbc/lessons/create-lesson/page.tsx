@@ -36,6 +36,7 @@ export type AddLessonForm = {
 export default function CreateLessonPage() {
   const [step, setStep] = useState(1);
   const { activeLesson } = useCurriculumStore();
+  const [basicInfoSubmitted, setBasicInfoSubmitted] = useState(false);
 
   const [lessonId, setLessonId] = useState<number | null>(
     activeLesson?.id ?? null
@@ -44,6 +45,19 @@ export default function CreateLessonPage() {
   useEffect(() => {
     setLessonId(activeLesson?.id ?? null);
   }, [activeLesson?.id]);
+
+  useEffect(() => {
+    if (step === 1 && lessonId !== null && basicInfoSubmitted) {
+      setStep(2);
+      setBasicInfoSubmitted(false); // reset
+    }
+  }, [lessonId, basicInfoSubmitted, step]);
+
+  useEffect(() => {
+    if (step === 1 && lessonId !== null) {
+      setStep(2);
+    }
+  }, [lessonId]);
 
   // alert(activeLesson?.id);
   const form = useForm<AddLessonForm>({
@@ -88,7 +102,8 @@ export default function CreateLessonPage() {
         return (
           <BasicInformationStep
             form={form}
-            lessonId={activeLesson?.id}
+            lessonId={lessonId}
+            setBasicInfoSubmitted={setBasicInfoSubmitted}
             setLessonId={setLessonId}
             onNext={goToStep}
           />
@@ -155,6 +170,7 @@ export default function CreateLessonPage() {
     <div className="flex h-screen bg-white">
       {/* Sidebar */}
       <LessonMenu
+        title={activeLesson?.id ? "Update Lesson" : "Create Lesson"}
         steps={steps}
         currentStep={step}
         lessonId={lessonId}

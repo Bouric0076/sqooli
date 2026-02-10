@@ -4,9 +4,12 @@ import { getLessonBasicInfo } from "@/app/lib/lessonContent";
 import { useCurriculumStore } from "@/app/store/useCurriculumStore";
 import React, { useEffect, useState } from "react";
 import { Calendar, Clock, User, BookOpen, CreditCard } from "lucide-react";
+import { useAuthStore } from "@/app/store/useAuthStore";
 
 export default function BookingPage() {
   const { activeLesson } = useCurriculumStore();
+
+  const user = useAuthStore.getState().user;
 
   const [lessonId, setLessonId] = useState<number | null>(
     activeLesson?.id ?? null
@@ -38,17 +41,19 @@ export default function BookingPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          PaymentMethod: "Paystack",
           lessonId: lesson.id,
           amount: lesson.price,
-          email: "student@email.com", // replace with logged-in user email
+          email: user?.email, // replace with logged-in user email
           lessonName: lesson.name,
         }),
       });
 
       const data = await res.json();
 
-      if (data.authorization_url) {
-        window.location.href = data.authorization_url;
+      //console.log("Paystack initiation response:", data);
+      if (data?.data?.paymentUrl) {
+        window.location.href = data?.data?.paymentUrl;
       } else {
         alert("Failed to generate payment link");
       }
@@ -125,6 +130,7 @@ export default function BookingPage() {
             <p className="text-gray-500 text-sm mt-1">
               Complete payment to book this lesson
             </p>
+            <p>{user?.email}</p>
           </div>
 
           <div className="text-center mt-6">

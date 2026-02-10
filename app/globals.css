@@ -3,6 +3,13 @@
 
 @custom-variant dark (&:is(.dark *));
 
+
+@import '@fontsource/roboto'; 
+@import '@fontsource/roboto/300.css';
+@import '@fontsource/roboto/500.css';
+@import '@fontsource/roboto/700.css';
+
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -49,7 +56,7 @@
 body {
   /* background: var(--background); */
   /* color: var(--foreground); */
-  /* font-family: Arial, Helvetica, sans-serif; */
+
 }
 
 :root {
@@ -128,4 +135,241 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+
+/* Root calendar */
+.fc {
+  font-family: Roboto;
+  background: #ffffff;
+  border-radius: 16px;
+}
+
+/* Toolbar */
+.fc-toolbar {
+  margin-bottom: 1rem;
+}
+
+.fc-toolbar-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Buttons */
+.fc .fc-button {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  color: #111827 !important;
+  border-radius: 10px !important;
+  padding: 6px 12px !important;
+  font-size: 12px !important;
+  box-shadow: none !important;
+}
+
+.fc .fc-button:hover {
+  background: #f3f4f6 !important;
+}
+
+.fc .fc-button-active {
+  background: #2563eb !important;
+  color: #ffffff !important;
+  border-color: #2563eb !important;
+}
+
+/* Weekday headers */
+.fc-col-header-cell {
+  background: #f9fafb;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  border: none;
+}
+
+/* Day cells */
+.fc-daygrid-day-frame {
+  padding: 6px;
+}
+
+.fc-daygrid-day {
+  border: 1px solid #f1f5f9;
+}
+
+/* Today highlight */
+/* .fc-day-today {
+  background: #eff6ff !important;
+} */
+
+/* Day number */
+.fc-daygrid-day-number {
+  font-size: 12px;
+  color: #374151;
+}
+
+/* Event container */
+/* .fc-daygrid-event {
+  border-radius: 12px !important;
+  border: none !important;
+  padding: 4px 6px !important;
+  background: transparent !important;
+} */
+
+/* Event card */
+/* .fc-event {
+  background: #f8fafc !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 4px 6px !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+} */
+
+/* Remove event dot */
+/* .fc-daygrid-event-dot {
+  display: none;
+} */
+
+/* More link */
+.fc-daygrid-more-link {
+  font-size: 11px;
+  color: #2563eb;
+}
+
+/* Popover */
+.fc-popover {
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+/* Scrollbar */
+.fc-scroller::-webkit-scrollbar {
+  width: 6px;
+}
+
+.fc-scroller::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 10px;
+}
+
+/* Remove outline */
+.fc a {
+  text-decoration: none;
+}
+
+/* Hover effect */
+.fc-event:hover {
+  transform: scale(1.02);
+  transition: all 0.1s ease-in-out;
+}
+
+/* Timegrid (if used later) */
+.fc-timegrid-slot {
+  border-color: #f1f5f9;
+}
+
+/* Header border cleanup */
+.fc-theme-standard th,
+.fc-theme-standard td {
+  border-color: #f1f5f9;
+}
+
+/* Hide all-day label */
+.fc-timegrid-axis-cushion {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* Rounded calendar edges */
+.fc-view-harness {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Selection highlight */
+.fc-highlight {
+  background: #dbeafe !important;
+}
+
+/* Now indicator */
+.fc-timegrid-now-indicator-line {
+  border-color: #2563eb;
+}
+
+/* Week numbers (optional) */
+.fc-daygrid-week-number {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+
+/* Dark attendamce*/
+
+.attendance-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.subtitle {
+  color: gray;
+  margin-bottom: 10px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.toolbar input,
+.toolbar select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.attendance-table {
+  border: 1px solid #ddd;
+  overflow-x: auto;
+  border-radius: 10px;
+}
+
+.header-row,
+.data-row {
+  display: flex;
+}
+
+.name-col {
+  min-width: 180px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-right: 1px solid #eee;
+}
+
+.name-col img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.day-col {
+  min-width: 50px;
+  text-align: center;
+  padding: 8px;
+  border-right: 1px solid #eee;
+}
+
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot.present {
+  background-color: #22c55e;
+}
+
+.dot.absent {
+  background-color: #ef4444;
 }

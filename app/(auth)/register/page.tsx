@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import GoogleLoginButton from "@/app/components/auth/GoogleLoginButton";
 
 type RegisterForm = {
   firstName: string;
@@ -70,8 +71,8 @@ export default function Registerpage() {
     hasError ? { borderColor: "#dc2626" } : {};
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-xl bg-white rounded-lg shadow-md p-3">
+    <div className="min-h-screen flex items-center justify-center  px-4">
+      <div className="w-full max-w-xl bg-white border rounded-lg shadow-md p-3">
         <h1 className="text-2xl font-bold text-center text-gray-800">
           Create an Account
         </h1>
@@ -80,13 +81,15 @@ export default function Registerpage() {
         </p>
 
         {/* Google */}
-        <button className="mt-6 w-full flex items-center justify-center gap-3 border border-gray-300 rounded-md py-2 hover:bg-gray-50">
+        {/* <button className="mt-6 w-full flex items-center justify-center gap-3 border border-gray-300 rounded-md py-2 hover:bg-gray-50">
           <img
             src="https://www.svgrepo.com/show/475656/google-color.svg"
             className="w-5 h-5"
           />
           Continue with Google
-        </button>
+        </button> */}
+
+        <GoogleLoginButton />
 
         {/* Divider */}
         <div className="flex items-center my-6">

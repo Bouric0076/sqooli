@@ -110,8 +110,8 @@ export default function Loginpage() {
         src="https://accounts.google.com/gsi/client"
         strategy="beforeInteractive"
       />
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-        <div className="w-full max-w-xl bg-white rounded-lg shadow-md p-3">
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="w-full max-w-xl bg-white border rounded-lg shadow-md p-3">
           <h1 className="text-2xl font-bold text-center text-gray-800">
             Welcome Back
           </h1>

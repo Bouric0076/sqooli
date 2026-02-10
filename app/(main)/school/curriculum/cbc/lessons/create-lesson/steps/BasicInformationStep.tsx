@@ -20,7 +20,6 @@ import {
 
 import { useCurriculumStore } from "@/app/store/useCurriculumStore";
 import { AddLessonForm } from "../page";
-import { log } from "console";
 import { getLessonBasicInfo } from "@/app/lib/lessonContent";
 
 type Props = {
@@ -28,6 +27,7 @@ type Props = {
   lessonId?: number | null;
   onNext: (lessonId: number) => void;
   setLessonId: (lessonId: number) => void;
+  setBasicInfoSubmitted: (v: boolean) => void;
 };
 
 export default function BasicInformationStep({
@@ -35,6 +35,7 @@ export default function BasicInformationStep({
   lessonId,
   setLessonId,
   onNext,
+  setBasicInfoSubmitted,
 }: Props) {
   const {
     register,
@@ -42,12 +43,14 @@ export default function BasicInformationStep({
     watch,
     setValue,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isSubmitted },
   } = form;
 
   const activeCurriculum = useCurriculumStore(
     (state) => state.activeCurriculum
   );
+
+  const { setActiveLesson } = useCurriculumStore();
 
   const [lesson, setLesson] = useState([]);
   const [lessonTypes, setLessonTypes] = useState<any[]>([]);
@@ -63,6 +66,8 @@ export default function BasicInformationStep({
   const educationLevelId = watch("educationLevelId");
   const gradeLevelId = watch("gradeLevelId");
   const subjectId = watch("subjectId");
+
+  /* ---------------- LOAD EDIT DATA ---------------- */
 
   useEffect(() => {
     if (!lessonId) return;
@@ -85,6 +90,12 @@ export default function BasicInformationStep({
       .finally(() => setLoading(false));
   }, [lessonId]);
 
+  // useEffect(() => {
+  //   if (lessonId !== null) {
+  //     onNext(2);
+  //   }
+  // }, [lessonId]);
+
   /* ---------------- BASE LOOKUPS ---------------- */
 
   useEffect(() => {
@@ -103,10 +114,13 @@ export default function BasicInformationStep({
 
   /* ---------------- DEPENDENT LOOKUPS ---------------- */
 
+  // Education → Grade
   useEffect(() => {
     if (!educationLevelId || !activeCurriculum?.id) {
       setGradeLevels([]);
-      setValue("gradeLevelId", null);
+      if (!isSubmitted) {
+        setValue("gradeLevelId", null);
+      }
       return;
     }
 
@@ -114,12 +128,15 @@ export default function BasicInformationStep({
       curriculumId: activeCurriculum.id,
       educationLevelId,
     }).then(setGradeLevels);
-  }, [educationLevelId, activeCurriculum, setValue]);
+  }, [educationLevelId, activeCurriculum, isSubmitted, setValue]);
 
+  // Grade → Subject
   useEffect(() => {
     if (!gradeLevelId || !activeCurriculum?.id) {
       setSubjects([]);
-      setValue("subjectId", null);
+      if (!isSubmitted) {
+        setValue("subjectId", null);
+      }
       return;
     }
 
@@ -127,12 +144,15 @@ export default function BasicInformationStep({
       curriculumId: activeCurriculum.id,
       gradeLevelId,
     }).then(setSubjects);
-  }, [gradeLevelId, activeCurriculum, setValue]);
+  }, [gradeLevelId, activeCurriculum, isSubmitted, setValue]);
 
+  // Subject → Topic
   useEffect(() => {
     if (!subjectId || !activeCurriculum?.id) {
       setTopics([]);
-      setValue("topicId", null);
+      if (!isSubmitted) {
+        setValue("topicId", null);
+      }
       return;
     }
 
@@ -140,13 +160,11 @@ export default function BasicInformationStep({
       curriculumId: activeCurriculum.id,
       subjectId,
     }).then(setTopics);
-  }, [subjectId, activeCurriculum, setValue]);
+  }, [subjectId, activeCurriculum, isSubmitted, setValue]);
 
   /* ---------------- SUBMIT STEP ---------------- */
 
   const submitBasicInfo = async (data: AddLessonForm) => {
-    // console.log(data);
-    // return;
     const res = await fetch("/api/lesson", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -168,18 +186,20 @@ export default function BasicInformationStep({
 
     const result = await res.json();
 
-    console.log(result);
-
     setMessage(result?.message);
+
     const lessonId_new = result?.data?.id;
 
-    // ✅ HARD GUARD
-    // if (!lessonId || Number.isNaN(lessonId)) {
-    //   throw new Error("Lesson ID not returned from server");
-    // }
+    if (!lessonId_new) {
+      console.error("Lesson ID not returned from server");
+      return;
+    }
+    setActiveLesson(result?.data);
+
     setLessonId(lessonId_new);
-    // ✅ Only now do we move forward
-    onNext(2);
+    setBasicInfoSubmitted(true);
+
+    // onNext(2);
   };
 
   /* ---------------- UI ---------------- */
@@ -316,6 +336,7 @@ export default function BasicInformationStep({
             )}
           />
         </FormField>
+
         <div className="col-span-2">
           <FormField label="Topic" error={errors.topicId?.message}>
             <Controller
@@ -349,7 +370,7 @@ export default function BasicInformationStep({
             {...register("end", { required: "End time is required" })}
           />
         </FormField>
-        {/* ACTIONS */}
+
         <div className="col-span-2">
           <div className="flex justify-end pt-4">
             <button

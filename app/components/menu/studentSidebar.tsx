@@ -29,8 +29,8 @@ export default function Sidebar() {
   const { user, activeSchool } = useAuthStore();
 
   const isActive = (link: string) => {
-    if (link === "/school") {
-      return pathname === "/school";
+    if (link === "/student") {
+      return pathname === "/student";
     }
 
     return pathname === link || pathname.startsWith(link + "/");
