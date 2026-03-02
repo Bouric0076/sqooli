@@ -80,52 +80,96 @@ export default function CurriculumSelection() {
 
     loadCurriculums();
   }, []);
+
   const toggleSelection = (id: number) => {
-    setSelectedIds((prev) => {
-      let updated: number[];
+    let updated: number[];
 
-      if (role === "SchoolAdmin") {
-        updated = prev.includes(id)
-          ? prev.filter((i) => i !== id)
-          : [...prev, id];
+    if (role === "SchoolAdmin") {
+      updated = selectedIds.includes(id)
+        ? selectedIds.filter((i) => i !== id)
+        : [...selectedIds, id];
+    } else {
+      updated = selectedIds.includes(id) ? [] : [id];
+    }
+
+    // update local state
+    setSelectedIds(updated);
+
+    // update store
+    setSchoolEnrollment({ curriculumIds: updated });
+
+    if (role === "Student") {
+      if (updated.length === 0) {
+        useOnboardingStore.getState().clearStudentEnrollments(); // ✅ use action
       } else {
-        // student/teacher: single select
-        updated = prev.includes(id) ? [] : [id];
+        addStudentEnrollment({
+          curriculumId: updated[0],
+          gradeLevelId: 0,
+          schoolId: null,
+          subjectIds: [],
+        });
       }
+    }
 
-      // Update schoolEnrollment
-      setSchoolEnrollment({ curriculumIds: updated });
-
-      // Update student/teacher enrollment
-      if (role === "Student") {
-        if (updated.length === 0) {
-          useOnboardingStore.getState().studentEnrollments = [];
-        } else {
-          addStudentEnrollment({
-            curriculumId: updated[0],
-            gradeLevelId: 0,
-            schoolId: null,
-            subjectIds: [],
-          });
-        }
+    if (role === "Teacher") {
+      if (updated.length === 0) {
+        useOnboardingStore.getState().clearTeacherEnrollments(); // ✅ use action
+      } else {
+        addTeacherEnrollment({
+          curriculumId: updated[0],
+          gradeLevelId: 0,
+          schoolId: null,
+          subjectIds: [],
+        });
       }
-
-      if (role === "Teacher") {
-        if (updated.length === 0) {
-          useOnboardingStore.getState().teacherEnrollments = [];
-        } else {
-          addTeacherEnrollment({
-            curriculumId: updated[0],
-            gradeLevelId: 0,
-            schoolId: null,
-            subjectIds: [],
-          });
-        }
-      }
-
-      return updated;
-    });
+    }
   };
+  // const toggleSelection = (id: number) => {
+  //   setSelectedIds((prev) => {
+  //     let updated: number[];
+
+  //     if (role === "SchoolAdmin") {
+  //       updated = prev.includes(id)
+  //         ? prev.filter((i) => i !== id)
+  //         : [...prev, id];
+  //     } else {
+  //       // student/teacher: single select
+  //       updated = prev.includes(id) ? [] : [id];
+  //     }
+
+  //     // Update schoolEnrollment
+  //     setSchoolEnrollment({ curriculumIds: updated });
+
+  //     // Update student/teacher enrollment
+  //     if (role === "Student") {
+  //       if (updated.length === 0) {
+  //         useOnboardingStore.getState().studentEnrollments = [];
+  //       } else {
+  //         addStudentEnrollment({
+  //           curriculumId: updated[0],
+  //           gradeLevelId: 0,
+  //           schoolId: null,
+  //           subjectIds: [],
+  //         });
+  //       }
+  //     }
+
+  //     if (role === "Teacher") {
+  //       if (updated.length === 0) {
+  //         useOnboardingStore.getState().teacherEnrollments = [];
+  //       } else {
+  //         addTeacherEnrollment({
+  //           curriculumId: updated[0],
+  //           gradeLevelId: 0,
+  //           schoolId: null,
+  //           subjectIds: [],
+  //         });
+  //       }
+  //     }
+
+  //     return updated;
+  //   });
+  // };
 
   // Next button handler
   const handleNext = () => {

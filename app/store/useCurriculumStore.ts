@@ -21,6 +21,7 @@ interface CurriculumState {
   curriculumId: number | null;
   lessonId: number | null;
 
+
   // Actions
   setActiveCurriculum: (curriculum: Curriculum) => void;
   clearActiveCurriculum: () => void;
@@ -38,11 +39,14 @@ export const useCurriculumStore = create<CurriculumState>()(
       curriculumId: null,
       lessonId: null,
 
-      setActiveCurriculum: (curriculum) =>
+      setActiveCurriculum: (curriculum) => {
+        document.cookie = `curriculumId=${curriculum.id}; path=/`;
         set({
           activeCurriculum: curriculum,
           curriculumId: curriculum.id,
-        }),
+        });
+      },
+      
 
       clearActiveCurriculum: () =>
         set({

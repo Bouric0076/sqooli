@@ -88,6 +88,14 @@ export const useOnboardingStore = create<OnboardingState>()(
           studentEnrollments: [e],
         })),
 
+
+        clearStudentEnrollments: () =>
+          set({ studentEnrollments: [] }),
+        
+        clearTeacherEnrollments: () =>
+          set({ teacherEnrollments: [] }),
+
+
       setSchoolEnrollment: (data) =>
         set((state) => ({
           schoolEnrollment: { ...state.schoolEnrollment, ...data },

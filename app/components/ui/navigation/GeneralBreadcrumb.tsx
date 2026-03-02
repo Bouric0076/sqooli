@@ -26,13 +26,13 @@ export default function GeneralBreadcrumb({ items }: GeneralBreadcrumbProps) {
               {index > 0 && <span>›</span>}
 
               {isLast || !item.href ? (
-                <span className="text-blue-600 font-semibold">
+                <span className="text-blue-500 font-semibold">
                   {item.label}
                 </span>
               ) : (
                 <Link
                   href={item.href}
-                  className="hover:text-blue-600 transition-colors"
+                  className="hover:text-blue-500 transition-colors"
                 >
                   {item.label}
                 </Link>

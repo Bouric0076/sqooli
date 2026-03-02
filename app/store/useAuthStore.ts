@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 
 
 type User = {
+  fullName:string;
   userId: string;
   firstName: string;
   lastName: string;
@@ -12,6 +13,11 @@ type User = {
   userRole: string;
   userType: string;
   isEmailConfirmed: boolean;
+  nationality:string,
+  nationalId: string;
+  phone:string;
+  address:string;
+  profilePhoto:string,
   schools:[]
 };
 type School = {

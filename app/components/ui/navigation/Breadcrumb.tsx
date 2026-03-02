@@ -51,9 +51,11 @@ export default function Breadcrumb() {
               {index > 0 && (
                 <>
                   <span>›</span>
+                  {activeCurriculum?.name}
+                  <span>›</span>
                   <span
                     className={
-                      isLast ? "text-blue-600 font-semibold" : "text-gray-600"
+                      isLast ? "text-blue-500 font-semibold" : "text-gray-600"
                     }
                   >
                     {labelMap[segment]}{" "}

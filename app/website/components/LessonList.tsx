@@ -9,9 +9,9 @@ import { getLessons } from "@/app/helpers/lookups";
 import { Lesson } from "@/app/store/useCurriculumStore";
 import LessonCard, {
   ViewMode,
-} from "@/app/(main)/school/curriculum/cbc/lessons/components/LessonCard";
-import LessonsHeader from "@/app/(main)/school/curriculum/cbc/lessons/components/LessonsHeader";
-import AddLessonModal from "@/app/(main)/school/curriculum/cbc/lessons/partials/AddLessonModal";
+} from "@/app/(main)/school/curriculum/[c_type]/lessons/components/LessonCard";
+import LessonsHeader from "@/app/(main)/school/curriculum/[c_type]/lessons/components/LessonsHeader";
+import AddLessonModal from "@/app/(main)/school/curriculum/[c_type]/lessons/partials/AddLessonModal";
 import LessonCardWeb from "./LessonCardWeb";
 
 export default function LessonsList() {

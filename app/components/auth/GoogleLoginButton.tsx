@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { GoogleLogin } from "@react-oauth/google";
 import { useAuthStore } from "@/app/store/useAuthStore";
 import { XCircle } from "lucide-react";
+import { useOnboardingStore } from "@/app/store/useOnboardingStore";
 
 interface GoogleLoginButtonProps {
   redirectTo?: string;
@@ -76,6 +77,7 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
       if (schools.length === 1) {
         useAuthStore.getState().setActiveSchool(schools[0]);
       }
+      useOnboardingStore.getState().setBasicInfo({ role: role });
 
       if (role === "Pending") {
         router.push("/onboarding");

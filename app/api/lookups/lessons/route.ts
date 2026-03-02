@@ -1,9 +1,17 @@
 import axiosClient from "@/app/lib/axiosClient";
+import { cookies } from "next/headers";
+
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const backendUrl = `${process.env.BACKEND_API_URL}/Lesson`;
+
+    const curriculumId = (await cookies()).get("curriculumId")?.value;
+
+// console.log(curriculumId)
+
+    const backendUrl = `${process.env.BACKEND_API_URL}/Lesson?curriculumId=`+curriculumId;
+    //console.log(backendUrl)
 
     const res = await axiosClient.get(backendUrl);
 

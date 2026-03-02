@@ -8,7 +8,7 @@ import PageHeader from "@/app/components/ui/navigation/PageHeader";
 import { getBookingLessons, getLessons } from "@/app/helpers/lookups";
 import { Lesson } from "../store/useCurriculumStore";
 import { ViewMode } from "../website/components/LessonCardWeb";
-import LessonCard from "./school/curriculum/cbc/lessons/components/LessonCard";
+import LessonCard from "./school/curriculum/[c_type]/lessons/components/LessonCard";
 
 export default function Home() {
   const [lessons, setLessons] = useState<Lesson[]>([]);

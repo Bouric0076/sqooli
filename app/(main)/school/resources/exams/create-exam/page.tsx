@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 
 import { useCurriculumStore } from "@/app/store/useCurriculumStore";
 
-import LessonMenu from "../../../curriculum/cbc/lessons/components/LessonMenu";
+import LessonMenu from "../../../curriculum/[c_type]/lessons/components/LessonMenu";
 import { useAssignmentStore } from "@/app/store/useAssignmentStore";
 import ResourceBasicInfo from "../../assignments/create-assignment/basicInfo/page";
 import ResourceQuestions from "../../assignments/create-assignment/questions/page";

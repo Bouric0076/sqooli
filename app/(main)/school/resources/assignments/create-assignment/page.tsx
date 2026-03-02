@@ -7,7 +7,7 @@ import { useCurriculumStore } from "@/app/store/useCurriculumStore";
 
 import ResourceBasicInfo from "./basicInfo/page";
 import ResourceQuestions from "./questions/page";
-import LessonMenu from "../../../curriculum/cbc/lessons/components/LessonMenu";
+import LessonMenu from "../../../curriculum/[c_type]/lessons/components/LessonMenu";
 import { useAssignmentStore } from "@/app/store/useAssignmentStore";
 
 type Question = {

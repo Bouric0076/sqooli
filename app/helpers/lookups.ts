@@ -9,6 +9,13 @@ export interface LookupItem {
   name: string;
 }
 
+export interface ContractItem {
+  id: number;
+  title: string;
+  content: string;
+  contractType: string;
+}
+
 export type LookupFilters = Record<
   string,
   string | number | boolean | undefined
@@ -141,3 +148,9 @@ export const getAllAssignments = (type:string,filters?: LookupFilters) =>
 
 export const getAllUploadResources = (type:string,filters?: LookupFilters) =>
   lookupFetcher<LookupItem>(`/api/resource/uploads?type=${type}`, filters);
+
+export const getPayments = (filters?: LookupFilters) =>
+  lookupFetcher<LookupItem>("/api/payments", filters);
+
+export const getContract = (filters?: LookupFilters) =>
+  lookupFetcher<ContractItem>("/api/lookups/contract", filters);

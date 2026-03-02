@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/app/store/useAuthStore";
 import Script from "next/script";
 import GoogleLoginButton from "@/app/components/auth/GoogleLoginButton";
+import { useOnboardingStore } from "@/app/store/useOnboardingStore";
 
 type LoginForm = {
   email: string;
@@ -66,6 +67,7 @@ export default function Loginpage() {
           useAuthStore.getState().setActiveSchool(schools[0]);
         }
 
+        useOnboardingStore.getState().setBasicInfo({ role: role });
         // console.log("User role:", role);
         // return;
 

@@ -5,6 +5,7 @@ import "../globals.css";
 import { useAuthStore } from "../store/useAuthStore";
 import { useRouter } from "next/navigation";
 import AuthWrapper from "../components/auth/AuthWrapper";
+import "react-phone-input-2/lib/style.css";
 export default function OnboardingLayout({
   children,
 }: {
@@ -33,7 +34,7 @@ export default function OnboardingLayout({
 
           {/* Main Content Area */}
           <main className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12">
-            <div className="w-full max-w-xl">
+            <div className="w-full   ">
               <AuthWrapper>{children}</AuthWrapper>
             </div>
           </main>

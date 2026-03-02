@@ -1,5 +1,5 @@
 "use client";
-import { AddLessonForm } from "@/app/(main)/school/curriculum/cbc/lessons/create-lesson/page";
+import { AddLessonForm } from "@/app/(main)/school/curriculum/[c_type]/lessons/create-lesson/page";
 import { FormField } from "@/app/components/ui/form/FormField";
 import { SelectInput } from "@/app/components/ui/form/SelectInput";
 import { TextArea } from "@/app/components/ui/form/TextArea";

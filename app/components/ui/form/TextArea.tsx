@@ -1,103 +1,71 @@
 "use client";
 
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Link from "@tiptap/extension-link";
-import Placeholder from "@tiptap/extension-placeholder";
+import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+
+const CKEditor = dynamic(
+  () => import("@ckeditor/ckeditor5-react").then((mod) => mod.CKEditor),
+  { ssr: false }
+);
 
 type TextAreaProps = {
   value?: string;
-  onChange?: (value: string) => void;
+  name?: string; // ✅ important for RHF
+  onChange?: (value: any) => void;
   placeholder?: string;
 };
 
-export function TextArea({ value, onChange, placeholder }: TextAreaProps) {
-  const editor = useEditor({
-    extensions: [StarterKit, Link, Placeholder.configure({ placeholder })],
-    content: value ?? "",
-    onUpdate: ({ editor }) => onChange?.(editor.getHTML()),
-    editorProps: {
-      attributes: {
-        class: "min-h-[120px] p-2 text-sm outline-none",
-      },
-    },
-    immediatelyRender: false,
-  });
+export function TextArea({
+  value = "",
+  name,
+  onChange,
+  placeholder = "Write something...",
+}: TextAreaProps) {
+  const [content, setContent] = useState(value);
 
-  if (!editor) return null;
+  useEffect(() => {
+    setContent(value || "");
+  }, [value]);
 
   return (
-    <div className="w-full rounded-xl border border-gray-300 focus-within:ring-1 focus-within:ring-blue-400">
-      {/* Toolbar */}
-      <div className="flex gap-2 p-2 border-b bg-gray-50">
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          className={`px-2 py-1 rounded ${
-            editor.isActive("bold") ? "bg-blue-500 text-white" : ""
-          }`}
-        >
-          B
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={`px-2 py-1 rounded ${
-            editor.isActive("italic") ? "bg-blue-500 text-white" : ""
-          }`}
-        >
-          I
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleUnderline().run()}
-          className={`px-2 py-1 rounded ${
-            editor.isActive("underline") ? "bg-blue-500 text-white" : ""
-          }`}
-        >
-          U
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={`px-2 py-1 rounded ${
-            editor.isActive("bulletList") ? "bg-blue-500 text-white" : ""
-          }`}
-        >
-          • List
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          className={`px-2 py-1 rounded ${
-            editor.isActive("orderedList") ? "bg-blue-500 text-white" : ""
-          }`}
-        >
-          1. List
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            const url = prompt("Enter link URL");
-            if (url) editor.chain().focus().setLink({ href: url }).run();
-          }}
-          className={`px-2 py-1 rounded ${
-            editor.isActive("link") ? "bg-blue-500 text-white" : ""
-          }`}
-        >
-          🔗
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().unsetLink().run()}
-          className="px-2 py-1 rounded"
-        >
-          ❌ Link
-        </button>
-      </div>
+    <div className="w-full rounded-xl border border-gray-300 focus-within:ring-1 focus-within:ring-blue-400 overflow-hidden">
+      <CKEditor
+        editor={ClassicEditor}
+        data={content}
+        config={{
+          licenseKey: "GPL",
+          placeholder,
+          toolbar: [
+            "bold",
+            "italic",
+            "underline",
+            "bulletedList",
+            "numberedList",
+            "link",
+            "undo",
+            "redo",
+          ],
+        }}
+        onChange={(_, editor) => {
+          const data = editor.getData();
+          setContent(data);
 
-      {/* Editor */}
-      <EditorContent editor={editor} />
+          // ✅ Support both normal and RHF-style handlers
+          if (!onChange) return;
+
+          if (name) {
+            onChange({
+              target: {
+                name,
+                value: data,
+              },
+            });
+          } else {
+            onChange(data);
+          }
+        }}
+      />
     </div>
   );
 }

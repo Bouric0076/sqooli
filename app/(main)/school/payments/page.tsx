@@ -1,6 +1,7 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import PaymentDetailsModal from "./partials/PaymentDetailsModal";
+import { getPayments, LookupItem } from "@/app/helpers/lookups";
 
 const payments = [
   {
@@ -41,6 +42,17 @@ const payments = [
 export default function PaymentsPage() {
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [payments, setPayments] = useState<LookupItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getPayments()
+      .then((data) => {
+        console.log("Fetched payments:", data);
+        setPayments(data);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const filteredPayments = useMemo(() => {
     return payments.filter((p) => {

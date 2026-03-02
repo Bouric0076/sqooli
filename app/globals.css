@@ -373,3 +373,18 @@ body {
 .dot.absent {
   background-color: #ef4444;
 }
+
+.ck-editor__editable {
+  min-height: 120px;
+  font-size: 0.875rem;
+  padding: 12px;
+}
+
+.ck.ck-editor {
+  border-radius: 0.75rem;
+}
+
+.ck.ck-toolbar {
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
+}
