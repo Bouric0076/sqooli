@@ -1,10 +1,60 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search, MoreVertical, EyeOff } from "lucide-react";
+import { fetchTransactions, fetchWallet } from "@/app/helpers/wallet";
+import WithdrawModal from "./components/WithdrawModal";
+
+interface TransactionItemProps {
+  description: string;
+  detail: string;
+  status: string;
+}
 
 export default function WalletPage() {
   const [activeTab, setActiveTab] = useState("earnings");
+
+  const [balance, setBalance] = useState(0.0);
+  const [availableBalance, setAvailableBalance] = useState(0.0);
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [withdrawalAmount, setWithdrawalAmount] = useState("");
+  const [withdrawalMethod, setWithdrawalMethod] = useState("");
+  const [withdrawalDetails, setWithdrawalDetails] = useState("");
+  const [processingWithdrawal, setProcessingWithdrawal] = useState(false);
+  const [withdrawalError, setWithdrawalError] = useState(null);
+  const [withdrawalSuccess, setWithdrawalSuccess] = useState(false);
+  const [showBalance, setShowBalance] = useState(true);
+  const [referralLink, setReferralLink] = useState("");
+  const [copySuccess, setCopySuccess] = useState(false);
+  const [switchingAccount, setSwitchingAccount] = useState(false);
+  const [switchAccountError, setSwitchAccountError] = useState(null);
+
+  useEffect(() => {
+    const fetchWalletData = async () => {
+      try {
+        const [walletData, transactionsData] = await Promise.all([
+          fetchWallet(),
+          fetchTransactions({
+            type: activeTab === "earnings" ? "earnings" : "withdrawals",
+          }),
+        ]);
+
+        setBalance(walletData.balance);
+        setAvailableBalance(walletData.availableBalance);
+        setTransactions(transactionsData?.data?.items);
+      } catch (error) {
+        console.error("Error fetching wallet data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWalletData();
+  }, [activeTab]);
+
+  // console.log("Wallet data:", { balance, availableBalance, transactions });
 
   return (
     <div className="min-h-screen bg-gray-100 flex">
@@ -24,15 +74,52 @@ export default function WalletPage() {
           </div>
         </div>
 
-        <div className="text-sm space-y-1 text-gray-600">
+        {/* <div className="text-sm space-y-1 text-gray-600">
           <p>Contact Information</p>
           <p>+254712 345 678</p>
           <p>mathematicexcel@gmail.com</p>
-        </div>
+        </div> */}
 
-        <button className="w-full bg-purple-600 text-white py-2 rounded-xl">
+        {/* <button className="w-full bg-purple-600 text-white py-2 rounded-xl">
           Switch Account
-        </button>
+        </button> */}
+
+        {/* WALLET CARD */}
+        <div className=" bg-gradient-to-r from-purple-600 to-indigo-500 text-white p-6 rounded-2xl relative overflow-hidden">
+          <div className="flex justify-between items-start">
+            <p className="text-sm opacity-80">A/C 000000</p>
+            <MoreVertical size={18} />
+          </div>
+
+          <div className="mt-6">
+            <p className="text-xs opacity-80">Available Balance</p>
+            <p className="text-lg font-medium">KES {balance}</p>
+          </div>
+
+          <div className="mt-4">
+            <p className="text-xs opacity-80">Actual Balance</p>
+            <div className="flex items-center gap-2">
+              <h2 className="text-3xl font-bold">KES {availableBalance}</h2>
+              <EyeOff size={18} />
+            </div>
+          </div>
+
+          <div className="mt-6 text-sm opacity-90">
+            <p>Saved Method:</p>
+            <p>Paybill: 2*****7</p>
+            <p>Account No: 0*********5463</p>
+          </div>
+
+          <WithdrawModal />
+          {/* <div className="flex gap-3 mt-6">
+            <button className="bg-white text-purple-600 px-4 py-2 rounded-xl font-medium">
+              Withdraw
+            </button>
+            <button className="bg-white/20 px-4 py-2 rounded-xl border border-white/30">
+              Edit
+            </button>
+          </div> */}
+        </div>
 
         <div className="bg-purple-50 p-4 rounded-2xl space-y-2">
           <h3 className="font-semibold text-sm">Refer & Earn with Sqooli</h3>
@@ -56,42 +143,6 @@ export default function WalletPage() {
 
         {/* TOP SECTION */}
         <div className="flex gap-6">
-          {/* WALLET CARD */}
-          <div className="w-[420px] bg-gradient-to-r from-purple-600 to-indigo-500 text-white p-6 rounded-2xl relative overflow-hidden">
-            <div className="flex justify-between items-start">
-              <p className="text-sm opacity-80">A/C 000000</p>
-              <MoreVertical size={18} />
-            </div>
-
-            <div className="mt-6">
-              <p className="text-xs opacity-80">Available Balance</p>
-              <p className="text-lg font-medium">KES 0.00</p>
-            </div>
-
-            <div className="mt-4">
-              <p className="text-xs opacity-80">Actual Balance</p>
-              <div className="flex items-center gap-2">
-                <h2 className="text-3xl font-bold">KES 0.00</h2>
-                <EyeOff size={18} />
-              </div>
-            </div>
-
-            <div className="mt-6 text-sm opacity-90">
-              <p>Saved Method:</p>
-              <p>Paybill: 2*****7</p>
-              <p>Account No: 0*********5463</p>
-            </div>
-
-            <div className="flex gap-3 mt-6">
-              <button className="bg-white text-purple-600 px-4 py-2 rounded-xl font-medium">
-                Withdraw
-              </button>
-              <button className="bg-white/20 px-4 py-2 rounded-xl border border-white/30">
-                Edit
-              </button>
-            </div>
-          </div>
-
           {/* SEARCH + TABS */}
           <div className="flex-1 bg-white rounded-2xl p-6 shadow-sm">
             <div className="relative mb-6">
@@ -116,7 +167,7 @@ export default function WalletPage() {
               >
                 Earnings
               </button>
-              <button
+              {/* <button
                 onClick={() => setActiveTab("topups")}
                 className={`pb-2 ${
                   activeTab === "topups"
@@ -125,7 +176,7 @@ export default function WalletPage() {
                 }`}
               >
                 Top-Ups
-              </button>
+              </button> */}
               <button
                 onClick={() => setActiveTab("withdrawals")}
                 className={`pb-2 ${
@@ -139,17 +190,49 @@ export default function WalletPage() {
             </div>
 
             {/* TRANSACTIONS */}
-            <div className="space-y-4">
-              <div className="text-xs text-gray-400">24 APR 2025</div>
+            {activeTab === "earnings" && (
+              <div className="space-y-4">
+                <div className="text-xs text-gray-400">03 MAR 2026</div>
 
-              <TransactionItem />
-              <TransactionItem />
+                {transactions?.length > 0 ? (
+                  transactions.map((txn: any) => (
+                    <TransactionItem
+                      key={txn.id}
+                      description={txn.description}
+                      detail={txn.detail}
+                      status={txn.status}
+                    />
+                  ))
+                ) : (
+                  <p className="text-center text-gray-500 py-10">
+                    No transactions found.
+                  </p>
+                )}
 
-              <div className="text-xs text-gray-400 mt-6">25 APR 2025</div>
+                <div className="text-xs text-gray-400 mt-6">03 MAR 2026</div>
+              </div>
+            )}
 
-              <TransactionItem />
-              <TransactionItem />
-            </div>
+            {activeTab === "withdrawals" && (
+              <div className="space-y-4">
+                <div className="text-xs text-gray-400">03 MAR 2026</div>
+
+                {transactions?.length > 0 ? (
+                  transactions.map((txn: any) => (
+                    <TransactionItem
+                      key={txn.id}
+                      description={txn.description}
+                      detail={txn.detail}
+                      status={txn.status}
+                    />
+                  ))
+                ) : (
+                  <p className="text-center text-gray-500 py-10">
+                    No transactions found.
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -157,7 +240,11 @@ export default function WalletPage() {
   );
 }
 
-function TransactionItem() {
+function TransactionItem({
+  description = "Commission",
+  detail = "Campaign #123456",
+  status = "Complete",
+}: TransactionItemProps) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
@@ -165,13 +252,13 @@ function TransactionItem() {
           S
         </div>
         <div>
-          <p className="font-medium">Commission</p>
-          <p className="text-sm text-gray-500">Campaign #123456</p>
+          <p className="font-medium">{description}</p>
+          <p className="text-sm text-gray-500">{detail}</p>
         </div>
       </div>
 
       <span className="bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full">
-        Complete
+        {status}
       </span>
     </div>
   );

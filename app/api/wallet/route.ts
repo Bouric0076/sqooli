@@ -1,11 +1,18 @@
 import axiosClient from "@/app/lib/axiosClient";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+
+export async function GET(req: NextRequest) {
   try {
-    const backendUrl = `${process.env.BACKEND_API_URL}/wallet`;
+    const backendUrl = `${process.env.BACKEND_API_URL}/wallet/balance`;
 
-    const res = await axiosClient.get(backendUrl);
+    const { searchParams } = new URL(req.url);
+    const res = await axiosClient.get(
+      `${backendUrl}`,
+      {
+        params: Object.fromEntries(searchParams),
+      }
+    );
 
     return NextResponse.json(res.data, { status: 200 });
   } catch (error: any) {

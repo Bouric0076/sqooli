@@ -74,7 +74,7 @@ export default function TeacherSidebar() {
     ADMINISTRATION: [
       { icon: Users, label: "Resource Centre", link: "/teacher/resources" },
       //   { icon: BarChart3, label: "Performance", link: "/teacher/performance" },
-      { icon: CreditCard, label: "Wallet", link: "/school/wallet" },
+      { icon: CreditCard, label: "Wallet", link: "/teacher/wallet" },
     ],
   };
 
