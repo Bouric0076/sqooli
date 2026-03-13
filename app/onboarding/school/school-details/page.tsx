@@ -116,7 +116,7 @@ export default function SchoolRegistrationForm() {
     hasError ? { borderColor: "#dc2626" } : {};
 
   return (
-    <div className="min-h-screen w-full relative">
+    <div className="min-h-screen bg-white flex flex-col items-center py-12 px-4">
       {/* Loading Overlay */}
       {loading && (
         <div className="absolute inset-0 bg-white bg-opacity-70 flex flex-col items-center justify-center z-50 rounded-xl">
@@ -125,7 +125,7 @@ export default function SchoolRegistrationForm() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-lg p-12">
+      <div className="bg-white rounded-xl shadow-lg p-12 w-full max-w-4xl">
         {/* Success & Error Messages */}
         {apiError && (
           <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm">
@@ -141,12 +141,12 @@ export default function SchoolRegistrationForm() {
 
         {/* Logo */}
         <div>
-          <img src="/logo.svg" alt="Sqooli Logo" className="h-2 mb-6" />
-          <img src="/logo.svg" alt="Sqooli Logo" className="h-14 mb-6" />
+          {/* <img src="/logo.svg" alt="Sqooli Logo" className="h-2 mb-6" /> */}
+          <img src="/logo.svg" alt="Sqooli Logo" className="h-8 mb-6" />
         </div>
 
         <h1 className="text-xl font-normal text-center mb-12 text-gray-900">
-          Add the following details of your school {user?.firstName}
+          Add the following details of your school<br></br> {user?.firstName}
         </h1>
 
         <form onSubmit={handleSubmit(onSubmit)}>

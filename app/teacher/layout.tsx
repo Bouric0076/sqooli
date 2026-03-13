@@ -8,6 +8,7 @@ import StudentSidebar from "../components/menu/studentSidebar";
 import StudentTopmenu from "../components/menu/studentTopmenu";
 import TeacherSidebar from "../components/menu/teacherSidebar";
 import Providers from "../providers/providers";
+import TeacherTopmenu from "../components/menu/teacherTopmenu";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,7 +40,7 @@ export default function RootLayout({
           {/* Main Content */}
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Header */}
-            <StudentTopmenu />
+            <TeacherTopmenu />
 
             {/* Page Content */}
             <main className="flex-1 overflow-auto bg-white relative h-screen">

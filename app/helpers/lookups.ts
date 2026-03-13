@@ -91,7 +91,7 @@ export interface Teacher {
    INTERNAL HELPER
 ========================= */
 
-async function lookupFetcher<T>(
+export async function lookupFetcher<T>(
   url: string,
   filters?: LookupFilters
 ): Promise<T[]> {

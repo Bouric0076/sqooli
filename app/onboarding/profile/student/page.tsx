@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import PageHeader from "@/app/components/ui/navigation/PageHeader";
@@ -29,14 +29,14 @@ export default function StudentProfile() {
 
   const { register, control, watch, setValue, handleSubmit } = useForm({
     defaultValues: {
-      firstName: "",
-      lastName: "",
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
       educationLevelId: null,
       gradeLevelId: null,
       subjectIds: [] as number[],
       topicId: null,
       Email: user?.email || "",
-      Phone: "",
+      Phone: user?.phone || "",
       Gender: "",
     },
   });

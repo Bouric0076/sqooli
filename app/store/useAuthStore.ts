@@ -18,6 +18,8 @@ type User = {
   phone:string;
   address:string;
   profilePhoto:string,
+  gender:string,
+  referralCode?:string;
   schools:[]
 };
 type School = {

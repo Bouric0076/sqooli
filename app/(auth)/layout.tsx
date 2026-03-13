@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { Suspense } from "react";
 import "../globals.css";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
@@ -48,7 +48,9 @@ export default function OnboardingLayout({
             <GoogleOAuthProvider
               clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
             >
-              <div className="w-full max-w-xl">{children}</div>
+              <Suspense fallback={<div>Loading...</div>}>
+                <div className="w-full max-w-xl">{children}</div>
+              </Suspense>
             </GoogleOAuthProvider>
           </main>
         </div>

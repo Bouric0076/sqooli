@@ -21,6 +21,7 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import { useAuthStore } from "@/app/store/useAuthStore";
+import QrcodeComponent from "../invite/QrcodeComponent";
 
 export default function Sidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -70,7 +71,7 @@ export default function Sidebar() {
     ADMINISTRATION: [
       { icon: Users, label: "Resource Centre", link: "/student/resources" },
       { icon: BarChart3, label: "Performance", link: "/student/performance" },
-      { icon: CreditCard, label: "Wallet", link: "/school/wallet" },
+      { icon: CreditCard, label: "Wallet", link: "/student/wallet" },
     ],
   };
 
@@ -173,6 +174,8 @@ export default function Sidebar() {
             </div>
           ))}
         </nav>
+
+        <QrcodeComponent />
 
         {/* Footer */}
         <div className="p-4 border-t border-gray-200">
