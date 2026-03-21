@@ -198,8 +198,8 @@ export default function ProgramForm() {
             <div className="">
            <FormField className="text-sm font-medium text-gray-700" label=" Program Start Date" error={errors.programStartDate?.message}>
              <TextInput
-               type="date"
-               {...register("programStartDate", { required: "Start date is required" })}
+               type="datetime-local"
+               {...register("programStartDate", { required: "Start time is required" })}
              />
            </FormField>
    
@@ -214,7 +214,7 @@ export default function ProgramForm() {
             <div className="">
           <FormField className="text-sm font-medium text-gray-700" label=" Program End Date" error={errors.programEndDate?.message}>
              <TextInput
-               type="date"
+               type="datetime-local"
                {...register("programEndDate", { required: "End date is required" })}
              />
            </FormField>
@@ -269,7 +269,7 @@ export default function ProgramForm() {
           </button>
         </div>
       </div>
-                                             
+
       <ProgramDetailsModal
         form={form}
         open={showModal}

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import type { FC } from "react";
-import { inputBase } from "../constants";
+
 import { ChevronDown } from "./Icons";
+import { inputBase } from "./constants";
 
 interface DropdownProps {
   placeholder: string;

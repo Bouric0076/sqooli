@@ -1,6 +1,7 @@
 import type { FC } from "react";
-import { WIZARD_STEPS } from "../constants";
+
 import { CheckIcon } from "./Icons";
+import { WIZARD_STEPS } from "./constants";
 
 interface SidebarProps {
   step: number;

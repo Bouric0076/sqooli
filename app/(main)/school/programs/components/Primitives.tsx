@@ -1,6 +1,6 @@
 import type { FC, ReactNode } from "react";
-import { HH, MM, AP } from "../constants";
-import type { TimeValue } from "../constants";
+import { TimeValue, HH, MM, AP } from "./constants";
+
 
 export const Label: FC<{ children: ReactNode }> = ({ children }) => (
   <p style={{ margin: "0 0 6px", fontSize: 13.5, color: "#374151", fontWeight: 500 }}>{children}</p>
