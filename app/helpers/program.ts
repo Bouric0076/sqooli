@@ -10,6 +10,17 @@ export interface ProgramData extends ContractItem {
 export const getCPrograms = (filters?: LookupFilters) =>
   lookupFetcher<ProgramData>("/api/program", filters);
 
+export const getCProgram = async (id: any, filters?: LookupFilters) => {
+      const res = await fetch(`/api/program/${id}`, {
+      method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+    });
+    if (!res.ok) throw new Error("Failed to get program");
+    return res.json();
+}
+
 
   export const addCProgram = async (data: any) => {
     const res = await fetch("/api/program", {
@@ -20,3 +31,14 @@ export const getCPrograms = (filters?: LookupFilters) =>
     return res.json();
   };
   
+
+  export const getCProgramSlots = async (id: any,sub_id: any, filters?: LookupFilters) => {
+      const res = await fetch(`/api/program/${id}/sub-programs/${sub_id}/slots`, {
+      method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+    });
+    if (!res.ok) throw new Error("Failed to get program slots");
+    return res.json();
+}

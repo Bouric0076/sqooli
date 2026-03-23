@@ -14,6 +14,7 @@ import { ProgramPreview } from "./Programpreview";
 
 export type WizardFormValues = {
   subProgram: string;
+  lessonDuration: number;
   educationLevelId: number;
   gradeLevelId: number;
   subjects: number[];
@@ -29,9 +30,10 @@ export type WizardFormValues = {
 
 interface ProgramWizardProps {
   form: UseFormReturn<any>;
+  setModalOpen?: (open: boolean) => void;
 }
 
-export default function ProgramWizard({ form }: ProgramWizardProps) {
+export default function ProgramWizard({ form, setModalOpen }: ProgramWizardProps) {
   const [step, setStep] = useState<number>(1);
   const [done, setDone] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
@@ -43,25 +45,26 @@ const [error, setError] = useState("");
   /* ---------------- PAYLOAD MAPPER ---------------- */
 
   const buildPayload = (data: ProgramRequest) => ({
+    programId: data.programId || null,
     programName: data.programName || "",
     programTypeId: data.programTypeId || 0,
     curriculumId: data.curriculumId || 0,
-
     programStartDate: data.programStartDate || "",
     programEndDate: data.programEndDate || "",
 
     hasSubPrograms: !!data.subPrograms,
-
+    SlotDurationMinutes:data.lessonDuration ,
     subPrograms: data.subPrograms
       ? [
           {
             name: data.subProgram,
             educationLevelId: data.educationLevelId,
             gradeLevelId: data.gradeLevelId,
-            grades:data.grades,
+            gradeLevelIds:data.grades,
             subjectIds: data.subjects || [],
             startDate: data.startDate,
             endDate: data.endDate,
+            SlotDurationMinutes:data.lessonDuration ,
           },
         ]
       : [],
@@ -72,6 +75,7 @@ const [error, setError] = useState("");
       startTime: convertTimeTo24(data.days?.[day]?.from),
       endTime: convertTimeTo24(data.days?.[day]?.to),
       breaks: (data.days?.[day]?.breaks || []).map((b: any) => ({
+        name: b.name,
         startTime: convertTimeTo24(b.from),
         endTime: convertTimeTo24(b.to),
       })),
@@ -103,11 +107,18 @@ const handleFormSubmit = async (formData: WizardFormValues) => {
 
     await addCProgram(payload);
 
+    if (setModalOpen) setModalOpen(false);
+
+
     setSuccess("Program created successfully.");
 
     // optional short delay so user sees the message
     setTimeout(() => {
-      router.push("/school/programs");
+      if (payload.programId) {
+        router.push(`/school/programs/${payload.programId}/sub-programs`);
+      }else{
+          router.push("/school/programs");
+      }
     }, 1200);
 
   } catch (err: any) {

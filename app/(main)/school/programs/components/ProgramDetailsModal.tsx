@@ -15,7 +15,7 @@ interface Props {
 export default function ProgramDetailsModal({ form,open, onClose }: Props) {
   return (
     <LargeModal open={open} onClose={onClose} title="Program Details">
-      <ProgramWizard form={form} />
+      <ProgramWizard form={form} setModalOpen={onClose} />
       {/* <ProgramWizard/> */}
     </LargeModal>
   );

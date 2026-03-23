@@ -32,6 +32,8 @@ export interface SubProgram {
 }
 
 export interface ProgramRequest {
+  programId?: number;
+  lessonDuration?: number;
   programName: string;
   programTypeId: number;
   curriculumId: number;

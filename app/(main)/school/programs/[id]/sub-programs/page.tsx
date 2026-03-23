@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { 
   ChevronRight, 
   ChevronDown, 
@@ -9,10 +9,11 @@ import {
   ListFilter,
   MoreVertical
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import ProgramDetailsModal from "../../components/ProgramDetailsModal";
 import { useForm } from "react-hook-form";
 import { ProgramRequest } from "../../types/program";
+import { getCProgram } from "@/app/helpers/program";
 
 // Types for the Sub-Program
 interface SubProgram {
@@ -31,25 +32,88 @@ interface SubProgram {
 }
 
 export default function ProgramDetailUI() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("Active");
-  const [programs, setPrograms] = useState<any[]>([]);
+  const [program, setProgram] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [curriculums, setCurriculums] = useState<any[]>([]);
+
+  const { id } = useParams();
+
+
   const form = useForm<ProgramRequest>({
-    defaultValues: {
-      programName: "",  
-      programTypeId: 0,
-      curriculumId: 0,
-      programStartDate: "",
-      programEndDate: "",
-      hasSubPrograms: false,
-      subPrograms: [],
-      schedules: [],
-      holidays: [],
-      businessHours: [],
-    },
-  });
+  defaultValues: {
+    programId: 0,
+    programName: "",
+    programTypeId: 0,
+    curriculumId: 0,
+    programStartDate: "",
+    programEndDate: "",
+    hasSubPrograms: true,
+    subPrograms: [],
+    schedules: [],
+    holidays: [],
+    businessHours: [],
+  },
+});
+
+
+useEffect(() => {
+  if (id) {
+    getCProgram(id)
+      .then((data) => {
+        const p = data?.data;
+
+        setProgram(p);
+
+        form.reset({
+          programId: p?.id || 0,
+          programName: p?.programName || "",
+          programTypeId: p?.programType?.id || 0,
+          curriculumId: p?.curriculumId || 0,
+          programStartDate: p?.programStartDate || "",
+          programEndDate: p?.programEndDate || "",
+          hasSubPrograms: true,
+          subPrograms: [],
+          schedules: [],
+          holidays: [],
+          businessHours: [],
+        });
+      })
+      .catch((err) => console.error("Error fetching program:", err))
+      .finally(() => setLoading(false));
+  }
+}, []);
+
+useEffect(() => {
+  if (id) {
+    getCProgram(id)
+      .then((data) => {
+        const p = data?.data;
+
+        setProgram(p);
+
+        form.reset({
+          programId: p?.id || 0,
+          programName: p?.programName || "",
+          programTypeId: p?.programType?.id || 0,
+          curriculumId: p?.curriculumId || 0,
+          programStartDate: p?.programStartDate || "",
+          programEndDate: p?.programEndDate || "",
+          hasSubPrograms: true,
+          subPrograms: [],
+          schedules: [],
+          holidays: [],
+          businessHours: [],
+        });
+      })
+      .catch((err) => console.error("Error fetching program:", err))
+      .finally(() => setLoading(false));
+  }
+}, [id]);
+
+ 
+
 
   const subPrograms: SubProgram[] = [
     {
@@ -94,7 +158,7 @@ export default function ProgramDetailUI() {
     }
   ];
 
-  const router = useRouter();
+
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] p-8 text-[#1D2939]">
@@ -106,12 +170,12 @@ export default function ProgramDetailUI() {
           </span>
           <ChevronRight size={14} />
         </div>
-        <span className="text-[#3B9EFF] font-medium">CBC First Term 2026</span>
+        <span className="text-[#3B9EFF] font-medium">{program?.programName || "Program Name"}</span>
       </nav>
 
       {/* --- Header --- */}
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-[32px] font-bold tracking-tight">CBC First Term 2026</h1>
+        <h1 className="text-[32px] font-bold tracking-tight"></h1>
         <div className="flex gap-3">
           <button className="flex items-center gap-2 px-4 py-2 bg-white border border-[#D0D5DD] rounded-lg text-sm font-semibold text-[#344054] shadow-sm">
             Other Actions <ChevronDown size={16} />
@@ -124,15 +188,15 @@ export default function ProgramDetailUI() {
 
       {/* --- Program Summary Bar --- */}
       <div className="grid grid-cols-6 bg-white border border-[#EAECF0] rounded-xl mb-10 shadow-sm overflow-hidden">
-        <SummaryItem title="CBC First Term 2026 Gr..." subtitle="Date Created: 11 Jan 2026" />
-        <SummaryItem title="12 Jan 2020" subtitle="Program Start Date" />
-        <SummaryItem title="12 Jan 2020" subtitle="Program End Date" />
+        <SummaryItem title={program?.programName || "Program Name"} subtitle="Date Created: 11 Jan 2026" />
+        <SummaryItem title={program?.programStartDate || "12 Jan 2020"} subtitle="Program Start Date" />
+        <SummaryItem title={program?.programEndDate || "12 Jan 2020"} subtitle="Program End Date" />
         <SummaryItem 
-          title="CBC" 
+          title={program?.curriculum || "CBC"} 
           subtitle="Curriculum" 
           icon={<div className="bg-black text-white text-[8px] p-0.5 rounded font-bold mr-1">CBC</div>} 
         />
-        <SummaryItem title="4" subtitle="Sub-program" />
+        <SummaryItem title={program?.subPrograms?.length || "4"} subtitle="Sub-program" />
         <div className="p-4 border-l border-[#EAECF0]">
           <p className="text-[12px] text-[#667085] mb-1">Status</p>
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#ECFDF3] text-[#027A48]">
@@ -193,35 +257,47 @@ export default function ProgramDetailUI() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#EAECF0]">
-              {subPrograms.map((program) => (
-                <tr key={program.id} className="text-sm">
-                  <td className="px-6 py-5 text-[#667085]">{program.dateAdded}</td>
-                  <td className="px-6 py-5 font-medium">{program.name}</td>
+               {program?.subPrograms?.map((subprogram) => (
+                <tr key={subprogram.id} className="text-sm">
+                  <td className="px-6 py-5 text-[#667085]">{subprogram.startDate}</td>
+                  <td className="px-6 py-5 font-medium">{subprogram.name}</td>
                   <td className="px-6 py-5 text-[#475467]">{program.curriculum}</td>
-                  <td className="px-6 py-5 text-[#475467]">{program.gradeLevel}</td>
-                  <td className="px-6 py-5">
+                  <td className="px-6 py-5 text-[#475467]">
+
                     <div className="flex items-center gap-2">
-                      {program.subjects.map((s) => (
-                        <span key={s} className="px-2 py-0.5 bg-[#F9F5FF] text-[#6941C6] border border-[#E9D7FE] rounded-lg text-xs font-medium">
-                          {s}
+                      {subprogram.gradeLevels.map((s) => (
+                        <span key={s.gradeLevelId} className="px-2 py-0.5 bg-[#F9F5FF] text-[#6941C6] border border-[#E9D7FE] rounded-lg text-xs font-medium">
+                          {s.name}
                         </span>
                       ))}
-                      <span className="text-xs text-[#667085]">+{program.extraCount}</span>
+                      <span className="text-xs text-[#667085]">+{subprogram.extraCount}</span>
+                    </div>
+
+
+                  </td>
+                  <td className="px-6 py-5">
+                    <div className="flex items-center gap-2">
+                      {subprogram.subjects.map((s) => (
+                        <span key={s.subjectId} className="px-2 py-0.5 bg-[#F9F5FF] text-[#6941C6] border border-[#E9D7FE] rounded-lg text-xs font-medium">
+                          {s.name}
+                        </span>
+                      ))}
+                      <span className="text-xs text-[#667085]">+{subprogram.extraCount}</span>
                     </div>
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                      <img src={program.createdBy.avatar} alt="" className="w-10 h-10 rounded-full object-cover" />
+                      <img src={subprogram?.createdBy?.avatar ?? 'https://i.pravatar.cc/40?img=4'} alt="" className="w-10 h-10 rounded-full object-cover" />
                       <div>
-                        <div className="font-semibold text-[#101828]">{program.createdBy.name}</div>
-                        <div className="text-xs text-[#667085]">{program.createdBy.email}</div>
+                        <div className="font-semibold text-[#101828]">{subprogram?.createdBy?.name ?? 'Admin'}</div>
+                        <div className="text-xs text-[#667085]">{subprogram?.createdBy?.email ?? 'admin@sqooli.com'}</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-5 text-right">
                     <button
                            type="button"
-                        onClick={() => router.push(`/school/programs/${program.id}/sub-programs/slots`)}
+                        onClick={() => router.push(`/school/programs/${subprogram.id}/sub-programs/slots`)}
                     className="text-[#3B9EFF] font-semibold hover:underline">View</button>
                   </td>
                 </tr>

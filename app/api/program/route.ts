@@ -36,8 +36,10 @@ export async function GET(req: NextRequest) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-
-    const backendUrl = `${process.env.BACKEND_API_URL}/CPrograms`;
+    let backendUrl = `${process.env.BACKEND_API_URL}/CPrograms`;
+    if(body.programId) {
+       backendUrl = `${process.env.BACKEND_API_URL}/CPrograms/${body.programId}`;
+    }
 
     const res = await axiosClient.post(backendUrl, body);
 
