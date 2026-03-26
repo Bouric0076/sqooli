@@ -3,10 +3,11 @@ import {
   GraduationCap, Layers, Handshake, BookOpen, X, Search,
   CheckCircle2, Send, Star, AlertCircle,
   UserCheck, Clock3, XCircle, Bell, SquareCheck, Square,
+  Minus,
 } from "lucide-react";
 import { avatarColor, SUBJECT_COLORS, teacherById } from "../constants";
 
-export function SlotCell({slot, isSelected, onToggle, onOpenActive}){
+export function SlotCell({slot, isSelected, onToggle, onOpenActive,teachers}){
   if(slot.type==="active"){
     const subjectColor = slot.subject ? SUBJECT_COLORS[slot.subject] : null;
     return (
@@ -45,7 +46,7 @@ export function SlotCell({slot, isSelected, onToggle, onOpenActive}){
             ? <SquareCheck size={14} className="text-[#3B9EFF] mr-0.5 flex-shrink-0"/>
             : <Square size={14} className="text-[#CBD5E1] mr-0.5 flex-shrink-0"/>}
           {invites.slice(0,3).map(inv=>{
-            const t=teacherById(inv.teacherId); if(!t) return null;
+            const t=teacherById(inv.teacherId,teachers); if(!t) return null;
             return <div key={inv.teacherId}
               className={`w-5 h-5 rounded-full text-[8px] font-bold flex items-center justify-center text-white ring-2
                 ${inv.status==="accepted"?"ring-[#6CE9A6]":inv.status==="declined"?"ring-[#FECACA] opacity-40":"ring-[#FDE68A]"}`}
@@ -60,6 +61,8 @@ export function SlotCell({slot, isSelected, onToggle, onOpenActive}){
 
   // Free
   return (
+    <>
+    {slot?.id && (
     <button onClick={onToggle}
       className={`w-full h-[72px] border-2 rounded-2xl flex flex-col items-center justify-center gap-1 text-[13px] font-bold transition-all cursor-pointer group
         ${isSelected
@@ -67,7 +70,22 @@ export function SlotCell({slot, isSelected, onToggle, onOpenActive}){
           :"border-dashed border-[#CBD5E1] text-[#94A3B8] hover:border-[#3B9EFF] hover:text-[#3B9EFF] hover:bg-white"}`}>
       {isSelected
         ? <><SquareCheck size={16}/><span>Selected</span></>
-        : <><Plus size={16} className="opacity-60 group-hover:opacity-100"/><span>Free Slot</span></>}
+        : <><Plus size={16} className="opacity-60 group-hover:opacity-100"/><span>Free Slot  </span></>}
     </button>
+    )}
+
+        {!slot?.id && (
+    <button 
+      className={`w-full h-[72px] border-2 rounded-2xl flex flex-col items-center justify-center gap-1 text-[13px] font-bold transition-all cursor-pointer group
+        ${isSelected
+          ?"border-[#3B9EFF] bg-[#EFF6FF] text-[#3B9EFF] ring-2 ring-[#BFDBFE]"
+          :"border-dashed border-[#ee3c06] text-[#94A3B8] hover:border-[#3B9EFF] hover:text-[#3B9EFF] hover:bg-white"}`}>
+      {isSelected
+        ? <><SquareCheck size={16}/><span>Selected</span></>
+        : <><Minus size={16} className="opacity-60 group-hover:opacity-100"/><span>Holiday  </span></>}
+    </button>
+    )}
+
+    </>
   );
 }

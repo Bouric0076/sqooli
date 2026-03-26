@@ -50,11 +50,13 @@ export const INITIAL_SLOTS = {
 
 /* ─────────────────────────────────────────────────────── */
 export const AC = ["#3B82F6","#8B5CF6","#10B981","#F59E0B","#EF4444","#06B6D4"];
-export function avatarColor(i){ return AC[i.charCodeAt(0)%AC.length]; }
+export function avatarColor(i){ return AC[i?.charCodeAt(0)%AC.length]; }
 
 
 
-export function teacherById(id){ return TEACHERS.find(t=>t.id===id); }
+export function teacherById(id, teachers) {
+  return teachers?.find(t => String(t.id) === String(id)) || null;
+}
 
 
 

@@ -28,7 +28,7 @@ export function ActiveSlotModal({slot, time, day, onClose}){
           <div className="flex items-center gap-3 bg-[#ECFDF3] border border-[#6CE9A6] rounded-2xl px-4 py-3">
             {teacher && <Avatar initials={teacher.avatar}/>}
             <div>
-              <p className="text-[14px] font-bold text-[#027A48]">{teacher?.name}</p>
+              <p className="text-[14px] font-bold text-[#027A48]">{teacher?.fullName}</p>
               <div className="flex items-center gap-2 mt-0.5">
                 <span className="text-[12px] text-[#065F46]">{slot.code}</span>
                 {subjectColor && (

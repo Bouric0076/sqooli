@@ -42,3 +42,12 @@ export const getCProgram = async (id: any, filters?: LookupFilters) => {
     if (!res.ok) throw new Error("Failed to get program slots");
     return res.json();
 }
+
+  export const bulkSlotInvite = async (data: any) => {
+    const res = await fetch("/api/invitations/invite", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("Failed to send bulk invitations");
+    return res.json();
+  };

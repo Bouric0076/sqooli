@@ -1,9 +1,9 @@
 import { X, Send, XCircle, CheckCircle2, Search, AlertCircle, Star, UserCheck } from "lucide-react";
 import React, { useState } from "react";
-import { TEACHERS, SUBJECT_COLORS, SUBJECTS, teacherById } from "../../constants";
+import {  SUBJECT_COLORS, teacherById } from "../../constants";
 import { Avatar } from "../../page";
 
-export function InviteModal({ selectedSlots, allSlots, onClose, onInvite }){
+export function InviteModal({ selectedSlots, allSlots, onClose, onInvite,subjects,teachers }){
   const [step, setStep]       = useState("subject");
   const [subject, setSubject] = useState(null);
   const [query, setQuery]     = useState("");
@@ -11,6 +11,9 @@ export function InviteModal({ selectedSlots, allSlots, onClose, onInvite }){
   const [sending, setSending] = useState(false);
   const [sent, setSent]       = useState(false);
 
+
+  console.log("subjects",subjects)
+  console.log("teachers",teachers)
   const eligibleSlots = selectedSlots.filter(({time,day}) => {
     const s = allSlots[time]?.[day];
     return s && s.type !== "active";
@@ -18,9 +21,15 @@ export function InviteModal({ selectedSlots, allSlots, onClose, onInvite }){
   const skipped = selectedSlots.length - eligibleSlots.length;
   const isSingle = selectedSlots.length === 1;
 
-  const filteredTeachers = TEACHERS.filter(t=>
-    (!subject || t.subject === subject) &&
-    (t.name.toLowerCase().includes(query.toLowerCase()) ||
+  // const filteredTeachers = teachers.filter(t=>
+  //   (!subject || t.subject === subject) &&
+  //   (t.fullName.toLowerCase().includes(query.toLowerCase()) ||
+  //    t.subject.toLowerCase().includes(query.toLowerCase()))
+  // );
+
+   const filteredTeachers = teachers.filter(t=>
+
+    (t.fullName.toLowerCase().includes(query.toLowerCase()) ||
      t.subject.toLowerCase().includes(query.toLowerCase()))
   );
 
@@ -36,7 +45,7 @@ export function InviteModal({ selectedSlots, allSlots, onClose, onInvite }){
     }, 800);
   }
 
-  const subjectColor = subject ? SUBJECT_COLORS[subject] : null;
+  const subjectColor = subject?.name ? SUBJECT_COLORS[subject] : null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -110,17 +119,17 @@ export function InviteModal({ selectedSlots, allSlots, onClose, onInvite }){
               Which subject {isSingle?"is this slot":"are these slots"} for?
             </p>
             <div className="grid grid-cols-2 gap-3">
-              {SUBJECTS.map(sub=>{
-                const c = SUBJECT_COLORS[sub];
-                const avail = TEACHERS.filter(t=>t.subject===sub && t.available);
+              {subjects.map(sub=>{
+                const c = SUBJECT_COLORS[sub.colorCode];
+                const avail = teachers.filter(t=>t?.subject===sub.name && t?.available);
                 return (
-                  <button key={sub} onClick={()=>setSubject(sub)}
+                  <button key={sub.id} onClick={()=>setSubject(sub)}
                     className={`p-4 rounded-2xl border-2 text-left transition-all
-                      ${subject===sub?"border-[#3B9EFF] shadow-md":"border-[#E2E8F0] hover:border-[#94A3B8]"}`}
-                    style={subject===sub?{background:c.bg, borderColor:c.border}:{}}>
+                      ${subject?.name===sub.name?"border-[#3B9EFF] shadow-md":"border-[#E2E8F0] hover:border-[#94A3B8]"}`}
+                    style={subject?.name===sub.name?{background:c?.bg, borderColor:c?.border}:{}}>
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-[13px] font-bold" style={{color:subject===sub?c.text:"#0F172A"}}>{sub}</span>
-                      {subject===sub && <CheckCircle2 size={15} style={{color:c.text}}/>}
+                      <span className="text-[13px] font-bold" style={{color:subject?.name===sub.name?c?.text:"#0F172A"}}>{sub.name}</span>
+                      {subject?.name===sub.name && <CheckCircle2 size={15} style={{color:c?.text}}/>}
                     </div>
                     <p className="text-[11px] text-[#94A3B8]">{avail.length} teacher{avail.length!==1?"s":""} available</p>
                   </button>
@@ -152,11 +161,23 @@ export function InviteModal({ selectedSlots, allSlots, onClose, onInvite }){
               {picked.length>0 && (
                 <div className="flex items-center gap-2 mt-3 flex-wrap">
                   {picked.map(id=>{
-                    const t=teacherById(id);
+                    const t=teacherById(id,teachers);
                     return (
                       <div key={id} className="flex items-center gap-1.5 bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] rounded-full px-3 py-1 text-[12px] font-bold">
-                        <Avatar initials={t.avatar} size="sm"/>
-                        {t.name.split(" ").slice(0,2).join(" ")}
+                        <Avatar 
+                        initials={t.fullName
+                          ?.trim()
+                          .split(/\s+/)
+                          .slice(0, 2)
+                          .map(n => n[0]?.toUpperCase())
+                          .join("") || ""}
+                          
+                          size="sm"/>
+
+
+  {/* <Avatar initials={t.avatar} size="sm"/> */}
+
+                        {t.fullName.split(" ").slice(0,2).join(" ")}
                         <button onClick={()=>togglePick(id)} className="ml-1 opacity-60 hover:opacity-100"><X size={12}/></button>
                       </div>
                     );
@@ -179,16 +200,28 @@ export function InviteModal({ selectedSlots, allSlots, onClose, onInvite }){
                       ${!t.available?"opacity-40 cursor-not-allowed border-transparent bg-[#F8FAFC]"
                       :isSel?"border-[#3B9EFF] bg-[#EFF6FF]"
                       :"border-transparent bg-[#F8FAFC] hover:border-[#CBD5E1] hover:bg-white"}`}>
-                    <Avatar initials={t.avatar}/>
+                      <Avatar
+                        initials={t.fullName
+                          ?.trim()
+                          .split(/\s+/)
+                          .slice(0, 2)
+                          .map(n => n[0]?.toUpperCase())
+                          .join("") || ""}
+                      />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <p className="text-[14px] font-bold text-[#0F172A] truncate">{t.name}</p>
+                        <p className="text-[14px] font-bold text-[#0F172A] truncate">{t.fullName}</p>
                         {!t.available&&<span className="text-[10px] font-bold text-[#B45309] bg-[#FEF3C7] px-2 py-0.5 rounded-full flex-shrink-0">Busy</span>}
                       </div>
-                      <p className="text-[12px] text-[#64748B] font-medium">{t.subject}</p>
+                      <p className="text-[12px] text-[#64748B] font-medium">
+                        {t?.enrollments
+                          ?.flatMap(e => e.subjects)
+                          ?.map(s => s.name) // adjust if it's a different key
+                          ?.join(", ") || "No subjects"}
+                      </p>
                     </div>
                     <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                      <div className="flex items-center gap-1"><Star size={11} className="text-[#F59E0B] fill-[#F59E0B]"/><span className="text-[12px] font-bold text-[#64748B]">{t.rating}</span></div>
+                      <div className="flex items-center gap-1"><Star size={11} className="text-[#F59E0B] fill-[#F59E0B]"/><span className="text-[12px] font-bold text-[#64748B]">{t.averageRating}</span></div>
                       {isSel&&<UserCheck size={16} className="text-[#3B9EFF]"/>}
                     </div>
                   </button>
