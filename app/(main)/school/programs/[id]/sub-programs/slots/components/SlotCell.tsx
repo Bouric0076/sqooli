@@ -45,13 +45,34 @@ export function SlotCell({slot, isSelected, onToggle, onOpenActive,teachers}){
           {isSelected
             ? <SquareCheck size={14} className="text-[#3B9EFF] mr-0.5 flex-shrink-0"/>
             : <Square size={14} className="text-[#CBD5E1] mr-0.5 flex-shrink-0"/>}
-          {invites.slice(0,3).map(inv=>{
-            const t=teacherById(inv.teacherId,teachers); if(!t) return null;
-            return <div key={inv.teacherId}
-              className={`w-5 h-5 rounded-full text-[8px] font-bold flex items-center justify-center text-white ring-2
-                ${inv.status==="accepted"?"ring-[#6CE9A6]":inv.status==="declined"?"ring-[#FECACA] opacity-40":"ring-[#FDE68A]"}`}
-              style={{background:avatarColor(t.avatar)}}>{t.avatar}</div>;
-          })}
+            {invites.slice(0,3).map(inv => {
+              const t = teacherById(inv.teacherId, teachers);
+              if (!t) return null;
+
+              const initials =
+                t.fullName
+                  ?.trim()
+                  .split(/\s+/)
+                  .slice(0, 2)
+                  .map(n => n[0]?.toUpperCase())
+                  .join("") || "";
+
+              return (
+                <div
+                  key={inv.teacherId}
+                  className={`w-5 h-5 rounded-full text-[8px] font-bold flex items-center justify-center text-white ring-2
+                    ${inv.status==="accepted"
+                      ? "ring-[#6CE9A6]"
+                      : inv.status==="declined"
+                      ? "ring-[#FECACA] opacity-40"
+                      : "ring-[#FDE68A]"
+                    }`}
+                  style={{ background: avatarColor(initials) }}
+                >
+                  {initials}
+                </div>
+              );
+            })}
           {invites.length>3&&<span className="text-[10px] font-bold text-[#B45309] ml-0.5">+{invites.length-3}</span>}
         </div>
         <span className="text-[11px] font-bold text-[#B45309]">{pendingN} pending{declinedN?` · ${declinedN} declined`:""}</span>

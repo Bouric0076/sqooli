@@ -309,6 +309,14 @@ const payload = {
     if (!res.ok) throw new Error(data.message || "Failed");
 
     console.log("Invite sent:", data);
+
+
+    addToast(
+      `${teacherIds.length} teacher${teacherIds.length !== 1 ? "s" : ""} invited to ${eligibleSlots.length} slots`,
+      "info"
+    );
+
+
   } catch (err) {
     console.error("Error sending invite:", err);
   }
@@ -318,12 +326,12 @@ const payload = {
   //   teacherIds.forEach(id => scheduleSimulatedResponse(time, day, id));
   // });
 
-  if (eligibleSlots.length > 1) {
-    addToast(
-      `${teacherIds.length} teacher${teacherIds.length !== 1 ? "s" : ""} invited to ${eligibleSlots.length} slots`,
-      "info"
-    );
-  }
+  // if (eligibleSlots.length > 1) {
+  //   addToast(
+  //     `${teacherIds.length} teacher${teacherIds.length !== 1 ? "s" : ""} invited to ${eligibleSlots.length} slots`,
+  //     "info"
+  //   );
+  // }
 }
 
   const eligibleCount = selectedSlots.filter(({time,day})=>slots[time]?.[day]?.type!=="active").length;

@@ -27,12 +27,30 @@ export function InviteModal({ selectedSlots, allSlots, onClose, onInvite,subject
   //    t.subject.toLowerCase().includes(query.toLowerCase()))
   // );
 
-   const filteredTeachers = teachers.filter(t=>
+  //  const filteredTeachers = teachers.filter(t=>
 
-    (t.fullName.toLowerCase().includes(query.toLowerCase()) ||
-     t.subject.toLowerCase().includes(query.toLowerCase()))
-  );
+  //   (t.fullName.toLowerCase().includes(query.toLowerCase()) ||
+  //    t.subject.toLowerCase().includes(query.toLowerCase()))
+  // );
 
+
+const filteredTeachers = teachers.filter(t => {
+  const matchesSubject =
+    !subject ||
+    t?.enrollments?.some(enrollment =>
+      enrollment?.subjects?.some(s => s?.name === subject?.name)
+    );
+
+  const matchesQuery =
+    t?.fullName?.toLowerCase().includes(query.toLowerCase()) ||
+    t?.enrollments?.some(enrollment =>
+      enrollment?.subjects?.some(s =>
+        s?.name?.toLowerCase().includes(query.toLowerCase())
+      )
+    );
+
+  return matchesSubject && matchesQuery;
+});
   function togglePick(id){ setPicked(p=>p.includes(id)?p.filter(x=>x!==id):[...p,id]); }
 
   function handleSend(){
@@ -121,7 +139,14 @@ export function InviteModal({ selectedSlots, allSlots, onClose, onInvite,subject
             <div className="grid grid-cols-2 gap-3">
               {subjects.map(sub=>{
                 const c = SUBJECT_COLORS[sub.colorCode];
-                const avail = teachers.filter(t=>t?.subject===sub.name && t?.available);
+               const avail = teachers.filter(t =>
+  t?.available &&
+  t?.enrollments?.some(enrollment =>
+    enrollment?.subjects?.some(
+      s => s?.name?.toLowerCase() === sub.name?.toLowerCase()
+    )
+  )
+);
                 return (
                   <button key={sub.id} onClick={()=>setSubject(sub)}
                     className={`p-4 rounded-2xl border-2 text-left transition-all
@@ -147,7 +172,7 @@ export function InviteModal({ selectedSlots, allSlots, onClose, onInvite,subject
                 {subjectColor && (
                   <span className="text-[12px] font-bold px-3 py-1 rounded-full border"
                     style={{background:subjectColor.bg, color:subjectColor.text, borderColor:subjectColor.border}}>
-                    {subject}
+                    {subject?.name}
                   </span>
                 )}
                 <button onClick={()=>{ setStep("subject"); setPicked([]); setQuery(""); }}
@@ -189,7 +214,7 @@ export function InviteModal({ selectedSlots, allSlots, onClose, onInvite,subject
               {filteredTeachers.length===0 && (
                 <div className="flex flex-col items-center justify-center py-10 text-[#94A3B8] gap-2">
                   <AlertCircle size={24}/>
-                  <p className="text-[13px] font-semibold">No {subject} teachers found</p>
+                  <p className="text-[13px] font-semibold">No {subject?.name} teachers found</p>
                 </div>
               )}
               {filteredTeachers.map(t=>{

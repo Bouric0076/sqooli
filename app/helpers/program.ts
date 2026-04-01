@@ -51,3 +51,43 @@ export const getCProgram = async (id: any, filters?: LookupFilters) => {
     if (!res.ok) throw new Error("Failed to send bulk invitations");
     return res.json();
   };
+
+  //get the invited program slots
+  export const getInvitedProgramSlots = async (filters?: LookupFilters) => {
+
+  const queryParams = filters
+    ? `?${new URLSearchParams(filters as Record<string, string>).toString()}`
+    : "";
+
+
+
+  const res = await fetch(`/api/program/slots${queryParams}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+    if (!res.ok) throw new Error("Failed to get invited program slots");
+    return res.json();
+}
+
+  export const acceptProgramSlot = async (data: any) => {
+    console.log("Accepting program slot with data:", data);
+    const res = await fetch("/api/program/slots/accept", {
+      method: "POST", 
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("Failed to accept program slot");
+    return res.json();
+  };
+
+  export const rejectProgramSlot = async (data: any) => {
+    const res = await fetch("/api/program/slots/reject", {
+      method: "POST", 
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("Failed to reject program slot");
+    return res.json();
+  };
+
+  
