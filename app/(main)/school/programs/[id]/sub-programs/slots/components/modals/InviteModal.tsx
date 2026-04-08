@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import {  SUBJECT_COLORS, teacherById } from "../../constants";
 import { Avatar } from "../../page";
 
-export function InviteModal({ selectedSlots, allSlots, onClose, onInvite,subjects,teachers }){
+export function InviteModal({ selectedSlots, allSlots, onClose, onInvite,subjects,teachers,onCreateTeacher }){
   const [step, setStep]       = useState("subject");
   const [subject, setSubject] = useState(null);
   const [query, setQuery]     = useState("");
@@ -12,8 +12,8 @@ export function InviteModal({ selectedSlots, allSlots, onClose, onInvite,subject
   const [sent, setSent]       = useState(false);
 
 
-  console.log("subjects",subjects)
-  console.log("teachers",teachers)
+  // console.log("subjects",subjects)
+  // console.log("teachers",teachers)
   const eligibleSlots = selectedSlots.filter(({time,day}) => {
     const s = allSlots[time]?.[day];
     return s && s.type !== "active";
@@ -211,12 +211,29 @@ const filteredTeachers = teachers.filter(t => {
               )}
             </div>
             <div className="flex-1 overflow-y-auto px-7 py-4 flex flex-col gap-2">
-              {filteredTeachers.length===0 && (
-                <div className="flex flex-col items-center justify-center py-10 text-[#94A3B8] gap-2">
-                  <AlertCircle size={24}/>
-                  <p className="text-[13px] font-semibold">No {subject?.name} teachers found</p>
-                </div>
-              )}
+{filteredTeachers.length===0 && (
+  <div className="flex flex-col items-center justify-center py-10 text-[#94A3B8] gap-2">
+    <AlertCircle size={24}/>
+    
+    <p className="text-[13px] font-semibold">
+      No {subject?.name} teachers found
+    </p>
+
+    {/* ✅ NEW: Add Teacher Button */}
+    <button
+      disabled={!query}
+      onClick={() =>
+        onCreateTeacher?.({
+          name: query,
+          subject,
+        })
+      }
+      className="mt-2 px-4 py-2 rounded-xl bg-[#3B9EFF] text-white text-[13px] font-bold hover:bg-[#328dec] transition disabled:opacity-40 disabled:cursor-not-allowed"
+    >
+      + Add New Teacher
+    </button>
+  </div>
+)}
               {filteredTeachers.map(t=>{
                 const isSel=picked.includes(t.id);
                 return (

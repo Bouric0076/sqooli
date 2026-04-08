@@ -6,6 +6,8 @@ import {
   rejectProgramSlot,
   getInvitedProgramSlots,
 } from "@/app/helpers/program";
+import { useCurriculumStore } from "@/app/store/useCurriculumStore";
+import { useRouter } from "next/navigation";
 
 type Slot = {
   id: number;
@@ -14,6 +16,12 @@ type Slot = {
   startTime: string;
   endTime: string;
   code: string;
+  curriculumId: number;
+  curriculum: string;
+  educationLevelId: number;
+  educationLevel: string;
+  gradeLevelId: number;
+  gradeLevel: string;
   status: string;
   token: string; // 🔐 needed for secure accept/decline
 };
@@ -21,6 +29,12 @@ type Slot = {
 function AllSlotspage() {
   const [slots, setSlots] = useState<Slot[]>([]);
   const [loading, setLoading] = useState(false);
+      const router = useRouter();
+  
+
+      const setActiveCurriculum = useCurriculumStore(
+        (state) => state.setActiveCurriculum
+      );
 
   // ================= FETCH SLOTS =================
   const fetchSlots = async () => {
@@ -45,6 +59,20 @@ function AllSlotspage() {
     try {
       if (action === "accept") {
         await acceptProgramSlot({ token: slot.token });
+
+      setActiveCurriculum({
+      id: slot.curriculumId,
+      name: slot.curriculum,
+      acronym: slot.curriculum,
+    });
+
+    //http://localhost:3000/school/curriculum/cbc/lessons/create-lesson
+
+    router.push(`/school/curriculum/${slot.curriculum.toLowerCase()}/lessons/create-lesson?token=${slot.token}`);
+
+
+
+
       } else {
         await rejectProgramSlot({ token: slot.token });
       }

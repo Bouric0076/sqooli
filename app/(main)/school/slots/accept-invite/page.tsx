@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { acceptProgramSlot, getInvitedProgramSlots } from "@/app/helpers/program";
 import axiosClient from "@/app/lib/axiosClient";
+import { useCurriculumStore } from "@/app/store/useCurriculumStore";
 
 type SlotDetails = {
   id: number;
@@ -12,8 +13,11 @@ type SlotDetails = {
   startTime: string;
   endTime: string;
   code: string;
+  curriculumId: number;
   curriculum: string;
+  educationLevelId: number;
   educationLevel: string;
+  gradeLevelId: number;
   gradeLevel: string;
   status: string;
 };
@@ -21,10 +25,16 @@ type SlotDetails = {
 function AcceptSlotInvitepage() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
+    const router = useRouter();
+  
 
   const [status, setStatus] = useState<"loading" | "ready" | "success" | "error">("loading");
   const [message, setMessage] = useState("");
   const [slot, setSlot] = useState<SlotDetails | null>(null);
+
+    const setActiveCurriculum = useCurriculumStore(
+      (state) => state.setActiveCurriculum
+    );
 
   // ================= FETCH SLOT DETAILS =================
   useEffect(() => {
@@ -52,11 +62,32 @@ function AcceptSlotInvitepage() {
   // ================= HANDLE ACCEPT =================
   const handleAccept = async () => {
     if (!token) return;
+     if(!slot) return;
     setStatus("loading");
     try {
+
+
+
+
       await acceptProgramSlot({ token });
       setStatus("success");
       setMessage("Slot accepted successfully!");
+
+
+     
+
+      setActiveCurriculum({
+      id: slot.curriculumId,
+      name: slot.curriculum,
+      acronym: slot.curriculum,
+    });
+
+    //http://localhost:3000/school/curriculum/cbc/lessons/create-lesson
+
+    router.push(`/school/curriculum/${slot.curriculum.toLowerCase()}/lessons/create-lesson?token=${token}`);
+
+
+
     } catch (err: any) {
       setStatus("error");
       setMessage(err?.response?.data?.message || "Failed to accept slot");

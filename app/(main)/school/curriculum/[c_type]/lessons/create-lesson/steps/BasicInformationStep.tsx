@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Controller, UseFormReturn } from "react-hook-form";
+import { useSearchParams } from "next/navigation";
 
 import PageHeader from "@/app/components/ui/navigation/PageHeader";
 import { FormField } from "@/app/components/ui/form/FormField";
@@ -21,6 +22,8 @@ import {
 import { useCurriculumStore } from "@/app/store/useCurriculumStore";
 import { AddLessonForm } from "../page";
 import { getLessonBasicInfo } from "@/app/lib/lessonContent";
+
+import { getInvitedProgramSlots } from "@/app/helpers/program";
 
 type Props = {
   form: UseFormReturn<AddLessonForm>;
@@ -46,58 +49,90 @@ export default function BasicInformationStep({
     formState: { errors, isSubmitting, isSubmitted },
   } = form;
 
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+  const isSlotFlow = !!token;
+
   const activeCurriculum = useCurriculumStore(
     (state) => state.activeCurriculum
   );
-
   const { setActiveLesson } = useCurriculumStore();
 
-  const [lesson, setLesson] = useState([]);
   const [lessonTypes, setLessonTypes] = useState<any[]>([]);
   const [programs, setPrograms] = useState<any[]>([]);
   const [educationLevels, setEducationLevels] = useState<any[]>([]);
   const [gradeLevels, setGradeLevels] = useState<any[]>([]);
   const [subjects, setSubjects] = useState<any[]>([]);
   const [topics, setTopics] = useState<any[]>([]);
-  const [teachers, setTeachers] = useState<any[]>([]);
-  const [message, setMessage] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<any>(null);
+
+  const [slotDetails, setSlotDetails] = useState<any>(null);
 
   const educationLevelId = watch("educationLevelId");
   const gradeLevelId = watch("gradeLevelId");
   const subjectId = watch("subjectId");
 
   /* ---------------- LOAD EDIT DATA ---------------- */
-
   useEffect(() => {
     if (!lessonId) return;
 
-    setLoading(true);
-    getLessonBasicInfo(lessonId)
-      .then((res) => {
-        setLesson(res.data);
-        form.setValue("name", res.data.name);
-        form.setValue("description", res.data.description);
-        form.setValue("lessonTypeId", res.data.lessonTypeId);
-        form.setValue("programId", res.data.programId);
-        form.setValue("educationLevelId", res.data.educationLevelId);
-        form.setValue("gradeLevelId", res.data.gradeLevelId);
-        form.setValue("subjectId", res.data.subjectId);
-        form.setValue("topicId", res.data.topicId);
-        form.setValue("start", res.data.start.slice(0, 16));
-        form.setValue("end", res.data.end.slice(0, 16));
-      })
-      .finally(() => setLoading(false));
+    getLessonBasicInfo(lessonId).then((res) => {
+      form.setValue("name", res.data.name);
+      form.setValue("description", res.data.description);
+      form.setValue("lessonTypeId", res.data.lessonTypeId);
+      form.setValue("programId", res.data.programId);
+      form.setValue("educationLevelId", res.data.educationLevelId);
+      form.setValue("gradeLevelId", res.data.gradeLevelId);
+      form.setValue("subjectId", res.data.subjectId);
+      form.setValue("topicId", res.data.topicId);
+      form.setValue("start", res.data.start.slice(0, 16));
+      form.setValue("end", res.data.end.slice(0, 16));
+    });
   }, [lessonId]);
 
-  // useEffect(() => {
-  //   if (lessonId !== null) {
-  //     onNext(2);
-  //   }
-  // }, [lessonId]);
+  /* ---------------- SLOT PREFILL ---------------- */
+  useEffect(() => {
+    if (!token) return;
+
+    const fetchSlot = async () => {
+      try {
+        const res = await getInvitedProgramSlots({ token });
+        const slot = res.data;
+
+        console.log("Fetched slot details:", slot);
+
+        setSlotDetails(slot);
+
+        setValue("educationLevelId", slot.educationLevelId);
+        setValue("gradeLevelId", slot.gradeLevelId);
+        setValue("subjectId", slot.subjectId);
+        setValue("programId", slot.programId);
+
+       
+// ✅ Extract date safely from UTC string
+const dateOnly = new Date(slot.slotDate).toISOString().split("T")[0];
+
+// ✅ Combine with times
+const startDate = new Date(`${dateOnly}T${slot.startTime}`);
+const endDate = new Date(`${dateOnly}T${slot.endTime}`);
+
+// ✅ Format for input[type=datetime-local]
+const format = (d: Date) => d.toISOString().slice(0, 16);
+
+setValue("start", format(startDate));
+setValue("end", format(endDate));
+
+
+
+      } catch (err) {
+        console.error("Failed to fetch slot details");
+      }
+    };
+
+    fetchSlot();
+  }, [token, setValue]);
 
   /* ---------------- BASE LOOKUPS ---------------- */
-
   useEffect(() => {
     if (!activeCurriculum?.id) return;
 
@@ -114,11 +149,10 @@ export default function BasicInformationStep({
 
   /* ---------------- DEPENDENT LOOKUPS ---------------- */
 
-  // Education → Grade
   useEffect(() => {
     if (!educationLevelId || !activeCurriculum?.id) {
       setGradeLevels([]);
-      if (!isSubmitted) {
+      if (!isSubmitted && !isSlotFlow) {
         setValue("gradeLevelId", null);
       }
       return;
@@ -128,13 +162,12 @@ export default function BasicInformationStep({
       curriculumId: activeCurriculum.id,
       educationLevelId,
     }).then(setGradeLevels);
-  }, [educationLevelId, activeCurriculum, isSubmitted, setValue]);
+  }, [educationLevelId, activeCurriculum]);
 
-  // Grade → Subject
   useEffect(() => {
     if (!gradeLevelId || !activeCurriculum?.id) {
       setSubjects([]);
-      if (!isSubmitted) {
+      if (!isSubmitted && !isSlotFlow) {
         setValue("subjectId", null);
       }
       return;
@@ -144,13 +177,12 @@ export default function BasicInformationStep({
       curriculumId: activeCurriculum.id,
       gradeLevelId,
     }).then(setSubjects);
-  }, [gradeLevelId, activeCurriculum, isSubmitted, setValue]);
+  }, [gradeLevelId, activeCurriculum]);
 
-  // Subject → Topic
   useEffect(() => {
     if (!subjectId || !activeCurriculum?.id) {
       setTopics([]);
-      if (!isSubmitted) {
+      if (!isSubmitted && !isSlotFlow) {
         setValue("topicId", null);
       }
       return;
@@ -160,16 +192,20 @@ export default function BasicInformationStep({
       curriculumId: activeCurriculum.id,
       subjectId,
     }).then(setTopics);
-  }, [subjectId, activeCurriculum, isSubmitted, setValue]);
+  }, [subjectId, activeCurriculum]);
 
-  /* ---------------- SUBMIT STEP ---------------- */
+  /* ---------------- SUBMIT ---------------- */
 
   const submitBasicInfo = async (data: AddLessonForm) => {
     const res = await fetch("/api/lesson", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         lessonId: lessonId || null,
+        token: token,
+
         lessonTypeId: data.lessonTypeId,
         curriculumId: activeCurriculum?.id,
         subjectId: data.subjectId,
@@ -185,21 +221,15 @@ export default function BasicInformationStep({
     });
 
     const result = await res.json();
-
     setMessage(result?.message);
 
     const lessonId_new = result?.data?.id;
 
-    if (!lessonId_new) {
-      console.error("Lesson ID not returned from server");
-      return;
-    }
-    setActiveLesson(result?.data);
+    if (!lessonId_new) return;
 
+    setActiveLesson(result?.data);
     setLessonId(lessonId_new);
     setBasicInfoSubmitted(true);
-
-    // onNext(2);
   };
 
   /* ---------------- UI ---------------- */
@@ -210,6 +240,13 @@ export default function BasicInformationStep({
         title="Basic Information"
         description="Add basic information about your lesson"
       />
+
+      {isSlotFlow && (
+        <div className="mb-4 p-3 bg-blue-50 text-blue-600 rounded-md text-sm">
+          This lesson is based on an assigned slot. Some fields are locked.
+        </div>
+      )}
+
       {message}
 
       <form
@@ -236,37 +273,27 @@ export default function BasicInformationStep({
                   value: l.id.toString(),
                 }))}
                 onChange={(v) => field.onChange(Number(v))}
-                placeholder="Select lesson type"
               />
             )}
           />
         </FormField>
 
         <div className="col-span-2">
-          <FormField
-            label="Lesson Description"
-            error={errors.description?.message}
-          >
+          <FormField label="Lesson Description">
             <Controller
               name="description"
               control={control}
-              rules={{ required: "Description is required" }}
               render={({ field }) => (
-                <TextArea
-                  value={field.value}
-                  onChange={field.onChange}
-                  placeholder="Enter lesson description..."
-                />
+                <TextArea {...field} placeholder="Enter description..." />
               )}
             />
           </FormField>
         </div>
-
-        <FormField label="Program" error={errors.programId?.message}>
+ <div className="col-span-2">
+        <FormField label="Program">
           <Controller
             name="programId"
             control={control}
-            rules={{ required: "Program is required" }}
             render={({ field }) => (
               <SelectInput
                 value={field.value?.toString()}
@@ -275,19 +302,17 @@ export default function BasicInformationStep({
                   value: p.id.toString(),
                 }))}
                 onChange={(v) => field.onChange(Number(v))}
+        
               />
             )}
           />
         </FormField>
+        </div>
 
-        <FormField
-          label="Education Level"
-          error={errors.educationLevelId?.message}
-        >
+        <FormField label="Education Level">
           <Controller
             name="educationLevelId"
             control={control}
-            rules={{ required: "Education Level is required" }}
             render={({ field }) => (
               <SelectInput
                 value={field.value?.toString()}
@@ -296,16 +321,16 @@ export default function BasicInformationStep({
                   value: e.id.toString(),
                 }))}
                 onChange={(v) => field.onChange(Number(v))}
+                disabled={isSlotFlow}
               />
             )}
           />
         </FormField>
 
-        <FormField label="Grade Level" error={errors.gradeLevelId?.message}>
+        <FormField label="Grade Level">
           <Controller
             name="gradeLevelId"
             control={control}
-            rules={{ required: "Grade Level is required" }}
             render={({ field }) => (
               <SelectInput
                 value={field.value?.toString()}
@@ -314,16 +339,16 @@ export default function BasicInformationStep({
                   value: g.id.toString(),
                 }))}
                 onChange={(v) => field.onChange(Number(v))}
+                disabled={isSlotFlow}
               />
             )}
           />
         </FormField>
 
-        <FormField label="Subject" error={errors.subjectId?.message}>
+        <FormField label="Subject">
           <Controller
             name="subjectId"
             control={control}
-            rules={{ required: "Subject is required" }}
             render={({ field }) => (
               <SelectInput
                 value={field.value?.toString()}
@@ -332,55 +357,53 @@ export default function BasicInformationStep({
                   value: s.id.toString(),
                 }))}
                 onChange={(v) => field.onChange(Number(v))}
+                disabled={isSlotFlow}
               />
             )}
           />
         </FormField>
 
-        <div className="col-span-2">
-          <FormField label="Topic" error={errors.topicId?.message}>
-            <Controller
-              name="topicId"
-              control={control}
-              rules={{ required: "Topic is required" }}
-              render={({ field }) => (
-                <SelectInput
-                  value={field.value?.toString()}
-                  options={topics.map((t) => ({
-                    label: t.name,
-                    value: t.id.toString(),
-                  }))}
-                  onChange={(v) => field.onChange(Number(v))}
-                />
-              )}
-            />
-          </FormField>
-        </div>
-
-        <FormField label="Start Time" error={errors.start?.message}>
-          <TextInput
-            type="datetime-local"
-            {...register("start", { required: "Start time is required" })}
+        <FormField label="Topic">
+          <Controller
+            name="topicId"
+            control={control}
+            render={({ field }) => (
+              <SelectInput
+                value={field.value?.toString()}
+                options={topics.map((t) => ({
+                  label: t.name,
+                  value: t.id.toString(),
+                }))}
+                onChange={(v) => field.onChange(Number(v))}
+              />
+            )}
           />
         </FormField>
 
-        <FormField label="End Time" error={errors.end?.message}>
+        <FormField label="Start Time">
           <TextInput
             type="datetime-local"
-            {...register("end", { required: "End time is required" })}
+            {...register("start")}
+            disabled={isSlotFlow}
           />
         </FormField>
 
-        <div className="col-span-2">
-          <div className="flex justify-end pt-4">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="bg-blue-600 text-white px-6 py-2 rounded-md font-medium"
-            >
-              {isSubmitting ? "Saving..." : "Next"}
-            </button>
-          </div>
+        <FormField label="End Time">
+          <TextInput
+            type="datetime-local"
+            {...register("end")}
+            disabled={isSlotFlow}
+          />
+        </FormField>
+
+        <div className="col-span-2 flex justify-end pt-4">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="bg-blue-600 text-white px-6 py-2 rounded-md"
+          >
+            {isSubmitting ? "Saving..." : "Next"}
+          </button>
         </div>
       </form>
     </>

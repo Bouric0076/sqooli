@@ -17,6 +17,7 @@ import { ActiveSlotModal } from "./components/modals/ActiveSlotModal";
 import { Stat } from "./components/Stat";
 import { INITIAL_SLOTS, TEACHERS, SUBJECTS, teacherById, simulateResponse, DAYS, avatarColor } from "./constants";
 import { Toast } from "@/app/components/ui/toasts/Toast";
+import { CreateTeacherModal } from "./components/modals/CreateTeacherModal";
 
 /* ─────────────────────────────────────────────────────── */
 
@@ -57,6 +58,12 @@ export default function AllocateSlots(){
   const[teachers, setTeachers]             = useState(TEACHERS);
   const [subjects, setSubjects]             = useState(SUBJECTS);
   const [loading,setLoading] = useState(false);
+
+  const [createTeacherModal, setCreateTeacherModal] = useState(false);
+
+
+  const [newTeacherData, setNewTeacherData] = useState(null);
+const [teachersList, setTeachersList] = useState(teachers); // local state
   const curriculumId = 1; // Assuming a fixed curriculum for this example
   
 
@@ -283,9 +290,19 @@ async function handleInvite(eligibleSlots, teacherIds, subject) {
   // 2️⃣ Prepare payload for backend
 const validSlots = eligibleSlots.filter(s => s.slotId);
 
+const selectedTeachers = teachers.filter(t =>
+  teacherIds.includes(t.id)
+);
 const payload = {
   subjectId: subject?.id,
-  teacherIds,
+  // ✅ existing only
+  teacherIds: selectedTeachers
+    .filter(t => !t.isNew)
+    .map(t => t.id),
+
+  // ✅ new only
+  teachers: selectedTeachers
+    .filter(t => t.isNew),
   slots: validSlots.map(s => ({
     slotId: s.slotId
   }))
@@ -506,8 +523,47 @@ const payload = {
           teachers={teachers}
           onClose={()=>{ setInviteModal(false); setSelectedSlots([]); }}
           onInvite={handleInvite}
+            onCreateTeacher={({ name, subject }) => {
+    // open modal OR call API
+    console.log("Create teacher:", name, subject);
+
+      setNewTeacherData({ name, subject });
+      setCreateTeacherModal(true);
+  }}
         />
       )}
+
+
+{createTeacherModal && (
+  <CreateTeacherModal
+    open={createTeacherModal}
+    defaultData={newTeacherData} // ✅ IMPORTANT
+    onClose={() => setCreateTeacherModal(false)}
+    onSave={(data) => {
+      console.log("Saving new teacher:", data);
+
+      const newTeacher = {
+        id: Date.now(),
+        isNew: true, //
+        fullName: data.name,
+        phone: data.phone, // ✅ include phone
+        email: data.email, // ✅ include email if needed
+        available: true,
+        averageRating: 0,
+        enrollments: [
+          {
+            subjects: [newTeacherData?.subject], // ✅ use stored subject
+          },
+        ],
+      };
+
+      setTeachers((prev) => [newTeacher, ...prev]); // safer update
+      setCreateTeacherModal(false);
+    }}
+  />
+)}
+
+
 
       {activeSlotModal && (
         <ActiveSlotModal
