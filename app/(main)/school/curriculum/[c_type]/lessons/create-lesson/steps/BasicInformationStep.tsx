@@ -23,7 +23,7 @@ import { useCurriculumStore } from "@/app/store/useCurriculumStore";
 import { AddLessonForm } from "../page";
 import { getLessonBasicInfo } from "@/app/lib/lessonContent";
 
-import { getInvitedProgramSlots } from "@/app/helpers/program";
+import { getCPrograms, getInvitedProgramSlots } from "@/app/helpers/program";
 
 type Props = {
   form: UseFormReturn<AddLessonForm>;
@@ -68,6 +68,10 @@ export default function BasicInformationStep({
 
   const [slotDetails, setSlotDetails] = useState<any>(null);
 
+        const setActiveCurriculum = useCurriculumStore(
+          (state) => state.setActiveCurriculum
+        );
+
   const educationLevelId = watch("educationLevelId");
   const gradeLevelId = watch("gradeLevelId");
   const subjectId = watch("subjectId");
@@ -108,6 +112,14 @@ export default function BasicInformationStep({
         setValue("subjectId", slot.subjectId);
         setValue("programId", slot.programId);
 
+
+      setActiveCurriculum({
+      id: slot.curriculumId,
+      name: slot.curriculum,
+      acronym: slot.curriculum,
+    });
+
+
        
 // ✅ Extract date safely from UTC string
 const dateOnly = new Date(slot.slotDate).toISOString().split("T")[0];
@@ -138,16 +150,25 @@ setValue("end", format(endDate));
 
     Promise.all([
       getLessonTypes(),
-      getPrograms({ curriculumId: activeCurriculum.id }),
+      // getPrograms({ curriculumId: activeCurriculum.id }),
+      getCPrograms({ curriculumId: activeCurriculum.id }),
+      
       getEducationLevels({ curriculumId: activeCurriculum.id }),
     ]).then(([lt, pr, el]) => {
       setLessonTypes(lt);
+      console.log(pr)
       setPrograms(pr);
       setEducationLevels(el);
     });
   }, [activeCurriculum]);
 
   /* ---------------- DEPENDENT LOOKUPS ---------------- */
+
+useEffect(() => {
+  if (!isSlotFlow || !slotDetails || !programs.length) return;
+
+  setValue("programId", slotDetails.programId);
+}, [programs, slotDetails, isSlotFlow]);
 
   useEffect(() => {
     if (!educationLevelId || !activeCurriculum?.id) {
@@ -234,6 +255,9 @@ setValue("end", format(endDate));
 
   /* ---------------- UI ---------------- */
 
+//   console.log("programId RHF:", watch("programId"));
+// console.log("program options:", programs);
+
   return (
     <>
       <PageHeader
@@ -298,10 +322,11 @@ setValue("end", format(endDate));
               <SelectInput
                 value={field.value?.toString()}
                 options={programs.map((p) => ({
-                  label: p.name,
+                  label: p.programName,
                   value: p.id.toString(),
                 }))}
                 onChange={(v) => field.onChange(Number(v))}
+                disabled={isSlotFlow}
         
               />
             )}

@@ -270,13 +270,14 @@ export function ReviewPublishStep({ form, lessonId }: Props) {
                 <Edit className="w-4 h-4" />
                 Edit
               </button> */}
-              <button
+              {assignedTeacher  && <button
                 onClick={() => setShowAssignModal(true)}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 shadow-lg transition-colors text-sm font-medium"
               >
                 <Edit className="w-4 h-4" />
                 Assign Teacher
               </button>
+              }
               {lesson?.assignedTeachers &&
               lesson.assignedTeachers.length > 0 ? (
                 <button
@@ -346,7 +347,7 @@ export function ReviewPublishStep({ form, lessonId }: Props) {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <div className="p-6 border-b border-gray-200">
             <p className="text-gray-700 leading-relaxed text-sm">
-              {lesson?.description}
+             <p dangerouslySetInnerHTML={{ __html: lesson?.description }} />
             </p>
           </div>
 
@@ -420,7 +421,7 @@ export function ReviewPublishStep({ form, lessonId }: Props) {
           {/* Course Content Section */}
           <div className="p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Physics Form 4 Term 3
+               {lesson?.name}
             </h2>
             <p className="text-gray-700 mb-6 leading-relaxed text-sm">
               {lesson?.requirements}

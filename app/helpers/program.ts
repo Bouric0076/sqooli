@@ -71,15 +71,25 @@ export const getCProgram = async (id: any, filters?: LookupFilters) => {
     return res.json();
 }
 
-  export const acceptProgramSlot = async (data: any) => {
-    console.log("Accepting program slot with data:", data);
-    const res = await fetch("/api/program/slots/accept", {
-      method: "POST", 
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) throw new Error("Failed to accept program slot");
-    return res.json();
-  };
+export const acceptProgramSlot = async (data: any) => {
+  console.log("Accepting program slot with data:", data);
+
+  const res = await fetch("/api/program/slots/accept", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  const responseData = await res.json(); // parse once
+
+  if (!res.ok) {
+    throw new Error(responseData?.message || "Request failed");
+  }
+
+  return responseData;
+};
 
   export const rejectProgramSlot = async (data: any) => {
     const res = await fetch("/api/program/slots/reject", {
@@ -90,4 +100,20 @@ export const getCProgram = async (id: any, filters?: LookupFilters) => {
     return res.json();
   };
 
-  
+    export const getSlotTimetable = async (filters?: LookupFilters) => {
+
+  const queryParams = filters
+    ? `?${new URLSearchParams(filters as Record<string, string>).toString()}`
+    : "";
+
+
+
+  const res = await fetch(`/api/program/timetable${queryParams}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+    if (!res.ok) throw new Error("Failed to get invited program slots");
+    return res.json();
+}

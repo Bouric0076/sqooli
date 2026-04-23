@@ -33,11 +33,22 @@ export default function LessonCard({ lesson, viewMode }: LessonCardProps) {
     router.push(`/school/curriculum/cbc/lessons/create-lesson`);
   };
 
+  // const joinMetting = (lesson: Lesson) => () => {
+  //   clearActiveLesson();
+  //   setActiveLesson({ id: lesson.id, title: lesson.title });
+  //   router.push(lesson.subtitle);
+  // };
+
   const joinMetting = (lesson: Lesson) => () => {
-    clearActiveLesson();
-    setActiveLesson({ id: lesson.id, title: lesson.title });
-    router.push(lesson.subtitle);
-  };
+  clearActiveLesson();
+  setActiveLesson({ id: lesson.id, title: lesson.title });
+
+  window.open(
+    lesson.subtitle,
+    "_blank",
+    "noopener,noreferrer"
+  );
+};
 
   if (viewMode === "list") {
     return (

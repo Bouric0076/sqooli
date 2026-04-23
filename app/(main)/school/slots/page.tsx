@@ -85,10 +85,16 @@ function AllSlotspage() {
             : s
         )
       );
-    } catch (error) {
-      console.error(`Failed to ${action} slot`, error);
-      alert(`Failed to ${action} slot: ${error}`);
-    }
+} catch (error) {
+  console.error(`Failed to ${action} slot`, error);
+
+  const message =
+    error?.response?.data?.message || // Axios backend message
+    error?.message ||                // generic JS error
+    "Something went wrong";
+
+  alert(message);
+}
   };
 
   // ================= UI =================

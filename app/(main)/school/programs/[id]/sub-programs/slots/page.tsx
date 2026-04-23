@@ -7,7 +7,7 @@ import {
   CheckCircle2, Send, Star, AlertCircle,
   UserCheck, Clock3, XCircle, Bell, SquareCheck, Square,
 } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { getCProgramSlots } from "@/app/helpers/program";
 import { getSubjects, getTeachers } from "@/app/helpers/lookups";
 import { SlotCell } from "./components/SlotCell";
@@ -18,16 +18,17 @@ import { Stat } from "./components/Stat";
 import { INITIAL_SLOTS, TEACHERS, SUBJECTS, teacherById, simulateResponse, DAYS, avatarColor } from "./constants";
 import { Toast } from "@/app/components/ui/toasts/Toast";
 import { CreateTeacherModal } from "./components/modals/CreateTeacherModal";
+import ScrollTable from "./components/ScrollTable";
 
 /* ─────────────────────────────────────────────────────── */
 
 export const SIDEBAR = [
-  { name:"Allocate Slots", icon:<CalendarDays size={18}/> },
-  { name:"Timetable",      icon:<Clock size={18}/>        },
-  { name:"Tutors",         icon:<Users size={18}/>        },
-  { name:"Students",       icon:<GraduationCap size={18}/> },
-  { name:"Resources",      icon:<Layers size={18}/>       },
-  { name:"Partners",       icon:<Handshake size={18}/>    },
+  { name:"Allocate Slots", icon:<CalendarDays size={18}/>,link: '/school/programs' },
+  { name:"Timetable",      icon:<Clock size={18}/> ,link:'/school/timetable'       },
+  { name:"Tutors",         icon:<Users size={18}/> ,link:'/school/curriculum'       },
+  { name:"Students",       icon:<GraduationCap size={18}/>,link:'/school/curriculum'  },
+  { name:"Resources",      icon:<Layers size={18}/> ,link:'/school/resources'        },
+  { name:"Partners",       icon:<Handshake size={18}/> ,link:'/school/partners'     },
 ];
 /* ─────────────────────────────────────────────────────── */
 
@@ -58,13 +59,14 @@ export default function AllocateSlots(){
   const[teachers, setTeachers]             = useState(TEACHERS);
   const [subjects, setSubjects]             = useState(SUBJECTS);
   const [loading,setLoading] = useState(false);
-
+const [activeMonth,setActiveMonth] =  useState('Jan');
   const [createTeacherModal, setCreateTeacherModal] = useState(false);
 
 
   const [newTeacherData, setNewTeacherData] = useState(null);
 const [teachersList, setTeachersList] = useState(teachers); // local state
   const curriculumId = 1; // Assuming a fixed curriculum for this example
+  const router = useRouter();
   
 
   const timers = useRef({});
@@ -119,141 +121,11 @@ function toggleSlotSelect(time, day, index, slot) {
 
 
 
-function getTeacherSubjects(t) {
-  return t?.enrollments
-    ?.flatMap(e => e.subjects)
-    ?.map(s => s.name) // adjust if needed
-    ?.join(", ") || "No subjects";
-}
-
-function getInitials(name) {
-  return name
-    ?.trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map(n => n[0]?.toUpperCase())
-    .join("") || "";
-}
 
 
 
 
-function applyAccept(prev, time, day, teacherId) {
-  const slot = prev[time]?.[day];
-  if (!slot || slot.type === "active") return prev;
 
-  const invites = (slot.invites || []).map(i => ({
-    ...i,
-    status:
-      i.teacherId === teacherId
-        ? "accepted"
-        : i.status === "pending"
-        ? "declined"
-        : i.status,
-  }));
-
-  const t = teacherById(teacherId, teachers);
-  const subjects = getTeacherSubjects(t);
-
-  return {
-    ...prev,
-    [time]: {
-      ...prev[time],
-      [day]: {
-        type: "active",
-        code:
-          subjects.slice(0, 3).toUpperCase() +
-          Math.floor(Math.random() * 900 + 100),
-        subject: subjects,
-        teacherName: t?.fullName,
-        acceptedTeacherId: teacherId,
-        avatarInitials: getInitials(t?.fullName),
-        invites,
-      },
-    },
-  };
-}
-
-function scheduleSimulatedResponse(time, day, teacherId) {
-  const key = `${time}-${day}-${teacherId}`;
-  clearTimeout(timers.current[key]);
-
-  timers.current[key] = simulateResponse(() => {
-    const willAccept = Math.random() < 0.6;
-
-    setSlots(prev => {
-      const slot = prev[time]?.[day];
-
-      if (!slot || slot.type === "active") {
-        const t = teacherById(teacherId, teachers);
-        addToast(`${t?.fullName} responded but slot was already taken.`, "decline");
-        return prev;
-      }
-
-      const invites = slot.invites || [];
-      const alreadyAccepted = invites.some(i => i.status === "accepted");
-
-      if (alreadyAccepted) {
-        const t = teacherById(teacherId, teachers);
-        addToast(`${t?.fullName} responded late — slot already filled.`, "decline");
-
-        return {
-          ...prev,
-          [time]: {
-            ...prev[time],
-            [day]: {
-              ...slot,
-              invites: invites.map(i =>
-                i.teacherId === teacherId
-                  ? { ...i, status: "declined" }
-                  : i
-              ),
-            },
-          },
-        };
-      }
-
-      const t = teacherById(teacherId, teachers);
-
-      if (willAccept) {
-        addToast(`${t?.fullName} accepted the slot!`, "accept");
-        return applyAccept(prev, time, day, teacherId);
-      } else {
-        addToast(`${t?.fullName} declined.`, "decline");
-
-        const updated = invites.map(i =>
-          i.teacherId === teacherId
-            ? { ...i, status: "declined" }
-            : i
-        );
-
-        const allDone = updated.every(i => i.status !== "pending");
-        const anyAccepted = updated.some(i => i.status === "accepted");
-
-        if (allDone && !anyAccepted) {
-          return {
-            ...prev,
-            [time]: {
-              ...prev[time],
-              [day]: { type: "free" },
-            },
-          };
-        }
-
-        return {
-          ...prev,
-          [time]: {
-            ...prev[time],
-            [day]: {
-              ...slot,
-              invites: updated,
-            },
-          },
-        };
-      }
-    });
-  });
-}
 
 async function handleInvite(eligibleSlots, teacherIds, subject) {
 
@@ -353,8 +225,10 @@ const payload = {
 
   const eligibleCount = selectedSlots.filter(({time,day})=>slots[time]?.[day]?.type!=="active").length;
 
-
-
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const handleMonth = async (month) =>{
+  setActiveMonth(month);
+}
 
   return (
     <div className="min-h-screen bg-[#EBEBED] p-8 font-sans text-[#1E293B]">
@@ -398,7 +272,10 @@ const payload = {
         {/* Sidebar */}
         <div className="w-[200px] flex flex-col gap-2">
           {SIDEBAR.map(item=>(
-            <button key={item.name} onClick={()=>setActiveTab(item.name)}
+            <button key={item.name} onClick={()=>{
+              setActiveTab(item.name)
+              router.push(item.link)
+            }}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] font-bold transition-all
                 ${activeTab===item.name?"bg-[#3B9EFF] text-white shadow-lg shadow-blue-200":"text-[#94A3B8] hover:bg-white hover:text-[#475569]"}`}>
               {item.icon}{item.name}
@@ -420,8 +297,8 @@ const payload = {
             <div className="flex items-center bg-white border border-[#E2E8F0] rounded-xl p-1 shadow-sm">
               <button className="px-3 py-1.5 flex items-center gap-1 text-[13px] font-bold border-r border-[#F1F5F9]">2025 <ChevronDown size={14}/></button>
               <div className="flex px-1">
-                {["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map(m=>(
-                  <button key={m} className={`px-3 py-1.5 text-[12px] font-bold ${m==="Mar"?"bg-[#D1E9FF] text-[#004EEB] rounded-lg":"text-[#94A3B8] hover:text-[#475569]"}`}>{m}</button>
+                {MONTHS.map(m=>(
+                  <button onClick={()=>handleMonth(m)} key={m} className={`px-3 py-1.5 text-[12px] font-bold ${m==activeMonth ?"bg-[#D1E9FF] text-[#004EEB] rounded-lg":"text-[#94A3B8] hover:text-[#475569]"}`}>{m}</button>
                 ))}
               </div>
             </div>
@@ -476,6 +353,9 @@ const payload = {
           </div>
 
           {/* Timetable */}
+          
+   
+
           <div className="bg-[#F8FAFC]/50 border border-[#CBD5E1] rounded-[24px] overflow-hidden">
             <table className="w-full border-collapse">
               <thead>

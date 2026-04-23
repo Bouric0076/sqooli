@@ -20,7 +20,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           message:
-            error.response.data?.message ||
+            error.response.data?.error ||
             "Failed to accept program slot",
         },
         { status: error.response.status }
