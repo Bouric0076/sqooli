@@ -14,6 +14,7 @@ import ProgramDetailsModal from "../../components/ProgramDetailsModal";
 import { useForm } from "react-hook-form";
 import { ProgramRequest } from "../../types/program";
 import { getCProgram } from "@/app/helpers/program";
+import { useSubProgramStore } from "@/app/store/useSubProgramStore";
 
 // Types for the Sub-Program
 interface SubProgram {
@@ -38,7 +39,10 @@ export default function ProgramDetailUI() {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const { setActiveSubProgram } = useSubProgramStore();
+
   const { id } = useParams();
+
 
 
   const form = useForm<ProgramRequest>({
@@ -60,11 +64,13 @@ export default function ProgramDetailUI() {
 
 useEffect(() => {
   if (id) {
+    
     getCProgram(id)
       .then((data) => {
         const p = data?.data;
 
         setProgram(p);
+        setActiveSubProgram(p)
 
         form.reset({
           programId: p?.id || 0,

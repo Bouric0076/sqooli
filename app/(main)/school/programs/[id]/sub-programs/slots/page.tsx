@@ -24,7 +24,7 @@ import ScrollTable from "./components/ScrollTable";
 
 export const SIDEBAR = [
   { name:"Allocate Slots", icon:<CalendarDays size={18}/>,link: '/school/programs' },
-  { name:"Timetable",      icon:<Clock size={18}/> ,link:'/school/timetable'       },
+  { name:"Timetable", icon:<Clock size={18}/>, link: (id) => `/school/programs/${id}/sub-programs/timetable` },
   { name:"Tutors",         icon:<Users size={18}/> ,link:'/school/curriculum'       },
   { name:"Students",       icon:<GraduationCap size={18}/>,link:'/school/curriculum'  },
   { name:"Resources",      icon:<Layers size={18}/> ,link:'/school/resources'        },
@@ -274,7 +274,7 @@ const handleMonth = async (month) =>{
           {SIDEBAR.map(item=>(
             <button key={item.name} onClick={()=>{
               setActiveTab(item.name)
-              router.push(item.link)
+              router.push(item.link(id)); // ✅ pass id here
             }}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] font-bold transition-all
                 ${activeTab===item.name?"bg-[#3B9EFF] text-white shadow-lg shadow-blue-200":"text-[#94A3B8] hover:bg-white hover:text-[#475569]"}`}>

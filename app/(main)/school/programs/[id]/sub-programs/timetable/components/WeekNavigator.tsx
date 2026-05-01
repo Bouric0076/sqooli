@@ -1,8 +1,6 @@
-import { WEEKS } from "../page";
-
-export function WeekNavigator({ activeWeek, onChange }) {
-  const idx = WEEKS.findIndex((w) => w.id === activeWeek);
-  const week = WEEKS[idx];
+export function WeekNavigator({ activeWeek, weeks, onChange }) {
+  const idx = weeks.findIndex((w) => w.id === activeWeek);
+  const week = weeks[idx];
 
   // Date range label e.g. "05 Jan – 11 Jan 2026"
   const start = week.days[0].date;
@@ -16,7 +14,7 @@ export function WeekNavigator({ activeWeek, onChange }) {
     }}>
       {/* Prev */}
       <button
-        onClick={() => idx > 0 && onChange(WEEKS[idx - 1].id)}
+        onClick={() => idx > 0 && onChange(weeks[idx - 1].id)}
         disabled={idx === 0}
         style={{
           width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #e0e0e0",
@@ -32,7 +30,7 @@ export function WeekNavigator({ activeWeek, onChange }) {
 
       {/* Week pills */}
       <div style={{ display: "flex", gap: 6, overflowX: "auto", scrollbarWidth: "none" }}>
-        {WEEKS.map((w, i) => {
+        {weeks.map((w, i) => {
           const active = w.id === activeWeek;
           return (
             <button
@@ -56,13 +54,13 @@ export function WeekNavigator({ activeWeek, onChange }) {
 
       {/* Next */}
       <button
-        onClick={() => idx < WEEKS.length - 1 && onChange(WEEKS[idx + 1].id)}
-        disabled={idx === WEEKS.length - 1}
+        onClick={() => idx < weeks.length - 1 && onChange(weeks[idx + 1].id)}
+        disabled={idx === weeks.length - 1}
         style={{
           width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #e0e0e0",
-          background: idx === WEEKS.length - 1 ? "#f5f5f5" : "white",
-          color: idx === WEEKS.length - 1 ? "#ccc" : "#333",
-          fontSize: 18, cursor: idx === WEEKS.length - 1 ? "default" : "pointer",
+          background: idx === weeks.length - 1 ? "#f5f5f5" : "white",
+          color: idx === weeks.length - 1 ? "#ccc" : "#333",
+          fontSize: 18, cursor: idx === weeks.length - 1 ? "default" : "pointer",
           display: "flex", alignItems: "center", justifyContent: "center",
           flexShrink: 0, transition: "all 0.15s",
         }}

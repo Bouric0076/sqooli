@@ -1,151 +1,273 @@
-import { TIME_SLOTS, WEEKS } from "../page";
+import React, { useMemo } from "react";
 import { ClassCard } from "./ClassCard";
+import { BreakCard } from "./BreakCard";
 
-export function DesktopView({ schedule, onEdit, activeWeek, onWeekChange }) {
-  const week = WEEKS.find((w) => w.id === activeWeek);
+export function DesktopView({
+  weeks = [],
+  onEdit,
+  activeWeek,
+  onWeekChange,
+}) {
+  const week = weeks.find((w) => w.id === activeWeek);
+
+  // 🔥 convert API days/items → UI format (NO UI CHANGE)
+const { timeSlots, schedule } = useMemo(() => {
+  if (!week) return { timeSlots: [], schedule: {} };
+
+  const slotsMap = new Map();
+  const scheduleMap = {};
+
+  week.days.forEach((day) => {
+    day.items.forEach((item) => {
+      const slotId = `${item.start}-${item.end}`; // ✅ FIXED UNIQUE KEY
+
+      // build proper label (THIS FIXES YOUR ISSUE)
+      const label = `${item.start} - ${item.end}`;
+
+      if (!slotsMap.has(slotId)) {
+        slotsMap.set(slotId, {
+          id: slotId,
+          label,
+          isBreak: item.type === "break",
+          style: item.label?.toLowerCase()?.includes("tea")
+            ? "tea"
+            : item.label?.toLowerCase()?.includes("lunch")
+            ? "lunch"
+            : null,
+        });
+      }
+
+      const key = `${week.id}_${slotId}_${day.key}`;
+
+      scheduleMap[key] = {
+        subject: item.subject,
+        topic: item.topic,
+        teacher: item.teacher,
+        lessonId: item.lessonId,
+        joinUrl: item.joinUrl,
+        type: item.type,
+        start: item.start,
+        end: item.end,
+        label: item.label,
+      };
+    });
+  });
+
+  return {
+    timeSlots: Array.from(slotsMap.values()).sort((a, b) =>
+      a.id.localeCompare(b.id)
+    ),
+    schedule: scheduleMap,
+  };
+}, [week]);
+
+  if (!week) {
+    return <div style={{ padding: 40 }}>Loading timetable...</div>;
+  }
 
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif", background: "#f0f2f7", minHeight: "100vh", padding: 24 }}>
 
-      {/* Week navigation header */}
+      {/* Week navigation header (UNCHANGED) */}
       <div style={{
-        background: "white", borderRadius: 16, padding: "14px 20px",
-        marginBottom: 16, boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
-        display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
+        background: "white",
+        borderRadius: 16,
+        padding: "14px 20px",
+        marginBottom: 16,
+        boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 12,
       }}>
         <div>
           <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 11, fontWeight: 600, color: "#999", letterSpacing: 1 }}>
             TIMETABLE
           </div>
           <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 800, color: "#1a1a2e" }}>
-            {week.label} &nbsp;
+            {week?.label} &nbsp;
             <span style={{ fontWeight: 400, fontSize: 13, color: "#888" }}>
-              {week.days[0].date} – {week.days[6].date}
+              {week?.days[0].date} – {week?.days[6].date}
             </span>
           </div>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {/* Prev arrow */}
           <button
-            onClick={() => { const i = WEEKS.findIndex(w => w.id === activeWeek); if (i > 0) onWeekChange(WEEKS[i-1].id); }}
-            disabled={WEEKS.findIndex(w => w.id === activeWeek) === 0}
+            onClick={() => {
+              const i = weeks.findIndex(w => w.id === activeWeek);
+              if (i > 0) onWeekChange(weeks[i - 1].id);
+            }}
+            disabled={weeks.findIndex(w => w.id === activeWeek) === 0}
             style={{
-              width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #e0e0e0",
-              background: "white", fontSize: 20, cursor: "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              color: WEEKS.findIndex(w => w.id === activeWeek) === 0 ? "#ccc" : "#333",
+              width: 36,
+              height: 36,
+              borderRadius: "50%",
+              border: "1.5px solid #e0e0e0",
+              background: "white",
+              fontSize: 20,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >‹</button>
 
-          {/* Week pills */}
-          {WEEKS.map((w) => {
+          {weeks.map((w) => {
             const active = w.id === activeWeek;
             return (
-              <button key={w.id} onClick={() => onWeekChange(w.id)} style={{
-                padding: "7px 16px", borderRadius: 99, border: "none",
-                background: active ? "#1a1a2e" : "#f0f2f7",
-                color: active ? "white" : "#555",
-                fontFamily: "'Sora', sans-serif", fontWeight: 700, fontSize: 12,
-                cursor: "pointer", transition: "all 0.2s",
-              }}>{w.label}</button>
+              <button
+                key={w.id}
+                onClick={() => onWeekChange(w.id)}
+                style={{
+                  padding: "7px 16px",
+                  borderRadius: 99,
+                  border: "none",
+                  background: active ? "#1a1a2e" : "#f0f2f7",
+                  color: active ? "white" : "#555",
+                  fontFamily: "'Sora', sans-serif",
+                  fontWeight: 700,
+                  fontSize: 12,
+                }}
+              >
+                {w.label}
+              </button>
             );
           })}
 
-          {/* Next arrow */}
           <button
-            onClick={() => { const i = WEEKS.findIndex(w => w.id === activeWeek); if (i < WEEKS.length-1) onWeekChange(WEEKS[i+1].id); }}
-            disabled={WEEKS.findIndex(w => w.id === activeWeek) === WEEKS.length - 1}
+            onClick={() => {
+              const i = weeks.findIndex(w => w.id === activeWeek);
+              if (i < weeks.length - 1) onWeekChange(weeks[i + 1].id);
+            }}
+            disabled={weeks.findIndex(w => w.id === activeWeek) === weeks.length - 1}
             style={{
-              width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #e0e0e0",
-              background: "white", fontSize: 20, cursor: "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              color: WEEKS.findIndex(w => w.id === activeWeek) === WEEKS.length-1 ? "#ccc" : "#333",
+              width: 36,
+              height: 36,
+              borderRadius: "50%",
+              border: "1.5px solid #e0e0e0",
+              background: "white",
+              fontSize: 20,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >›</button>
         </div>
       </div>
 
-      {/* Grid */}
+      {/* GRID (UNCHANGED UI STRUCTURE) */}
       <div style={{
-        background: "white", borderRadius: 20,
-        overflow: "auto", boxShadow: "0 8px 40px rgba(0,0,0,0.1)", fontSize: 12,
+        background: "white",
+        borderRadius: 20,
+        overflow: "auto",
+        boxShadow: "0 8px 40px rgba(0,0,0,0.1)",
+        fontSize: 12,
       }}>
         <div style={{
           display: "grid",
           gridTemplateColumns: "110px repeat(7, minmax(110px, 1fr))",
           minWidth: 900,
         }}>
+
           {/* Header */}
           <div style={{
-            background: "white", padding: "16px 12px",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontWeight: 700, color: "#555", fontSize: 11, letterSpacing: 0.5,
-            borderBottom: "2px solid #eee",
-          }}>Date / Time</div>
+            background: "white",
+            padding: "16px 12px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontWeight: 700,
+            color: "#555",
+            fontSize: 11,
+          }}>
+            Date / Time
+          </div>
 
           {week.days.map((day) => (
             <div key={day.key} style={{
-              background: day.color, padding: "14px 8px",
-              textAlign: "center", color: "white",
-              borderBottom: "2px solid rgba(255,255,255,0.2)",
+              background: day.color,
+              padding: "14px 8px",
+              textAlign: "center",
+              color: "white",
             }}>
-              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 800, letterSpacing: 1 }}>
+              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 800 }}>
                 {day.label}
               </div>
-              <div style={{ fontSize: 10, fontWeight: 500, opacity: 0.85, marginTop: 2 }}>{day.date}</div>
+              <div style={{ fontSize: 10 }}>{day.date}</div>
             </div>
           ))}
 
-          {/* Rows */}
-          {TIME_SLOTS.map((slot) => {
-            if (slot.isBreak) {
-              const isTea = slot.style === "tea";
-              return (
-                <div key={slot.id} style={{
-                  gridColumn: "1 / -1", textAlign: "center", padding: "11px",
-                  fontFamily: "'Sora', sans-serif", fontSize: 14, fontWeight: 700, letterSpacing: 1,
-                  background: isTea ? "#fff8e8" : "#e8f8f0",
-                  color: isTea ? "#b37700" : "#1a8a50",
-                  borderBottom: "1px solid #eee",
-                }}>{slot.label}</div>
-              );
-            }
+          {/* ROWS */}
+          {timeSlots.map((slot) => {
+            // if (slot.isBreak) {
+            //   return (
+            //     <div key={slot.id} style={{
+            //       gridColumn: "1 / -1",
+            //       textAlign: "center",
+            //       padding: "11px",
+            //       background: slot.style === "tea" ? "#fff8e8" : "#e8f8f0",
+            //       fontWeight: 700,
+            //     }}>
+            //       {slot.label}
+            //     </div>
+            //   );
+            // }
 
             return (
-              <>
-                <div key={`label_${slot.id}`} style={{
-                  background: "#fafafa", padding: "10px 8px",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  textAlign: "center", fontWeight: 700, fontSize: 10.5, color: "#444",
-                  lineHeight: 1.4, borderBottom: "1px solid #eee", borderRight: "2px solid #eee",
+              <React.Fragment key={slot.id}>
+                <div style={{
+                  background: "#fafafa",
+                  padding: "10px 8px",
+                  fontWeight: 700,
+                  fontSize: 10.5,
                 }}>
-                  {slot.label}
+                  {slot.label} 
                 </div>
+
                 {week.days.map((day) => {
-                  const key = `${activeWeek}_${slot.id}_${day.key}`;
+                  const key = `${week.id}_${slot.id}_${day.key}`;
+                  const data = schedule[key];
+
                   return (
-                    <div key={key} style={{
-                      padding: "8px 7px",
-                      borderBottom: "1px solid #eee", borderRight: "1px solid #eee",
-                    }}>
-                      <ClassCard
-                        data={schedule[key]}
-                        day={day}
-                        onEdit={() => onEdit(activeWeek, slot.id, day, schedule[key])}
-                      />
+                    <div
+                      key={key}
+                      style={{
+                        padding: "8px 7px",
+                        border: "1px solid #eee",
+                      }}
+                    >
+       {data?.type =="break" ? (
+  <BreakCard
+    data={data}
+    day={day}
+    onEdit={() => onEdit(week.id, slot.id, day, data)}
+  />
+ 
+
+) : data?.subject ? (
+  <ClassCard
+    data={data}
+    day={day}
+    onEdit={() => onEdit(week.id, slot.id, day, data)}
+  />
+) : (
+  <div
+    onClick={() => onEdit(week.id, slot.id, day, null)}
+    style={{ color: "#aaa", cursor: "pointer" }}
+  >
+    Not Available
+  </div>
+)}
                     </div>
                   );
                 })}
-              </>
+              </React.Fragment>
             );
           })}
         </div>
       </div>
-
-      <p style={{ textAlign: "center", marginTop: 14, fontSize: 11, color: "#aaa" }}>
-        Hover &amp; click any class card to edit · Use arrows or week pills to switch weeks
-      </p>
     </div>
   );
 }

@@ -30,9 +30,9 @@ export function EditModal({ editTarget, onClose, onSave, isMobile }) {
           <div style={{ width: 40, height: 4, background: "#ddd", borderRadius: 99, margin: "0 auto 20px" }} />
         )}
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-          <div style={{ width: 14, height: 14, borderRadius: "50%", background: editTarget.day.color, flexShrink: 0 }} />
+          <div style={{ width: 14, height: 14, borderRadius: "50%", background: editTarget?.day?.color, flexShrink: 0 }} />
           <h2 style={{ fontFamily: "'Sora', sans-serif", fontSize: 16, fontWeight: 700, color: "#1a1a1a" }}>
-            Edit — {editTarget.day.label} · {editTarget.week.label}
+            Edit — {editTarget?.day?.label} · {editTarget?.week?.label}
           </h2>
         </div>
         {[
@@ -68,13 +68,13 @@ export function EditModal({ editTarget, onClose, onSave, isMobile }) {
             flex: 1, padding: "12px", border: "1.5px solid #ddd", borderRadius: 10,
             background: "white", fontSize: 14, fontWeight: 600, cursor: "pointer",
             fontFamily: "'DM Sans', sans-serif",
-          }}>Cancel</button>
-          <button onClick={() => onSave(form)} style={{
+          }}>Close</button>
+          {/* <button onClick={() => onSave(form)} style={{
             flex: 1, padding: "12px", border: "none", borderRadius: 10,
             background: editTarget.day.color, color: "white",
             fontSize: 14, fontWeight: 700, cursor: "pointer",
             fontFamily: "'DM Sans', sans-serif",
-          }}>Save</button>
+          }}>Save</button> */}
         </div>
       </div>
     </div>
