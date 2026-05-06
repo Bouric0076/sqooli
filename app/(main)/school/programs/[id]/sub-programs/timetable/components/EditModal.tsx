@@ -4,6 +4,8 @@ export function EditModal({ editTarget, onClose, onSave, isMobile }) {
   const [form, setForm] = useState({ ...editTarget.data });
   const handleChange = (field, val) => setForm((f) => ({ ...f, [field]: val }));
 
+  return<></>
+
   return (
     <div
       onClick={onClose}

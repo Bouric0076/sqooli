@@ -117,3 +117,27 @@ export const acceptProgramSlot = async (data: any) => {
     if (!res.ok) throw new Error("Failed to get invited program slots");
     return res.json();
 }
+
+
+
+
+export async function moveSlot({ subProgramId, from, to, item }) {
+  const res = await fetch(`/api/program/move-slot`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      subProgramId,
+      from,
+      to,
+      lessonId: item.lessonId,
+    }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to move slot");
+  }
+
+  return res.json();
+}

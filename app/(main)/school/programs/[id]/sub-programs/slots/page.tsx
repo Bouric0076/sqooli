@@ -19,6 +19,7 @@ import { INITIAL_SLOTS, TEACHERS, SUBJECTS, teacherById, simulateResponse, DAYS,
 import { Toast } from "@/app/components/ui/toasts/Toast";
 import { CreateTeacherModal } from "./components/modals/CreateTeacherModal";
 import ScrollTable from "./components/ScrollTable";
+import { useSubProgramStore } from "@/app/store/useSubProgramStore";
 
 /* ─────────────────────────────────────────────────────── */
 
@@ -67,6 +68,7 @@ const [activeMonth,setActiveMonth] =  useState('Jan');
 const [teachersList, setTeachersList] = useState(teachers); // local state
   const curriculumId = 1; // Assuming a fixed curriculum for this example
   const router = useRouter();
+    const { setActiveSubProgram } = useSubProgramStore();
   
 
   const timers = useRef({});
@@ -77,6 +79,7 @@ const [teachersList, setTeachersList] = useState(teachers); // local state
   
   useEffect(() => {
     if(id){
+      setActiveSubProgram({id:id});
       setLoading(true);
       getCProgramSlots(id, id).then(v=>setSlots(v?.data));
       getTeachers({curriculumId}).then(t=>setTeachers(t));

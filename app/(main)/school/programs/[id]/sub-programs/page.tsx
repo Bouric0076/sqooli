@@ -70,7 +70,7 @@ useEffect(() => {
         const p = data?.data;
 
         setProgram(p);
-        setActiveSubProgram(p)
+        // setActiveSubProgram(p)
 
         form.reset({
           programId: p?.id || 0,

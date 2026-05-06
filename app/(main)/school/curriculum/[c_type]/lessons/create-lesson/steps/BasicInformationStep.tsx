@@ -123,16 +123,19 @@ export default function BasicInformationStep({
        
 // ✅ Extract date safely from UTC string
 const dateOnly = new Date(slot.slotDate).toISOString().split("T")[0];
+const startDate = new Date(slot.slotDate).toISOString().split("T")[1].split(".")[0];
+const endDate = new Date(slot.slotDate).toISOString().split("T")[1].split(".")[0];
 
 // ✅ Combine with times
-const startDate = new Date(`${dateOnly}T${slot.startTime}`);
-const endDate = new Date(`${dateOnly}T${slot.endTime}`);
+// const startDate = new Date(`${dateOnly}T${slot.startTime}`);
+// const endDate = new Date(`${dateOnly}T${slot.endTime}`);
 
 // ✅ Format for input[type=datetime-local]
 const format = (d: Date) => d.toISOString().slice(0, 16);
 
-setValue("start", format(startDate));
-setValue("end", format(endDate));
+setValue("date",dateOnly);
+setValue("start", (slot.startTime));
+setValue("end", (slot.endTime));
 
 
 
@@ -218,6 +221,13 @@ useEffect(() => {
   /* ---------------- SUBMIT ---------------- */
 
   const submitBasicInfo = async (data: AddLessonForm) => {
+
+
+const dateOnly = new Date(data.start).toISOString().split("T")[0];
+// const startDate = new Date(slot.slotDate).toISOString().split("T")[1].split(".")[0];
+// const endDate = new Date(slot.slotDate).toISOString().split("T")[1].split(".")[0];
+
+
     const res = await fetch("/api/lesson", {
       method: "POST",
       headers: {
@@ -236,6 +246,7 @@ useEffect(() => {
         programId: data.programId,
         name: data.name,
         description: data.description,
+        Date:dateOnly,
         start: data.start,
         end: data.end,
       }),
