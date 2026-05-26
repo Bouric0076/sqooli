@@ -11,7 +11,18 @@ export default function LiveClassPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const user = useAuthStore((state) => state.user);
-  const role = user?.userType === "Teacher" ? "Teacher" : "Student";
+  const allowedRoles = [
+    "Teacher",
+    "Admin",
+    "School Admin",
+    "SchoolAdmin",
+  ] as const;
+
+  const role = allowedRoles.includes(user?.userType as any)
+    ? user?.userType
+    : "Student";
+
+    console.log("User role in w LiveClassPage:", role);
   const [lessonId, setLessonId] = useState(null);
   const [isStarted, setIstarted] = useState(false);
 

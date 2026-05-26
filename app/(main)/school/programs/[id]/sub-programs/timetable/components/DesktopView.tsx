@@ -14,9 +14,9 @@ export function DesktopView({
 
   const week = weeks.find((w) => w.id === activeWeek);
 
-  // ✅ ONLY allow empty slots
+  // ✅ ONLY allow slots where label === "Available"
   const isSlotAvailable = (data) => {
-    return !data;
+    return data?.label === "Available";
   };
 
   // 🔥 convert API → UI format (UNCHANGED)
@@ -170,12 +170,10 @@ export function DesktopView({
           <button
             onClick={() => {
               const i = weeks.findIndex((w) => w.id === activeWeek);
-              if (i < weeks.length - 1)
-                onWeekChange(weeks[i + 1].id);
+              if (i < weeks.length - 1) onWeekChange(weeks[i + 1].id);
             }}
             disabled={
-              weeks.findIndex((w) => w.id === activeWeek) ===
-              weeks.length - 1
+              weeks.findIndex((w) => w.id === activeWeek) === weeks.length - 1
             }
             style={{
               width: 36,
@@ -245,8 +243,8 @@ export function DesktopView({
               {sortedDays.map((day) => {
                 const key = `${week.id}_${slot.id}_${day.key}`;
                 const data = schedule[key];
-
                 const isInactiveDay = !day.isActive;
+                const isFree = isSlotAvailable(data);
 
                 return (
                   <div
@@ -259,16 +257,23 @@ export function DesktopView({
                       pointerEvents: isInactiveDay ? "none" : "auto",
                     }}
                     onDragOver={(e) => {
-                      if (!isSlotAvailable(data)) return;
+                      // Only allow drop on "Available" slots.
+                      // Not calling e.preventDefault() on other slots
+                      // makes the browser show the ❌ no-drop cursor.
+                      if (!isFree) return;
                       e.preventDefault();
                       e.currentTarget.style.background = "#f5f7ff";
+                      e.currentTarget.style.outline = "2px dashed #a0a8ff";
                     }}
                     onDragLeave={(e) => {
                       e.currentTarget.style.background = "";
+                      e.currentTarget.style.outline = "";
                     }}
-                    onDrop={() => {
+                    onDrop={(e) => {
+                      e.currentTarget.style.background = "";
+                      e.currentTarget.style.outline = "";
                       if (!draggedItem) return;
-                      if (!isSlotAvailable(data)) return;
+                      if (!isFree) return; // safety guard
 
                       const payload = {
                         from: draggedItem.from,
@@ -296,56 +301,62 @@ export function DesktopView({
                       setDraggedItem(null);
                     }}
                   >
-{data ? (
-  <div
-    draggable
-    onDragStart={() =>
-      setDraggedItem({
-        data,
-        from: {
-          weekId: week.id,
-          slotId: data?.slotId || slot.actualId,
-          dayKey: day.key,
-          date: day.date,
-        },
-      })
-    }
-  >
-    {data.label === "Available" ? (
-      <div
-        onClick={() => onEdit(week.id, slot.id, day, data)}
-        style={{ color: "#4CAF50", cursor: "pointer" }}
-      >
-        Available
-      </div>
-    ) : data.type === "holiday" ? (
-      <HolidayCard
-        data={data}
-        day={day}
-        onEdit={() => onEdit(week.id, slot.id, day, data)}
-      />
-    ) : data.type === "break" ? (
-      <BreakCard
-        data={data}
-        day={day}
-        onEdit={() => onEdit(week.id, slot.id, day, data)}
-      />
-    ) : (
-      <ClassCard
-        data={data}
-        day={day}
-        onEdit={() => onEdit(week.id, slot.id, day, data)}
-      />
-    )}
-  </div>
-) : (
-  <div
-    onClick={() => onEdit(week.id, slot.id, day, null)}
-    style={{ color: "#aaa", cursor: "pointer" }}
-  >
-    Not Available
-  </div>
-)}
+                    {data ? (
+                      <div
+                        draggable
+                        onDragStart={() =>
+                          setDraggedItem({
+                            data,
+                            from: {
+                              weekId: week.id,
+                              slotId: data?.slotId || slot.actualId,
+                              dayKey: day.key,
+                              date: day.date,
+                            },
+                          })
+                        }
+                      >
+                        {data.label === "Available" ? (
+                          <div
+                            onClick={() => onEdit(week.id, slot.id, day, data)}
+                            style={{ color: "#4CAF50", cursor: "pointer" }}
+                          >
+                            Available
+                          </div>
+                        ) : data.type === "holiday" ? (
+                          <HolidayCard
+                            data={data}
+                            day={day}
+                            onEdit={() => onEdit(week.id, slot.id, day, data)}
+                          />
+                        ) : data.type === "break" ? (
+                          <BreakCard
+                            data={data}
+                            day={day}
+                            onEdit={() => onEdit(week.id, slot.id, day, data)}
+                          />
+                        ) : data.type === "class" ? (
+                          <ClassCard
+                            data={data}
+                            day={day}
+                            onEdit={() => onEdit(week.id, slot.id, day, data)}
+                          />
+                        ) : (
+                          <ClassCard
+                            data={data}
+                            day={day}
+                            onEdit={() => onEdit(week.id, slot.id, day, data)}
+                          />
+                        )}
+                      </div>
+                    ) : (
+                      <div
+                        onClick={() => onEdit(week.id, slot.id, day, null)}
+                        style={{ color: "#aaa", cursor: "pointer" }}
+                      >
+                        Not Available
+                      </div>
+                    )}
                   </div>
                 );
               })}

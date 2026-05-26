@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getCPrograms } from "@/app/helpers/program";
+import Loader from "@/components/ui/Loader";
 
 // Define the interface based on your API structure
 interface Programme {
@@ -41,6 +42,12 @@ export default function ProgramsPage() {
   const filtered = programmes.filter((p) =>
     p.programName?.toLowerCase().includes(search.toLowerCase())
   );
+
+  if (loading) {
+    return (
+<Loader />
+    );
+  }
 
   return (
     <div

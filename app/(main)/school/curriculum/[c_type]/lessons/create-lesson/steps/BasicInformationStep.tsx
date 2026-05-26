@@ -83,12 +83,14 @@ export default function BasicInformationStep({
     getLessonBasicInfo(lessonId).then((res) => {
       form.setValue("name", res.data.name);
       form.setValue("description", res.data.description);
+      form.setValue("requirements", res.data.requirements);
       form.setValue("lessonTypeId", res.data.lessonTypeId);
       form.setValue("programId", res.data.programId);
       form.setValue("educationLevelId", res.data.educationLevelId);
       form.setValue("gradeLevelId", res.data.gradeLevelId);
       form.setValue("subjectId", res.data.subjectId);
       form.setValue("topicId", res.data.topicId);
+      form.setValue("Date", res.data.date);
       form.setValue("start", res.data.start.slice(0, 16));
       form.setValue("end", res.data.end.slice(0, 16));
     });
@@ -121,19 +123,10 @@ export default function BasicInformationStep({
 
 
        
-// ✅ Extract date safely from UTC string
-const dateOnly = new Date(slot.slotDate).toISOString().split("T")[0];
-const startDate = new Date(slot.slotDate).toISOString().split("T")[1].split(".")[0];
-const endDate = new Date(slot.slotDate).toISOString().split("T")[1].split(".")[0];
-
-// ✅ Combine with times
-// const startDate = new Date(`${dateOnly}T${slot.startTime}`);
-// const endDate = new Date(`${dateOnly}T${slot.endTime}`);
-
 // ✅ Format for input[type=datetime-local]
-const format = (d: Date) => d.toISOString().slice(0, 16);
 
-setValue("date",dateOnly);
+
+setValue("Date",slot.slotDate);
 setValue("start", (slot.startTime));
 setValue("end", (slot.endTime));
 
@@ -223,7 +216,7 @@ useEffect(() => {
   const submitBasicInfo = async (data: AddLessonForm) => {
 
 
-const dateOnly = new Date(data.start).toISOString().split("T")[0];
+// const dateOnly = new Date(data.start).toISOString().split("T")[0];
 // const startDate = new Date(slot.slotDate).toISOString().split("T")[1].split(".")[0];
 // const endDate = new Date(slot.slotDate).toISOString().split("T")[1].split(".")[0];
 
@@ -246,7 +239,7 @@ const dateOnly = new Date(data.start).toISOString().split("T")[0];
         programId: data.programId,
         name: data.name,
         description: data.description,
-        Date:dateOnly,
+        Date:data.Date,
         start: data.start,
         end: data.end,
       }),
@@ -416,19 +409,30 @@ const dateOnly = new Date(data.start).toISOString().split("T")[0];
           />
         </FormField>
 
+
+  <div className="col-span-2">
+        <FormField label="Lesson Date">
+          <TextInput
+            type="date"
+            {...register("Date")}
+            readOnly={isSlotFlow}
+          />
+        </FormField>
+        </div>
+
         <FormField label="Start Time">
           <TextInput
-            type="datetime-local"
+            type="time"
             {...register("start")}
-            disabled={isSlotFlow}
+            readOnly={isSlotFlow}
           />
         </FormField>
 
         <FormField label="End Time">
           <TextInput
-            type="datetime-local"
+            type="time"
             {...register("end")}
-            disabled={isSlotFlow}
+            readOnly={isSlotFlow}
           />
         </FormField>
 

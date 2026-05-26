@@ -15,6 +15,8 @@ import { useForm } from "react-hook-form";
 import { ProgramRequest } from "../../types/program";
 import { getCProgram } from "@/app/helpers/program";
 import { useSubProgramStore } from "@/app/store/useSubProgramStore";
+import { useSpinnerStore } from "@/app/store/useSpinnerStore";
+import { h } from "@fullcalendar/core/preact.js";
 
 // Types for the Sub-Program
 interface SubProgram {
@@ -37,7 +39,8 @@ export default function ProgramDetailUI() {
   const [activeTab, setActiveTab] = useState("Active");
   const [program, setProgram] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { loading, showSpinner, hideSpinner, setLoading } =
+    useSpinnerStore();
 
   const { setActiveSubProgram } = useSubProgramStore();
 
@@ -63,36 +66,34 @@ export default function ProgramDetailUI() {
 
 
 useEffect(() => {
-  if (id) {
-    
-    getCProgram(id)
-      .then((data) => {
-        const p = data?.data;
+  const fetchData = async () => {
+    try {
+      await loadProgram();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-        setProgram(p);
-        // setActiveSubProgram(p)
-
-        form.reset({
-          programId: p?.id || 0,
-          programName: p?.programName || "",
-          programTypeId: p?.programType?.id || 0,
-          curriculumId: p?.curriculumId || 0,
-          programStartDate: p?.programStartDate || "",
-          programEndDate: p?.programEndDate || "",
-          hasSubPrograms: true,
-          subPrograms: [],
-          schedules: [],
-          holidays: [],
-          businessHours: [],
-        });
-      })
-      .catch((err) => console.error("Error fetching program:", err))
-      .finally(() => setLoading(false));
-  }
+  fetchData();
 }, []);
 
 useEffect(() => {
+  const fetchData = async () => {
+    try {
+      await loadProgram();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  fetchData();
+}, [id]);
+
+
+const loadProgram = async() => {
+
   if (id) {
+    setLoading(true);
     getCProgram(id)
       .then((data) => {
         const p = data?.data;
@@ -114,9 +115,10 @@ useEffect(() => {
         });
       })
       .catch((err) => console.error("Error fetching program:", err))
-      .finally(() => setLoading(false));
+      .finally(() => {setLoading(false);hideSpinner();});
   }
-}, [id]);
+
+}
 
  
 
@@ -329,7 +331,11 @@ useEffect(() => {
       <ProgramDetailsModal
         form={form}
         open={showModal}
-        onClose={() => setShowModal(false)}
+        onClose={async () => {setShowModal(false)
+         await loadProgram();
+
+
+        }}
       />
 
     </div>

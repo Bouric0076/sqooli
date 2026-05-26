@@ -5,6 +5,7 @@ import { EditModal } from "./components/EditModal";
 import { MobileView } from "./components/mobileView";
 import { getSlotTimetable, moveSlot } from "@/app/helpers/program";
 import { useSubProgramStore } from "@/app/store/useSubProgramStore";
+import { useSpinnerStore } from "@/app/store/useSpinnerStore";
 
 // ─── Hooks ────────────────────────────────────────────────────────────────────
 function useIsMobile(bp = 768) {
@@ -28,6 +29,8 @@ export default function Timetable() {
   const [editTarget, setEditTarget] = useState(null);
   const isMobile = useIsMobile(768);
   const { activeSubProgram } = useSubProgramStore();
+  const { loading, showSpinner, hideSpinner, setLoading } =
+  useSpinnerStore();
 
   useEffect(() => {
     if (activeSubProgram?.id) {
@@ -37,6 +40,7 @@ export default function Timetable() {
 
   const loadTimetable = async () => {
     try {
+      showSpinner();
       const res = await getSlotTimetable({ subprogramId: activeSubProgram?.id });
 
       // 🔥 NEW API SHAPE
@@ -45,6 +49,8 @@ export default function Timetable() {
       setWeeks(apiWeeks);
     } catch (err) {
       console.error("Failed to load timetable", err);
+    }finally{
+      hideSpinner();
     }
   };
 

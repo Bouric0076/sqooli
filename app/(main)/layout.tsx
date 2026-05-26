@@ -6,6 +6,7 @@ import TopMenu from "../components/menu/topmenu";
 import AuthWrapper from "../components/auth/AuthWrapper";
 
 import { Roboto } from "next/font/google";
+import GlobalSpinner from "@/components/GlobalSpinner";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -45,6 +46,7 @@ export default function RootLayout({
 
             {/* Page Content */}
             <main className="flex-1 overflow-auto bg-white relative h-screen">
+              <GlobalSpinner/>
             {children}
             </main>
           </div>

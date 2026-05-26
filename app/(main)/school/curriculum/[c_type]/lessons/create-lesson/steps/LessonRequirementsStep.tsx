@@ -35,7 +35,7 @@ export function LessonRequirementsStep({ form, lessonId, onNext }: Props) {
 
     try {
       const response = await fetch(`/api/lesson/${lessonId}/requirements`, {
-        method: "PUT",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },

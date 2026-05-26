@@ -5,7 +5,6 @@ import { persist } from "zustand/middleware";
 
 type SubProgram = {
   id: number;
-
 };
 
 type SubProgramStore = {
@@ -13,7 +12,16 @@ type SubProgramStore = {
   setActiveSubProgram: (subprogram: SubProgram | null) => void;
 };
 
-export const useSubProgramStore = create<SubProgramStore>((set) => ({
-    activeSubProgram: null,
-    setActiveSubProgram: (subprogram) => set({ activeSubProgram: subprogram }),
-}));
+export const useSubProgramStore = create<SubProgramStore>()(
+  persist(
+    (set) => ({
+      activeSubProgram: null,
+
+      setActiveSubProgram: (subprogram) =>
+        set({ activeSubProgram: subprogram }),
+    }),
+    {
+      name: "subprogram-storage", // localStorage key
+    }
+  )
+);

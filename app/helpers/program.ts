@@ -141,3 +141,20 @@ export async function moveSlot({ subProgramId, from, to, item }) {
 
   return res.json();
 }
+
+
+export async function getSubprogram({ subProgramId }) {
+  const res = await fetch(`/api/program/subprogram/${subProgramId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to getSubprogram");
+  }
+
+  return res.json();
+}

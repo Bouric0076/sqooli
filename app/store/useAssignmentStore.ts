@@ -8,7 +8,7 @@ type Assignment = {
   name: string;
   title: string;
   description: string;
-  sections: any[]; // adjust type as needed
+  sections: any[];
 };
 
 type AssignmentStore = {
@@ -16,7 +16,20 @@ type AssignmentStore = {
   setActiveAssignment: (assignment: Assignment | null) => void;
 };
 
-export const useAssignmentStore = create<AssignmentStore>((set) => ({
-  activeAssignment: null,
-  setActiveAssignment: (assignment) => set({ activeAssignment: assignment }),
-}));
+export const useAssignmentStore = create<AssignmentStore>()(
+  persist(
+    (set) => ({
+      activeAssignment: null,
+
+      setActiveAssignment: (assignment) =>
+        set({ activeAssignment: assignment }),
+    }),
+    {
+      name: "assignment-storage",
+
+      partialize: (state) => ({
+        activeAssignment: state.activeAssignment,
+      }),
+    }
+  )
+);

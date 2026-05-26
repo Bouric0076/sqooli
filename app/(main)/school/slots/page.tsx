@@ -8,6 +8,7 @@ import {
 } from "@/app/helpers/program";
 import { useCurriculumStore } from "@/app/store/useCurriculumStore";
 import { useRouter } from "next/navigation";
+import { useSpinnerStore } from "@/app/store/useSpinnerStore";
 
 type Slot = {
   id: number;
@@ -28,13 +29,14 @@ type Slot = {
 
 function AllSlotspage() {
   const [slots, setSlots] = useState<Slot[]>([]);
-  const [loading, setLoading] = useState(false);
+
       const router = useRouter();
   
 
       const setActiveCurriculum = useCurriculumStore(
         (state) => state.setActiveCurriculum
       );
+       const { loading, setLoading } = useSpinnerStore();
 
   // ================= FETCH SLOTS =================
   const fetchSlots = async () => {

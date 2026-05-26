@@ -5,6 +5,7 @@ import https from "https";
 import Cookies from "js-cookie";
 import { use } from "react";
 import { useAuthStore } from "@/app/store/useAuthStore";
+import { redirect } from "next/navigation";
 
 
 // Detect if we're in development
@@ -40,25 +41,24 @@ axiosClient.interceptors.request.use(async (config) => {
 // 🚨 Handle 401 globally
 axiosClient.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     const deleteAccessToken = async () => {
       const { deleteAuthTokens } = await import("./getAccessToken");
       await deleteAuthTokens();
     };
     if (
-      typeof window !== "undefined" &&
       error.response &&
       error.response.status === 401
     ) {
       // Clear auth data
       Cookies.remove("access_token");
-      localStorage.clear();
+      // localStorage.clear();
       useAuthStore.getState().clearAuth();
       useAuthStore.getState().logout();
       // Redirect to login\
-       deleteAccessToken();
+       await deleteAccessToken();
 
-      window.location.href = "/login";
+    //  redirect("/login");
 
 
     }

@@ -8,9 +8,9 @@ type Resource = {
   resourceType: string;
   title: string;
   description: string;
-  files: any[]; // adjust type as needed
-  attachments: any[]; // adjust type as needed
-  creator: any; // adjust type as needed
+  files: any[];
+  attachments: any[];
+  creator: any;
 };
 
 type ResourceStore = {
@@ -18,7 +18,20 @@ type ResourceStore = {
   setActiveResource: (resource: Resource | null) => void;
 };
 
-export const useResourceStore = create<ResourceStore>((set) => ({
-    activeResource: null,
-    setActiveResource: (resource) => set({ activeResource: resource }),
-}));
+export const useResourceStore = create<ResourceStore>()(
+  persist(
+    (set) => ({
+      activeResource: null,
+
+      setActiveResource: (resource) =>
+        set({ activeResource: resource }),
+    }),
+    {
+      name: "resource-storage",
+
+      partialize: (state) => ({
+        activeResource: state.activeResource,
+      }),
+    }
+  )
+);

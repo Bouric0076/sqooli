@@ -66,18 +66,18 @@ export default function StudentSidebar() {
       { icon: Grid, label: "Programs", link: "/school/programs" },
       {
         icon: Users,
-        label: "Extra Curricula",
-        link: "/school/extra-curricula",
+        label: "Slot Invitations",
+        link: "/school/slots",
       },
     ],
     ADMINISTRATION: [
-      { icon: Users, label: "Students", link: "/school/students" },
-      { icon: User, label: "Teacher Management", link: "/school/teachers" },
+      // { icon: Users, label: "Students", link: "/school/students" },
+      // { icon: User, label: "Teacher Management", link: "/school/teachers" },
       { icon: CreditCard, label: "Payments", link: "/school/payments" },
     ],
     MANAGEMENT: [
       { icon: User, label: "User Management", link: "/school/users" },
-      { icon: Users, label: "Partners", link: "/school/partners" },
+      // { icon: Users, label: "Partners", link: "/school/partners" },
       { icon: BarChart3, label: "Reports", link: "/school/reports" },
     ],
   };

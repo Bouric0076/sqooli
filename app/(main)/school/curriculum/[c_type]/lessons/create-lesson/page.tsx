@@ -26,6 +26,7 @@ export type AddLessonForm = {
   topicId: number | null;
   educationLevelId: number | null;
   gradeLevelId: number | null;
+  Date:string;
   start: string;
   end: string;
   price: number;
