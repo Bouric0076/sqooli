@@ -16,12 +16,16 @@ import {
 } from "@/app/lib/lessonLive";
 
 /* ---------------- TYPES ---------------- */
-type UserRole = "Teacher" | "Student";
+type UserRole =
+  | "Teacher"
+  | "Student"
+  | "Admin"
+  | "School Admin";
 
 interface LiveClassroomProps {
   roomToken: string;
   jwt?: string | null;
-  role: UserRole;
+  role: UserRole | string;
   lessonId: string;
 }
 
@@ -45,11 +49,25 @@ export default function LiveClassroom({
 
   const apiRef = useRef<any>(null);
 
-  /* 🎥 VISIBILITY LOGIC */
-  const canViewClass =
-    role === "Teacher" ? classStarted : classStarted && hasJoined;
+  /* 🎥 ROLE & VISIBILITY LOGIC */
+  const normalizedRole = role?.toLowerCase();
 
-  /* ------------------ ATTENDANCE (TEACHER) ------------------ */
+  // console.log("User role:", normalizedRole);
+
+  const CLASS_MANAGERS = new Set([
+    "teacher",
+    "admin",
+    "school admin",
+    "schooladmin",
+  ]);
+
+  const canManageLesson = CLASS_MANAGERS.has(normalizedRole);
+
+  const canViewClass = canManageLesson
+    ? classStarted
+    : classStarted && hasJoined;
+
+  /* ------------------ ATTENDANCE ------------------ */
   const fetchAttendance = async () => {
     try {
       const res = await getAttendance(lessonId);
@@ -61,16 +79,17 @@ export default function LiveClassroom({
   };
 
   useEffect(() => {
-    if (role !== "Teacher" || !classStarted) return;
+    if (!canManageLesson || !classStarted) return;
 
     fetchAttendance();
+
     const interval = setInterval(fetchAttendance, 5000);
+
     return () => clearInterval(interval);
-  }, [role, classStarted]);
+  }, [canManageLesson, classStarted]);
 
+  /* ------------------ LESSON STATUS ------------------ */
   useEffect(() => {
-    // if (role !== "Student") return;
-
     let cancelled = false;
 
     const checkStatus = async () => {
@@ -82,18 +101,19 @@ export default function LiveClassroom({
           setClassStarted(data.started);
         }
       } catch (err) {
-        console.error("Failed to fetch lsesson status", err);
+        console.error("Failed to fetch lesson status", err);
       }
     };
 
-    checkStatus(); // initial load
+    checkStatus();
+
     const interval = setInterval(checkStatus, 3000);
 
     return () => {
       cancelled = true;
       clearInterval(interval);
     };
-  }, [role, lessonId]);
+  }, [roomToken, lessonId]);
 
   /* ------------------ JITSI SETUP ------------------ */
   const jitsiDomain =
@@ -114,15 +134,9 @@ export default function LiveClassroom({
 
   useEffect(() => {
     const i = setInterval(forceJitsiFullHeight, 500);
+
     return () => clearInterval(i);
   }, []);
-
-  /* ------------------ AUTO-START FOR TEACHER ------------------ */
-  // useEffect(() => {
-  //   if (role === "Teacher") {
-  //     setClassStarted(true);
-  //   }
-  // }, [role]);
 
   return (
     <div className="h-screen flex bg-gray-50 relative overflow-hidden">
@@ -152,13 +166,15 @@ export default function LiveClassroom({
               <Card className="w-[440px] text-center shadow-xl">
                 <CardContent className="p-8">
                   <Clock className="w-10 h-10 mx-auto mb-4 text-gray-400" />
+
                   <h2 className="text-xl font-bold mb-2">
-                    {role === "Teacher"
+                    {canManageLesson
                       ? "Start the class when ready"
                       : "Class hasn’t started yet"}
                   </h2>
+
                   <p className="text-sm text-gray-600">
-                    {role === "Teacher"
+                    {canManageLesson
                       ? "Students will join once you start"
                       : "Waiting for the teacher"}
                   </p>
@@ -209,12 +225,14 @@ export default function LiveClassroom({
             className="w-[300px] bg-white border-l absolute right-0 top-0 h-full z-40"
           >
             <div className="p-4 border-b font-semibold">
-              {role === "Teacher" ? "Teacher Panel" : "Class Panel"}
+              {canManageLesson
+                ? "Class Control Panel"
+                : "Class Panel"}
             </div>
 
             {/* ACTION BUTTON */}
             <div className="p-4 border-b">
-              {role === "Teacher" ? (
+              {canManageLesson ? (
                 <Button
                   variant={classStarted ? "destructive" : "default"}
                   className="w-full"
@@ -229,6 +247,7 @@ export default function LiveClassroom({
                   }}
                 >
                   {classStarted ? <VideoOff /> : <Video />}
+
                   <span className="ml-2">
                     {classStarted ? "End Class" : "Start Class"}
                   </span>
@@ -247,6 +266,7 @@ export default function LiveClassroom({
                   }}
                 >
                   {hasJoined ? <VideoOff /> : <Video />}
+
                   <span className="ml-2">
                     {hasJoined ? "Leave Class" : "Join Class"}
                   </span>
@@ -255,11 +275,15 @@ export default function LiveClassroom({
             </div>
 
             {/* ATTENDANCE */}
-            {role === "Teacher" && (
+            {canManageLesson && (
               <>
                 <div className="p-4 border-b flex items-center gap-2">
                   <Users className="w-4 h-4" />
-                  <span className="font-semibold">Attendance</span>
+
+                  <span className="font-semibold">
+                    Attendance
+                  </span>
+
                   <span className="ml-auto text-xs bg-green-100 text-green-700 px-2 rounded">
                     {attendance.length}
                   </span>
@@ -271,9 +295,15 @@ export default function LiveClassroom({
                       key={s.studentId}
                       className="px-3 py-2 text-sm rounded hover:bg-gray-100"
                     >
-                      <div className="font-medium">{s.fullName}</div>
+                      <div className="font-medium">
+                        {s.fullName}
+                      </div>
+
                       <div className="text-xs text-gray-500">
-                        Joined {new Date(s.joinedAt).toLocaleTimeString()}
+                        Joined{" "}
+                        {new Date(
+                          s.joinedAt
+                        ).toLocaleTimeString()}
                       </div>
                     </li>
                   ))}

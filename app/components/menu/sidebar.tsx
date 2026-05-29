@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/app/store/useAuthStore";
 import { useCurriculumStore } from "@/app/store/useCurriculumStore";
+import QrcodeComponent from "../invite/QrcodeComponent";
 
 export default function StudentSidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -65,18 +66,18 @@ export default function StudentSidebar() {
       { icon: Grid, label: "Programs", link: "/school/programs" },
       {
         icon: Users,
-        label: "Extra Curricula",
-        link: "/school/extra-curricula",
+        label: "Slot Invitations",
+        link: "/school/slots",
       },
     ],
     ADMINISTRATION: [
-      { icon: Users, label: "Students", link: "/school/students" },
-      { icon: User, label: "Teacher Management", link: "/school/teachers" },
+      // { icon: Users, label: "Students", link: "/school/students" },
+      // { icon: User, label: "Teacher Management", link: "/school/teachers" },
       { icon: CreditCard, label: "Payments", link: "/school/payments" },
     ],
     MANAGEMENT: [
       { icon: User, label: "User Management", link: "/school/users" },
-      { icon: Users, label: "Partners", link: "/school/partners" },
+      // { icon: Users, label: "Partners", link: "/school/partners" },
       { icon: BarChart3, label: "Reports", link: "/school/reports" },
     ],
   };
@@ -146,7 +147,6 @@ export default function StudentSidebar() {
             </div>
           </div>
         </div>
-
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto py-4 px-3">
           {Object.entries(menuItems).map(([section, items]) => (
@@ -185,6 +185,7 @@ export default function StudentSidebar() {
           ))}
         </nav>
 
+        <QrcodeComponent />
         {/* Footer */}
         <div className="p-4 border-t border-gray-200">
           <div className="text-[11px] text-gray-500 flex items-center gap-1">

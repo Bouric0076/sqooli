@@ -265,7 +265,7 @@ const TeacherListing: React.FC<TeacherListingProps> = ({ teachers }) => {
       {viewMode === "grid" ? (
         <div className="p-1 flex-1 overflow-auto">
           <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {filteredTeachers.map((teacher) => {
+            {filteredTeachers?.map((teacher) => {
               const subjects = teacher.enrollments.flatMap((e) => e.subjects);
 
               return (
@@ -304,7 +304,7 @@ const TeacherListing: React.FC<TeacherListingProps> = ({ teachers }) => {
                             className="px-2 py-[2px] bg-gray-100 text-gray-700 text-[10px] font-semibold rounded select-none"
                             style={{ lineHeight: "1rem" }}
                           >
-                            {subject}
+                            {subject?.name}
                           </span>
                         ))
                       ) : (

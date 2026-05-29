@@ -21,6 +21,7 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import { useAuthStore } from "@/app/store/useAuthStore";
+import QrcodeComponent from "../invite/QrcodeComponent";
 
 export default function TeacherSidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -177,7 +178,7 @@ export default function TeacherSidebar() {
             </div>
           ))}
         </nav>
-
+        <QrcodeComponent />
         {/* Footer */}
         <div className="p-4 border-t border-gray-200">
           <div className="text-[11px] text-gray-500 flex items-center gap-1">

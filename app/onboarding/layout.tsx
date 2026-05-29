@@ -34,7 +34,7 @@ export default function OnboardingLayout({
 
           {/* Main Content Area */}
           <main className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12">
-            <div className="w-full   ">
+            <div className="w-full    ">
               <AuthWrapper>{children}</AuthWrapper>
             </div>
           </main>

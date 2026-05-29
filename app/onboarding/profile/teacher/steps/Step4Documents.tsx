@@ -64,22 +64,22 @@ export default function Step4Documents({ onBack, onNext }: Props) {
         files.idFront,
         "National ID Front",
         userId,
-        "national_id_front",
-        "Teacher"
+        "Teacher",
+        "national_id_front"
       );
       await uploadDocument(
         files.idBack,
         "National ID Back",
         userId,
-        "national_id_back",
-        "Teacher"
+        "Teacher",
+        "national_id_back"
       );
       await uploadDocument(
         files.tscCert,
         "TSC Certificate",
         userId,
-        "tsc_certificate",
-        "Teacher"
+        "Teacher",
+        "tsc_certificate"
       );
 
       alert("Documents uploaded successfully");

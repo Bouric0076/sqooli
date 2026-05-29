@@ -2,8 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { Search, MoreVertical, EyeOff } from "lucide-react";
-import { fetchTransactions, fetchWallet } from "@/app/helpers/wallet";
+import {
+  fetchTransactions,
+  fetchWallet,
+  Transaction,
+} from "@/app/helpers/wallet";
 import WithdrawModal from "./components/WithdrawModal";
+import InviteComponent from "@/app/components/invite/InviteComponent";
+import RefferalComponent from "@/app/components/invite/RefferalComponent";
 
 interface TransactionItemProps {
   description: string;
@@ -16,7 +22,7 @@ export default function WalletPage() {
 
   const [balance, setBalance] = useState(0.0);
   const [availableBalance, setAvailableBalance] = useState(0.0);
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [withdrawalAmount, setWithdrawalAmount] = useState("");
@@ -41,9 +47,11 @@ export default function WalletPage() {
           }),
         ]);
 
+        console.log("Fetched wallet data:", transactionsData);
+
         setBalance(walletData.balance);
         setAvailableBalance(walletData.availableBalance);
-        setTransactions(transactionsData?.data?.items);
+        setTransactions(transactionsData);
       } catch (error) {
         console.error("Error fetching wallet data:", error);
       } finally {
@@ -65,9 +73,9 @@ export default function WalletPage() {
             🎓
           </div>
           <div>
-            <h2 className="font-semibold text-lg">
+            {/* <h2 className="font-semibold text-lg">
               Mathematic Excellence Academy
-            </h2>
+            </h2> */}
             <span className="bg-purple-100 text-purple-600 text-xs px-2 py-1 rounded-full">
               Online School
             </span>
@@ -121,15 +129,7 @@ export default function WalletPage() {
           </div> */}
         </div>
 
-        <div className="bg-purple-50 p-4 rounded-2xl space-y-2">
-          <h3 className="font-semibold text-sm">Refer & Earn with Sqooli</h3>
-          <p className="text-xs text-gray-600">
-            Share your unique link to students & parents to join Sqooli
-          </p>
-          <button className="bg-white px-3 py-1 text-sm rounded-lg border">
-            Copy Link
-          </button>
-        </div>
+        <RefferalComponent />
       </div>
 
       {/* MAIN CONTENT */}

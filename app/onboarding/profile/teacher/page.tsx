@@ -31,7 +31,7 @@ export type TeacherProfileForm = {
 
 export default function TeacherProfilePage() {
   const router = useRouter();
-  const [step, setStep] = useState(5);
+  const [step, setStep] = useState(1);
   const [preview, setPreview] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const { user } = useAuthStore();
@@ -42,7 +42,7 @@ export default function TeacherProfilePage() {
   useEffect(() => {
     if (!user) return;
     setCurrentUser(user);
-    console.log(user);
+    //console.log(user);
   }, [user]);
 
   const {

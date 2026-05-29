@@ -91,7 +91,7 @@ export interface Teacher {
    INTERNAL HELPER
 ========================= */
 
-async function lookupFetcher<T>(
+export async function lookupFetcher<T>(
   url: string,
   filters?: LookupFilters
 ): Promise<T[]> {
@@ -107,6 +107,10 @@ async function lookupFetcher<T>(
    LOOKUP HELPERS
 ========================= */
 
+export const getCurriculums = (filters?: LookupFilters) =>
+  lookupFetcher<LookupItem>("/api/lookups/curriculums", filters);
+
+
 export const getEducationLevels = (filters?: LookupFilters) =>
   lookupFetcher<LookupItem>("/api/lookups/education-levels", filters);
 
@@ -115,6 +119,9 @@ export const getGradeLevels = (filters?: LookupFilters) =>
 
 export const getPrograms = (filters?: LookupFilters) =>
   lookupFetcher<LookupItem>("/api/lookups/programs", filters);
+
+export const getProgramTypes = (filters?: LookupFilters) =>
+  lookupFetcher<LookupItem>("/api/lookups/program-types", filters);
 
 export const getSubjectCategories = (filters?: LookupFilters) =>
   lookupFetcher<LookupItem>("/api/lookups/subject-categories", filters);

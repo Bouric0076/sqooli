@@ -15,6 +15,7 @@ import {
   getEducationLevels,
   getGradeLevels,
   getCertificateLevels,
+  getSubjects,
 } from "@/app/helpers/lookups";
 import { useCurriculumStore } from "@/app/store/useCurriculumStore";
 
@@ -27,6 +28,7 @@ type RecruitTeacherForm = {
   role: string;
   educationLevelId: number | null;
   gradeLevelId: number | null;
+  subjectId: number | null; // ✅ ADD THIS
   nationalId: string;
   dob: string;
   bio: string;
@@ -48,6 +50,7 @@ export default function RecruitTeacherModal() {
   const [educationLevels, setEducationLevels] = useState<any[]>([]);
   const [gradeLevels, setGradeLevels] = useState<any[]>([]);
   const [certificateLevels, setCertificateLevels] = useState<any[]>([]);
+  const [subjects, setSubjects] = useState<any[]>([]);
 
   const activeCurriculum = useCurriculumStore(
     (state) => state.activeCurriculum
@@ -70,6 +73,7 @@ export default function RecruitTeacherModal() {
   });
 
   const selectedEducationLevelId = watch("educationLevelId");
+  const selectedGradeLevelId = watch("gradeLevelId");
 
   /* ---------------- LOAD EDUCATION LEVELS ---------------- */
 
@@ -105,6 +109,29 @@ export default function RecruitTeacherModal() {
       .then(setGradeLevels)
       .catch(() => setError("Failed to load grade levels"));
   }, [selectedEducationLevelId, activeCurriculum, setValue]);
+
+
+
+  /* ---------------- LOAD GSubjects (CASCADE) ---------------- */
+
+useEffect(() => {
+  if (!selectedEducationLevelId || !selectedGradeLevelId || !activeCurriculum?.id) {
+    setSubjects([]);
+    setValue("subjectId", null);
+    return;
+  }
+
+  getSubjects({
+    curriculumId: activeCurriculum.id,
+    educationLevelId: selectedEducationLevelId,
+    gradeLevelId: selectedGradeLevelId,
+  })
+    .then(setSubjects) // ✅ FIXED
+    .catch(() => setError("Failed to load subjects"));
+}, [selectedEducationLevelId, selectedGradeLevelId, activeCurriculum, setValue]);
+
+
+
 
   /* ---------------- SUBMIT ---------------- */
 
@@ -324,6 +351,32 @@ export default function RecruitTeacherModal() {
             />
           </FormField>
 
+
+          {/* Subject */}
+<FormField label="Subject" error={errors.subjectId?.message}>
+  <Controller
+    name="subjectId"
+    control={control}
+    rules={{ required: "Subject is required" }}
+    render={({ field }) => (
+      <SelectInput
+        value={field.value?.toString()}
+        options={subjects.map((s) => ({
+          label: s.name,
+          value: s.id.toString(),
+        }))}
+        onChange={(val) => field.onChange(Number(val))}
+        disabled={!selectedGradeLevelId}
+        placeholder={
+          selectedGradeLevelId
+            ? "Select subject"
+            : "Select grade level first"
+        }
+      />
+    )}
+  />
+</FormField>
+
           {/* Certificate Level */}
           <FormField
             label="Certificate Level"
@@ -348,12 +401,14 @@ export default function RecruitTeacherModal() {
           </FormField>
 
           {/* TSC Number */}
+          <div className="col-span-2">
           <FormField label="Workplace" error={errors.workplace?.message}>
             <TextInput
               placeholder="Workplace"
               {...register("workplace", { required: "Workplace is required" })}
             />
           </FormField>
+          </div>
           {/* Messages span 2 columns */}
           <div className="col-span-2">
             {error && (

@@ -70,6 +70,7 @@ export default function Loginpage() {
         useOnboardingStore.getState().setBasicInfo({ role: role });
         // console.log("User role:", role);
         // return;
+        console.log("User role:", result);
 
         if (role === "Pending") {
           router.push("/onboarding");
@@ -87,7 +88,7 @@ export default function Loginpage() {
             router.push("/student");
             break;
           case "Parent":
-            router.push("/parent/dashboard");
+            router.push("/parent");
             break;
           case "SchoolAdmin":
             router.push("/school");

@@ -1,7 +1,7 @@
 import axiosClient from "@/app/lib/axiosClient";
 import { NextResponse } from "next/server";
 
-export async function PUT(
+export async function POST(
   req: Request,
   context: { params: { id: string } }
 ) {
@@ -31,6 +31,7 @@ export async function PUT(
         requirements:body?.requirements
 
     });
+    console.log(res.data)
 
     return NextResponse.json(res.data, { status: 200 });
   } catch (error: any) {

@@ -21,9 +21,9 @@ export default function TopMenu() {
 
   // Close dropdown on outside click
   useEffect(() => {
-    if (user?.userType == "SchoolAdmin") {
-      router.push("/onboarding");
-    }
+    // if (user?.userType !== "SchoolAdmin") {
+    //   router.push("/onboarding");
+    // }
 
     function handleClickOutside(e: MouseEvent) {
       if (

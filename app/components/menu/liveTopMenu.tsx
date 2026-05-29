@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
+import InviteComponent from "../invite/InviteComponent";
 
 export default function LiveTopMenu() {
   const [open, setOpen] = useState(false);
@@ -53,6 +54,7 @@ export default function LiveTopMenu() {
       </div>
 
       <div className="flex items-center gap-2">
+        <InviteComponent />
         <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
           <svg
             className="w-5 h-5 text-gray-600"

@@ -1,101 +1,281 @@
 "use client";
 
-import { useState } from "react";
-import AuthoritySection from "../components/AuthoritySection";
-import CalendarSection from "../components/CalendarSection";
-import CapacityProjection from "../components/CapacityProjection";
-import ConflictPanel from "../components/ConflictPanel";
-import RevenueProjection from "../components/RevenueProjection";
-import StepIndicator from "../components/StepIndicator";
-import TeacherInvitationManager from "../components/TeacherInvitationManager";
-import TimetableGrid from "../components/TimetableGrid";
-import AcademicStructureSection from "../components/AcademicStructureSection";
-import ProgrammeTypeSection from "../components/ProgrammeTypeSection";
-import MonetizationSection from "../components/MonetizationSection";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { Calendar } from "lucide-react";
+import { ProgramRequest } from "../types/program";
+import ProgramDetailsModal from "../components/ProgramDetailsModal";
+import { FormField } from "@/app/components/ui/form/FormField";
+import { TextInput } from "@/app/components/ui/form/TextInput";
+import { getCurriculums, getProgramTypes } from "@/app/helpers/lookups";
+import { SelectInput } from "@/app/components/ui/form/SelectInput";
+import { useRouter } from "next/navigation";
 
-export type ProgrammeBreak = {
-  id: string;
-  label: string;
-  startTime: string;
-  endTime: string;
-};
+export default function ProgramForm() {
+  const [showModal, setShowModal] = useState(false);
+  const [programs, setPrograms] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [curriculums, setCurriculums] = useState<any[]>([]);
 
-const steps = [
-  "Authority",
-  "Programme Type",
-  "Academic Structure",
-  "Calendar Structure",
-  "Monetization",
-  "Timetable Engine",
-  "Teacher Invitations",
-];
+  const router = useRouter();
 
-export default function CreateProgrammePage() {
-  const [step, setStep] = useState(0);
 
-  /* ---------------- Shared Programme State ---------------- */
 
-  const [lessonDuration, setLessonDuration] = useState<number>(60);
-  const [breaks, setBreaks] = useState<ProgrammeBreak[]>([]);
 
-  /* --------------------------------------------------------- */
+  useEffect(() => {
+  
+    Promise.all([
+      getProgramTypes(),
+      getCurriculums(),
+    ]).then(([lt, pr]) => {
+      setPrograms(lt);
+      setCurriculums(pr);
+
+    });
+  }, []);
+
+
+
+  const form = useForm<ProgramRequest>({
+    defaultValues: {
+      programName: "",
+      programTypeId: 0,
+      curriculumId: 0,
+      programStartDate: "",
+      programEndDate: "",
+      hasSubPrograms: false,
+      subPrograms: [],
+      schedules: [],
+      holidays: [],
+      businessHours: [],
+    },
+  });
+
+  const {
+    register,
+     control,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = form;
+
+
+// const form = useForm<WizardFormValues & { days: DaysState }>({
+//   defaultValues: {
+//     subProgram: "",
+//     eduLevel: "",
+//     gradeLevel: "",
+//     subjects: ["Mathematics", "English"],
+//     startDate: "",
+//     endDate: "",
+//     days: Object.fromEntries(
+//       DAYS.map((day, i) => [
+//         day,
+//         {
+//           on: i < 5, // Mon-Fri active
+//           from: { h: "08", m: "30", ap: "AM" },
+//           to: { h: "05", m: "00", ap: "PM" },
+//           breaks: day === "Tuesday" ? [{ name: "Tea Break", from: "10.00 AM", to: "10.30 AM" }] : [],
+//         }
+//       ])
+//     ),
+//   },
+//   mode: "onBlur",
+// });
+
+
+
+
+
+
+
+  const hasSubPrograms = watch("hasSubPrograms");
+
+  const onSubmit = (data: ProgramRequest) => {
+    // console.log("Program Data:", data);
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <h1 className="text-3xl font-bold mb-6">Create Programme</h1>
+    <div className="min-h-screen bg-white p-8">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="bg-white p-8 rounded-xl shadow-sm border"
+    >
+      {/* Header */}
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold text-gray-800">
+          Program Details
+        </h2>
+        <p className="text-gray-500 text-sm">
+          Add basic information about your program
+        </p>
+      </div>
 
-      <StepIndicator steps={steps} currentStep={step} />
+      <div className="space-y-5">
+        {/* Program Name */}
+        <div>
 
-      <div className="bg-white rounded-2xl p-8 shadow mt-6">
-        {step === 0 && <AuthoritySection />}
 
-        {step === 1 && <ProgrammeTypeSection />}
 
-        {step === 2 && <AcademicStructureSection />}
+           <FormField className="text-sm font-medium text-gray-700" label="Program Name" error={errors.programName?.message}>
+             <TextInput
+               type="text"
+               placeholder="Enter Program Name"
+               {...register("programName", { required: "Program Name is required" })}
+             />
+           </FormField>
 
-        {step === 3 && (
-          <CalendarSection
-            lessonDuration={lessonDuration}
-            setLessonDuration={setLessonDuration}
-            breaks={breaks}
-            setBreaks={setBreaks}
+
+
+
+        </div>
+
+        {/* Program Type */}
+        <div>
+   
+
+       <FormField className="text-sm font-medium text-gray-700" label="Program Type" error={errors.programTypeId?.message}>
+          <Controller
+            name="programTypeId"
+            control={control}
+            rules={{ required: "Program Type is required" }}
+            render={({ field }) => (
+              <SelectInput
+                value={field.value?.toString()}
+                options={programs.map((l) => ({
+                  label: l.name,
+                  value: l.id.toString(),
+                }))}
+                onChange={(v) => field.onChange(Number(v))}
+                placeholder="Select Program Type"
+              />
+            )}
           />
-        )}
+        </FormField>
 
-        {step === 4 && <MonetizationSection />}
 
-        {step === 5 && (
-          <>
-            <TimetableGrid lessonDuration={lessonDuration} breaks={breaks} />
-            <ConflictPanel />
-            <CapacityProjection />
-            <RevenueProjection />
-          </>
-        )}
 
-        {step === 6 && <TeacherInvitationManager />}
-      </div>
 
-      {/* Navigation */}
-      <div className="flex justify-between mt-6">
-        {step > 0 && (
+
+        </div>
+
+        {/* Curriculum */}
+        <div>
+
+
+
+
+       <FormField className="text-sm font-medium text-gray-700" label="Curriculum" error={errors.curriculumId?.message}>
+          <Controller
+            name="curriculumId"
+            control={control}
+            rules={{ required: "Curriculum is required" }}
+            render={({ field }) => (
+              <SelectInput
+                value={field.value?.toString()}
+                options={curriculums.map((l) => ({
+                  label: l.name,
+                  value: l.id.toString(),
+                }))}
+                onChange={(v) => field.onChange(Number(v))}
+                placeholder="Select Curriculum"
+              />
+            )}
+          />
+        </FormField>
+
+
+
+
+        </div>
+
+        {/* Dates */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+   
+
+            <div className="">
+           <FormField className="text-sm font-medium text-gray-700" label=" Program Start Date" error={errors.programStartDate?.message}>
+             <TextInput
+               type="date"
+               {...register("programStartDate", { required: "Start date is required" })}
+             />
+           </FormField>
+   
+            </div>
+          </div>
+
+          <div>
+            {/* <label className="text-sm font-medium text-gray-700">
+              Program End Date
+            </label> */}
+
+            <div className="">
+          <FormField className="text-sm font-medium text-gray-700" label=" Program End Date" error={errors.programEndDate?.message}>
+             <TextInput
+               type="date"
+               {...register("programEndDate", { required: "End date is required" })}
+             />
+           </FormField>
+   
+            </div>
+          </div>
+        </div>
+
+        {/* Toggle + Add Button */}
+        <div className="flex items-center justify-between pt-3">
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              {...register("hasSubPrograms")}
+              className="w-5 h-5"
+            />
+
+            <div>
+              <p className="text-sm font-medium text-gray-700">
+                Do you have more than one sub-programs
+              </p>
+              <p className="text-xs text-gray-500">
+                Add sub-programs to your program
+              </p>
+            </div>
+          </div>
+
           <button
-            onClick={() => setStep((s) => s - 1)}
-            className="px-6 py-2 bg-gray-200 rounded-lg"
+            type="button"
+            onClick={() => setShowModal(true)}
+            className="flex items-center gap-2 border border-blue-500 text-blue-500 px-4 py-2 rounded-full"
           >
-            Back
+            + Add Program Details
           </button>
-        )}
+        </div>
 
-        {step < steps.length - 1 && (
+        {/* Footer Buttons */}
+        <div className="flex justify-between pt-6">
           <button
-            onClick={() => setStep((s) => s + 1)}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg"
+          onClick={()=>  router.push("/school/programs")}
+            type="button"
+            className="px-5 py-2 rounded-full border text-gray-600 hover:bg-gray-100"
           >
-            Next
+            ← Back
           </button>
-        )}
+
+          <button
+            type="submit"
+            className="px-6 py-2 rounded-full bg-blue-500 text-white hover:bg-blue-600"
+          >
+            Go to Preview →
+          </button>
+        </div>
       </div>
+                                             
+      <ProgramDetailsModal
+        form={form}
+        open={showModal}
+        onClose={() => setShowModal(false)}
+      />
+    </form>
     </div>
   );
 }

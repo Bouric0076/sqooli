@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import GoogleLoginButton from "@/app/components/auth/GoogleLoginButton";
 
 type RegisterForm = {
@@ -13,15 +13,22 @@ type RegisterForm = {
   username: string;
   password: string;
   confirmPassword: string;
+  referralCode?: string;
 };
 
 export default function Registerpage() {
+  const searchParams = useSearchParams();
+  const referralFromUrl = searchParams.get("ref");
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<RegisterForm>();
+  } = useForm<RegisterForm>({
+    defaultValues: {
+      referralCode: referralFromUrl ?? undefined,
+    },
+  });
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);

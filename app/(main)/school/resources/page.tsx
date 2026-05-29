@@ -18,40 +18,40 @@ function page() {
       <GeneralBreadcrumb
         items={[
           { label: "Resource Management", href: "/school/resources" },
-          { label: "Assignments", href: "/school/resources/assignments" },
+          // { label: "Assignments", href: "/school/resources/assignments" },
         ]}
       />
 
       <PageHeader
-        title="Assignments Management"
+        title="Resource Management"
         description="Manage school resources such as assignments,exams,books etc"
       />
       <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold">Assignments</h1>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-md">
+          <h1 className="text-xl ">Select a resource on side menu to proceed</h1>
+          {/* <button className="bg-blue-600 text-white px-4 py-2 rounded-md">
             + Create New
-          </button>
+          </button> */}
         </div>
 
         {/* Search */}
-        <input
+        {/* <input
           type="text"
           placeholder="Search"
           className="w-full border rounded-md px-3 py-2"
-        />
+        /> */}
 
         {/* Tabs */}
-        <div className="flex gap-4 border-b">
+        {/* <div className="flex gap-4 border-b">
           <button className="pb-2 border-b-2 border-blue-600 font-medium">
             Active
           </button>
           <button className="pb-2 text-gray-500">Inactive</button>
-        </div>
+        </div> */}
 
         {/* Table */}
-        <div className="border rounded-lg overflow-hidden">
+        {/* <div className="border rounded-lg overflow-hidden">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b">
               <tr className="text-left text-gray-500">
@@ -90,7 +90,7 @@ function page() {
               ))}
             </tbody>
           </table>
-        </div>
+        </div> */}
       </div>
     </>
   );

@@ -6,6 +6,7 @@ import TopMenu from "../components/menu/topmenu";
 import AuthWrapper from "../components/auth/AuthWrapper";
 import StudentSidebar from "../components/menu/studentSidebar";
 import StudentTopmenu from "../components/menu/studentTopmenu";
+import Providers from "../providers/providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,7 +42,9 @@ export default function RootLayout({
 
             {/* Page Content */}
             <main className="flex-1 overflow-auto bg-white relative h-screen">
-              <AuthWrapper>{children}</AuthWrapper>
+              <Providers>
+                <AuthWrapper>{children}</AuthWrapper>
+              </Providers>
             </main>
           </div>
         </div>

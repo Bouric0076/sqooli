@@ -1,6 +1,19 @@
 // services/wallet.ts
 
-import { LookupFilters } from "./lookups";
+import { lookupFetcher, LookupFilters } from "./lookups";
+
+
+export interface Transaction {
+
+  id: number;
+  type: "deposit" | "withdrawal";
+  amount: number;
+  status: "pending" | "completed" | "failed";
+  date: string;
+  method: string;
+  details: string;
+
+}
 
 export const fetchWallet = async () => {
     const res = await fetch("/api/wallet");
@@ -8,11 +21,14 @@ export const fetchWallet = async () => {
     return res.json();
   };
   
-  export const fetchTransactions = async (filters?: LookupFilters ) => {
-    const res = await fetch("/api/wallet/transactions",filters);
-    if (!res.ok) throw new Error("Failed to fetch transactions");
-    return res.json();
-  };
+  // export const fetchTransactions = async (filters?: LookupFilters ) => {
+  //   const res = await fetch("/api/wallet/transactions",filters);
+  //   if (!res.ok) throw new Error("Failed to fetch transactions");
+  //   return res.json();
+  // };
+
+  export const fetchTransactions = (filters?: LookupFilters) =>
+    lookupFetcher<Transaction>("/api/wallet/transactions", filters);
   
   export const deposit = async (data: any) => {
     const res = await fetch("/api/wallet/deposit", {
