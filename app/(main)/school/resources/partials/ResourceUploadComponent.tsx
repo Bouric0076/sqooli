@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Upload, ArrowLeft } from "lucide-react";
 import {
+  getMyCurriculums,
   getEducationLevels,
   getGradeLevels,
   getSubjects,
@@ -10,6 +11,12 @@ import {
 } from "@/app/helpers/lookups";
 
 /* ---------------- Types ---------------- */
+type Curriculum = {
+  id: number;
+  name: string;
+  acronym?: string;
+};
+
 type EducationLevel = { id: number; name: string };
 type GradeLevel = { id: number; name: string };
 type Subject = { id: number; name: string };
@@ -20,11 +27,10 @@ type ResourceUploadComponentProps = {
   titleLabel: string;
   uploadLabel: string;
 
-  // Optional callbacks
   onBack?: () => void;
   onSuccess?: (resourceId: number) => void;
 
-  activeResourceId: number; // Pass the active curriculum
+  activeResourceId: number;
 };
 
 export default function ResourceUploadComponent({
@@ -43,49 +49,85 @@ export default function ResourceUploadComponent({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   /* ---------------- LOOKUP STATE ---------------- */
+  const [curriculums, setCurriculums] = useState<Curriculum[]>([]);
   const [educationLevels, setEducationLevels] = useState<EducationLevel[]>([]);
   const [gradeLevels, setGradeLevels] = useState<GradeLevel[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [topics, setTopics] = useState<Topic[]>([]);
+
+  const [curriculumId, setCurriculumId] = useState<number | null>(
+    activeResourceId || null
+  );
 
   const [educationLevelId, setEducationLevelId] = useState<number | null>(null);
   const [gradeLevelId, setGradeLevelId] = useState<number | null>(null);
   const [subjectId, setSubjectId] = useState<number | null>(null);
   const [topicId, setTopicId] = useState<number | null>(null);
 
-  /* ---------------- BASE LOOKUPS ---------------- */
+  /* ---------------- LOAD CURRICULUMS ---------------- */
   useEffect(() => {
-    // if (!activeResourceId) return;
-    getEducationLevels({ curriculumId: activeResourceId }).then(
-      setEducationLevels
-    );
-  }, [activeResourceId]);
+    getMyCurriculums().then((data) => {
+      setCurriculums(data);
 
-  /* ---------------- DEPENDENT LOOKUPS ---------------- */
+      if (!curriculumId && data.length > 0) {
+        setCurriculumId(data[0].id);
+      }
+    });
+  }, []);
+
+  /* ---------------- CURRICULUM → EDUCATION LEVELS ---------------- */
+  useEffect(() => {
+    if (!curriculumId) {
+      setEducationLevels([]);
+      setEducationLevelId(null);
+      return;
+    }
+
+    getEducationLevels({ curriculumId }).then(setEducationLevels);
+  }, [curriculumId]);
+
+  /* ---------------- RESET CASCADE WHEN CURRICULUM CHANGES ---------------- */
+  useEffect(() => {
+    setEducationLevelId(null);
+    setGradeLevelId(null);
+    setSubjectId(null);
+    setTopicId(null);
+
+    setGradeLevels([]);
+    setSubjects([]);
+    setTopics([]);
+  }, [curriculumId]);
+
+  /* ---------------- EDUCATION LEVEL → GRADE LEVELS ---------------- */
   useEffect(() => {
     if (!educationLevelId) {
       setGradeLevels([]);
       setGradeLevelId(null);
       return;
     }
+
     getGradeLevels({ educationLevelId }).then(setGradeLevels);
   }, [educationLevelId]);
 
+  /* ---------------- GRADE LEVEL → SUBJECTS ---------------- */
   useEffect(() => {
     if (!gradeLevelId) {
       setSubjects([]);
       setSubjectId(null);
       return;
     }
+
     getSubjects({ gradeLevelId }).then(setSubjects);
   }, [gradeLevelId]);
 
+  /* ---------------- SUBJECT → TOPICS ---------------- */
   useEffect(() => {
     if (!subjectId) {
       setTopics([]);
       setTopicId(null);
       return;
     }
+
     getTopics({ subjectId }).then(setTopics);
   }, [subjectId]);
 
@@ -112,7 +154,10 @@ export default function ResourceUploadComponent({
       });
 
       const resourceJson = await resourceRes.json();
-      if (!resourceRes.ok) throw new Error(resourceJson.message);
+
+      if (!resourceRes.ok) {
+        throw new Error(resourceJson.message);
+      }
 
       const resourceId = resourceJson.data.id;
 
@@ -144,9 +189,10 @@ export default function ResourceUploadComponent({
       });
 
       onSuccess?.(resourceId);
+
       alert("Resource uploaded successfully");
     } catch (err: any) {
-      console.log("Upload error", err);
+      console.error("Upload error", err);
       alert(err.message || "Upload failed");
     } finally {
       setIsSubmitting(false);
@@ -161,6 +207,7 @@ export default function ResourceUploadComponent({
         <label className="text-sm font-medium text-neutral-700">
           {titleLabel}
         </label>
+
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -170,15 +217,21 @@ export default function ResourceUploadComponent({
         <label className="text-sm font-medium text-neutral-700 mt-4">
           {uploadLabel}
         </label>
+
         <div
           onClick={() => inputRef.current?.click()}
           className="mt-2 rounded-xl border border-dashed px-6 py-10 text-center cursor-pointer hover:bg-neutral-50"
         >
           <Upload className="mx-auto h-6 w-6 text-neutral-500" />
+
           <p className="mt-2 text-sm text-neutral-600">
             Click to upload or drag and drop
           </p>
-          {file && <p className="mt-2 text-xs text-neutral-700">{file.name}</p>}
+
+          {file && (
+            <p className="mt-2 text-xs text-neutral-700">{file.name}</p>
+          )}
+
           <input
             ref={inputRef}
             type="file"
@@ -190,15 +243,39 @@ export default function ResourceUploadComponent({
       </div>
 
       {/* -------- Education Flow -------- */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        {/* Curriculum */}
+        <select
+          className="border rounded-lg px-3 py-2"
+          value={curriculumId ?? ""}
+          onChange={(e) =>
+            setCurriculumId(
+              e.target.value ? Number(e.target.value) : null
+            )
+          }
+        >
+          <option value="">Select curriculum</option>
+
+          {curriculums.map((curriculum) => (
+            <option key={curriculum.id} value={curriculum.id}>
+              {curriculum.name}
+            </option>
+          ))}
+        </select>
+
+        {/* Education Level */}
         <select
           className="border rounded-lg px-3 py-2"
           value={educationLevelId ?? ""}
           onChange={(e) =>
-            setEducationLevelId(e.target.value ? Number(e.target.value) : null)
+            setEducationLevelId(
+              e.target.value ? Number(e.target.value) : null
+            )
           }
+          disabled={!curriculumId}
         >
           <option value="">Select education level</option>
+
           {educationLevels.map((el) => (
             <option key={el.id} value={el.id}>
               {el.name}
@@ -206,15 +283,19 @@ export default function ResourceUploadComponent({
           ))}
         </select>
 
+        {/* Grade */}
         <select
           className="border rounded-lg px-3 py-2"
           value={gradeLevelId ?? ""}
           onChange={(e) =>
-            setGradeLevelId(e.target.value ? Number(e.target.value) : null)
+            setGradeLevelId(
+              e.target.value ? Number(e.target.value) : null
+            )
           }
           disabled={!educationLevelId}
         >
           <option value="">Select grade</option>
+
           {gradeLevels.map((gl) => (
             <option key={gl.id} value={gl.id}>
               {gl.name}
@@ -222,34 +303,42 @@ export default function ResourceUploadComponent({
           ))}
         </select>
 
+        {/* Subject */}
         <select
           className="border rounded-lg px-3 py-2"
           value={subjectId ?? ""}
           onChange={(e) =>
-            setSubjectId(e.target.value ? Number(e.target.value) : null)
+            setSubjectId(
+              e.target.value ? Number(e.target.value) : null
+            )
           }
           disabled={!gradeLevelId}
         >
           <option value="">Select subject</option>
-          {subjects.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.name}
+
+          {subjects.map((subject) => (
+            <option key={subject.id} value={subject.id}>
+              {subject.name}
             </option>
           ))}
         </select>
 
+        {/* Topic */}
         <select
           className="border rounded-lg px-3 py-2"
           value={topicId ?? ""}
           onChange={(e) =>
-            setTopicId(e.target.value ? Number(e.target.value) : null)
+            setTopicId(
+              e.target.value ? Number(e.target.value) : null
+            )
           }
           disabled={!subjectId}
         >
           <option value="">Select topic</option>
-          {topics.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.name}
+
+          {topics.map((topic) => (
+            <option key={topic.id} value={topic.id}>
+              {topic.name}
             </option>
           ))}
         </select>

@@ -1,0 +1,75 @@
+.submitted-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    /* padding: 20px; */
+    /* Optional: uncomment below if your page background isn't already gray */
+    /* background-color: #d1d5db; */
+    /* font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; */
+}
+
+.submitted-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f9fbfc; /* Light gray card background */
+    padding: 10px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+/* Subtle hover interaction */
+.submitted-item:hover {
+    background-color: #f3f3f5;
+    transform: translateY(-1px);
+}
+
+.submitted-item-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.submitted-item-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4b5563; /* Dark gray for title */
+}
+
+.submitted-item-details {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.submitted-item-date {
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+/* Status Pill/Badge */
+.submitted-item-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 9999px; /* Fully rounded */
+    color: #ffffff;
+    text-transform: capitalize;
+}
+
+.badge-pass {
+    background-color: #10b981; /* Green color from image */
+}
+
+.badge-fail {
+    background-color: #ef4444; /* Red color from image */
+}
+
+.submitted-item-icon {
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+}

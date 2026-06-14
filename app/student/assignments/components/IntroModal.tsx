@@ -3,6 +3,7 @@ import { Assignment } from "../page";
 
 interface IntroModalProps {
   assignment: Assignment;
+  type?: "assignment" | "exam";
   onClose: () => void;
   onStartQuiz: () => void;
 }
@@ -33,7 +34,7 @@ function ModalShell({
   );
 }
 
-export function IntroModal({ assignment, onClose, onStartQuiz }: IntroModalProps) {
+export function IntroModal({ assignment, onClose, onStartQuiz, type }: IntroModalProps) {
   return (
     <ModalShell onClose={onClose} maxWidth={860}>
       {/* Header */}
@@ -63,7 +64,7 @@ export function IntroModal({ assignment, onClose, onStartQuiz }: IntroModalProps
             </p>
           </div>
           <button style={is.startBtn} onClick={onStartQuiz}>
-            Start Assignment
+            Start {type === "exam" ? "Exam" : "Assignment"}
           </button>
         </div>
 

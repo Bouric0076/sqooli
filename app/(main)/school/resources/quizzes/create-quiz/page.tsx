@@ -36,6 +36,7 @@ const ResourceType = "Quiz";
 export default function CreateAssignmentPage() {
   const [step, setStep] = useState(1);
   const { activeAssignment } = useAssignmentStore();
+  
 
   const [id, setId] = useState<number | null>(activeAssignment?.id ?? null);
 

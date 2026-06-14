@@ -46,31 +46,37 @@ export default function Sidebar() {
         label: "Assignments",
         link: "/student/assignments",
       },
+
       {
         icon: Calendar,
         label: "Lessons",
         link: "/student/lessons",
       },
-      {
+        {
         icon: FolderOpen,
-        label: "Programs",
-        link: "/student/programs",
+        label: "Exams",
+        link: "/student/exams",
       },
+      // {
+      //   icon: FolderOpen,
+      //   label: "Programs",
+      //   link: "/student/programs",
+      // },
       {
         icon: CheckSquare,
-        label: "Calendar",
-        link: "/student/calendar",
+        label: "Timetable",
+        link: "/student/timetable",
       },
-      { icon: Grid, label: "Groups", link: "/student/teachers" },
-      {
-        icon: Users,
-        label: "Teachers",
-        link: "/student/teachers",
-      },
+      // { icon: Grid, label: "Groups", link: "/student/teachers" },
+      // {
+      //   icon: Users,
+      //   label: "Teachers",
+      //   link: "/student/teachers",
+      // },
     ],
     ADMINISTRATION: [
-      { icon: Users, label: "Resource Centre", link: "/student/resources" },
-      { icon: BarChart3, label: "Performance", link: "/student/performance" },
+      // { icon: Users, label: "Resource Centre", link: "/student/resources" },
+      // { icon: BarChart3, label: "Performance", link: "/student/performance" },
       { icon: CreditCard, label: "Wallet", link: "/student/wallet" },
     ],
   };

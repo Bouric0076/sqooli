@@ -64,3 +64,20 @@ export async function addAssigment(form :AddResourceForm) {
     return res.json();
   }
   
+  export async function getAssignmentSubmissions(assignmentId: number) {
+    const res = await fetch(
+      `/api/assignment/submissions?assignmentId=${assignmentId}`,
+      { cache: "no-store" }
+    );
+    const data = await res.json();
+    return data;
+  }
+
+    export async function getAllAssignmentSubmissions(type: string) {
+    const res = await fetch(
+      `/api/assignment/submissions?type=${type}`,
+      { cache: "no-store" }
+    );
+    const data = await res.json();
+    return data;
+  }

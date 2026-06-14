@@ -95,13 +95,13 @@ export default function BookingPage() {
           <div className="grid grid-cols-2 gap-4 text-sm text-gray-700 mt-4">
             <div className="flex items-center gap-2">
               <Calendar className="text-blue-600 w-4 h-4" />
-              {new Date(lesson.start).toLocaleDateString()}
+              {new Date(lesson.date).toLocaleDateString()}
             </div>
 
             <div className="flex items-center gap-2">
               <Clock className="text-blue-600 w-4 h-4" />
-              {new Date(lesson.start).toLocaleTimeString()} -{" "}
-              {new Date(lesson.end).toLocaleTimeString()}
+              {lesson?.start} -{" "}
+              {lesson?.end}
             </div>
 
             <div>

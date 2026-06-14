@@ -33,6 +33,18 @@ export async function getLessonBasicInfo(lessonId: number) {
 }
 
 
+export async function getLessonBasicInfoToken(token: string) {
+  const res = await fetch(
+    `/api/lesson?token=${token}`,
+    { cache: "no-store" }
+  );
+
+  const data = await res.json();
+
+  return data;
+}
+
+
 
 export async function getCurriculumTeachers(lessonId: number) {
   const res = await fetch(

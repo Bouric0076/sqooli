@@ -1,13 +1,17 @@
 "use client";
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { AssignmentCard } from './components/AssignmentCard';
 import { QuizModal } from './components/QuizModal';
 import { IntroModal } from './components/IntroModal';
-
+import { useSpinnerStore } from '@/app/store/useSpinnerStore';
+import { getBookingLessons } from '@/app/helpers/lookups';
+import { SubmittedList } from './components/SubmittedList';
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export interface Assignment {
-  id: number;
+  id: string | number; // String format: `${bookingId}-${assignmentId}` for uniqueness
+  bookingId: number;
+  assignmentId: number;
   title: string;
   dueDays: number;
   attempts: string;
@@ -18,102 +22,23 @@ export interface Assignment {
   dueDate: string;
   description: string;
   learningPoints: string[];
+  questions: Question[]; // Questions are attached directly to each assignment
+  status: "Active" | "Inactive";
 }
 
 export interface Question {
   id: number;
+  assignmentId?: number;
+  assignmentTitle?: string;
+  assignmentDescription?: string;
+  sectionId?: number;
   text: string;
-  options: string[];
+  options: {
+    id: number;
+    label: string;
+    text: string;
+  }[];
 }
-
-// ─── Data ────────────────────────────────────────────────────────────────────
-
-const assignments: Assignment[] = [
-  {
-    id: 1,
-    title: 'Chemistry Test',
-    dueDays: 2,
-    attempts: '1 Attempt Left',
-    duration: 120,
-    module: 'Module 4 - Content Questions',
-    quiz: 'Quiz 4',
-    totalQuestions: 20,
-    dueDate: '12 Jan 2025 11.59 PM',
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    learningPoints: [
-      'Lorem ipsum dolor sit amet, consectetur adipiscing',
-      'Lorem ipsum dolor sit amet, consectetur adipiscing',
-      'Lorem ipsum dolor sit amet, consectetur adipiscing',
-    ],
-  },
-  {
-    id: 2,
-    title: 'Chemistry Test',
-    dueDays: 2,
-    attempts: '1 Attempt',
-    duration: 120,
-    module: 'Module 4 - Content Questions',
-    quiz: 'Quiz 4',
-    totalQuestions: 20,
-    dueDate: '12 Jan 2025 11.59 PM',
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    learningPoints: [
-      'Lorem ipsum dolor sit amet, consectetur adipiscing',
-      'Lorem ipsum dolor sit amet, consectetur adipiscing',
-      'Lorem ipsum dolor sit amet, consectetur adipiscing',
-    ],
-  },
-  {
-    id: 3,
-    title: 'Chemistry Test',
-    dueDays: 2,
-    attempts: '1 Attempt',
-    duration: 120,
-    module: 'Module 4 - Content Questions',
-    quiz: 'Quiz 4',
-    totalQuestions: 20,
-    dueDate: '12 Jan 2025 11.59 PM',
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    learningPoints: [
-      'Lorem ipsum dolor sit amet, consectetur adipiscing',
-      'Lorem ipsum dolor sit amet, consectetur adipiscing',
-      'Lorem ipsum dolor sit amet, consectetur adipiscing',
-    ],
-  },
-];
-
-const questions: Question[] = [
-  {
-    id: 1,
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    options: ['Option A', 'Option B', 'Option C', 'Option D'],
-  },
-  {
-    id: 2,
-    text: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-    options: ['Option A', 'Option B', 'Option C', 'Option D'],
-  },
-  {
-    id: 3,
-    text: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-    options: ['Option A', 'Option B', 'Option C', 'Option D'],
-  },
-  {
-    id: 4,
-    text: 'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    options: ['Option A', 'Option B', 'Option C', 'Option D'],
-  },
-  {
-    id: 5,
-    text: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam.',
-    options: ['Option A', 'Option B', 'Option C', 'Option D'],
-  },
-];
-
-
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -125,18 +50,116 @@ type ModalState =
 function Page(props: Record<string, unknown>) {
   const [activeTab, setActiveTab] = useState<'upcoming' | 'submitted'>('upcoming');
   const [modal, setModal] = useState<ModalState>({ mode: 'none' });
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [assignmentsList, setAssignmentsList] = useState<Assignment[]>([]);
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState<"Active" | "Inactive">("Active");
 
-  const openIntro = (a: Assignment) => setModal({ mode: 'intro', assignment: a });
-  const openQuiz = () =>
+  const { setLoading } = useSpinnerStore();
+
+  // 1. Open the introduction modal and load this specific assignment's questions
+  const openIntro = (assignment: Assignment) => {
+    setQuestions(assignment.questions || []);
+    setModal({
+      mode: "intro",
+      assignment,
+    });
+  };
+
+  // 2. Open the quiz modal for the active assignment
+  const openQuiz = async () => {
     setModal(prev =>
       prev.mode === 'intro' ? { mode: 'quiz', assignment: prev.assignment } : prev
     );
+  };
+
   const closeModal = () => setModal({ mode: 'none' });
+
+  // 3. Fetch lessons and extract individual assignments
+  useEffect(() => {
+    setLoading(true);
+    getBookingLessons()
+      .then((data) => {
+        const extractedAssignments: Assignment[] = [];
+
+        data.forEach((booking: any) => {
+          // Traverse through sections, lectures, and items to find assignments
+          booking.lesson?.sections?.forEach((section: any) => {
+            section.lectures?.forEach((lecture: any) => {
+              lecture.items?.forEach((item: any) => {
+                if (item.type === "Assignment" && item.data?.sections) {
+                  
+                  // Extract questions for this assignment only
+                  const assignmentQuestions: Question[] = [];
+                  item.data.sections.forEach((assignmentSection: any) => {
+                    assignmentSection.questions?.forEach((q: any) => {
+                      assignmentQuestions.push({
+                        assignmentId: item.referenceId,
+                        assignmentTitle: item.title,
+                        assignmentDescription: item.description || booking.lesson?.description,
+                        sectionId: assignmentSection.id,
+                        id: q.question.id,
+                        text: q.question.text,
+                        options: q.question.options?.map((option: any) => ({
+                          id: option.id,
+                          label: option.optionLabel,
+                          text: option.optionText,
+                        })) || [],
+                      });
+                    });
+                  });
+
+                  // Build the independent assignment object
+                  extractedAssignments.push({
+                    id: `${booking.id}-${item.referenceId}`, // Composite key for uniqueness
+                    bookingId: booking.id,
+                    assignmentId: item.referenceId,
+                    title: item.title || booking.lesson?.name || 'Assignment',
+                    dueDays: 2, // Map custom dynamic value if available
+                    attempts: '1 Attempt Left',
+                    duration: item.data.duration || 120,
+                    module: section.name || 'Lesson Module',
+                    quiz: item.title || 'Quiz',
+                    totalQuestions: assignmentQuestions.length,
+                    dueDate: booking.lesson?.date || '12 Jan 2025 11.59 PM',
+                    description: item.description || booking.lesson?.description || 'No description provided.',
+                    learningPoints: item.learningPoints || [
+                      'Review the related lecture topics.',
+                      'Answer all questions to the best of your ability.',
+                      'Review your answers before finalizing your attempt.'
+                    ],
+                    questions: assignmentQuestions,
+                    status: booking.isApproved ? "Active" : "Inactive"
+                  });
+                }
+              });
+            });
+          });
+        });
+
+        console.log("Extracted Assignments:", extractedAssignments);
+        setAssignmentsList(extractedAssignments);
+      })
+      .finally(() => setLoading(false));
+  }, [setLoading]);
+
+  // 4. UseMemo to filter the list of assignments based on search query and status
+  const filteredAssignments = useMemo(() => {
+    return assignmentsList.filter(a => {
+      const matchesSearch = 
+        a.title.toLowerCase().includes(search.toLowerCase()) || 
+        a.description.toLowerCase().includes(search.toLowerCase());
+      const matchesStatus = a.status === status;
+      return matchesSearch && matchesStatus;
+    });
+  }, [assignmentsList, search, status]);
 
   return (
     <div style={styles.page}>
       <h1 style={styles.pageTitle}>Assignments</h1>
       <p style={styles.pageSubtitle}>View and manage your Lessons</p>
+
+      {/* Optional: Add search and status filter inputs here if needed to connect to the state */}
 
       <div style={styles.tabsWrapper}>
         {(['upcoming', 'submitted'] as const).map(tab => (
@@ -152,24 +175,24 @@ function Page(props: Record<string, unknown>) {
 
       {activeTab === 'upcoming' && (
         <div style={styles.cardsGrid}>
-          {assignments.map(a => (
+          {assignmentsList.map(a => (
             <AssignmentCard key={a.id} assignment={a} onStart={openIntro} />
           ))}
         </div>
       )}
 
       {activeTab === 'submitted' && (
-        <div style={styles.emptyState}>
-          <p style={styles.emptyText}>No submitted assignments yet.</p>
-        </div>
+        
+          <SubmittedList type="assignment" />
+       
       )}
 
       {modal.mode === 'intro' && (
-        <IntroModal assignment={modal.assignment} onClose={closeModal} onStartQuiz={openQuiz} />
+        <IntroModal assignment={modal.assignment} onClose={closeModal}  type="assignment" onStartQuiz={openQuiz} />
       )}
 
       {modal.mode === 'quiz' && (
-        <QuizModal questions={questions} assignment={modal.assignment} onClose={closeModal} />
+        <QuizModal questions={questions} assignment={modal.assignment} type="assignment" onClose={closeModal} />
       )}
     </div>
   );
@@ -180,7 +203,6 @@ function Page(props: Record<string, unknown>) {
 export const styles: Record<string, React.CSSProperties> = {
   page: {
     minHeight: '100vh',
-
     padding: '32px 40px',
     fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
   },
@@ -206,11 +228,9 @@ export const styles: Record<string, React.CSSProperties> = {
   },
   cardImageOverlay: {
     position: 'absolute', inset: 0,
-    //backgroundImage: `repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,0.055) 3px,rgba(255,255,255,0.055) 4px),repeating-linear-gradient(90deg,transparent,transparent 3px,rgba(255,255,255,0.04) 3px,rgba(255,255,255,0.04) 4px)`,
   },
   cardImageSheen: {
     position: 'absolute', inset: 0,
-   // background: 'radial-gradient(ellipse at 30% 40%,rgba(255,255,255,0.18) 0%,transparent 60%),radial-gradient(ellipse at 72% 70%,rgba(20,70,110,0.18) 0%,transparent 50%)',
   },
   cardBody: { padding: '14px 16px 16px' },
   cardTitle: { fontSize: 14, fontWeight: 700, color: '#1a1a1a', margin: '0 0 4px' },

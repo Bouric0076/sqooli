@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
+import InviteComponent from "../invite/InviteComponent";
 
 export default function TopMenu() {
   const [open, setOpen] = useState(false);
@@ -54,6 +55,7 @@ export default function TopMenu() {
       </div>
 
       <div className="flex items-center gap-2">
+         <InviteComponent />
         <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
           <svg
             className="w-5 h-5 text-gray-600"
@@ -90,7 +92,7 @@ export default function TopMenu() {
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 via-pink-400 to-orange-400 flex items-center justify-center">
               <div className="w-7 h-7 rounded-full bg-gray-200"></div>
             </div>
-            <span className="text-sm font-medium text-gray-800">John Juma</span>
+            <span className="text-sm font-medium text-gray-800">{user?.firstName}</span>
             <ChevronDown className="w-4 h-4 text-gray-600" />
           </button>
 

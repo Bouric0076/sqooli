@@ -9,8 +9,10 @@ import { Plus, Trash2, Copy, Eye } from "lucide-react";
 
 import {
   LookupItem,
+  getCurriculums,
   getEducationLevels,
   getGradeLevels,
+  getMyCurriculums,
   getSubjects,
   getTopics,
 } from "@/app/helpers/lookups";
@@ -68,6 +70,7 @@ function ResourceQuestions({ form, id, setId, onBack, ResourceType }: Props) {
             questions: section.questions.map((q: any) => ({
               text: q.text,
               type: q.questionType,
+              curriculumId: q.curriculumId?.toString() ?? "",
               educationLevelId: q.educationLevelId?.toString() ?? "",
               gradeLevelId: q.gradeLevelId?.toString() ?? "",
               subjectId: q.subjectId?.toString() ?? "",
@@ -101,6 +104,7 @@ function ResourceQuestions({ form, id, setId, onBack, ResourceType }: Props) {
                 ? [{ text: "True" }, { text: "False" }]
                 : question.options?.map((o) => ({ text: o.text })) || [],
             correctAnswerIndex: question.correctAnswerIndex,
+            curriculumId: question.curriculumId,
             educationLevelId: question.educationLevelId,
             gradeLevelId: question.gradeLevelId,
             subjectId: question.subjectId,
@@ -157,6 +161,7 @@ function ResourceQuestions({ form, id, setId, onBack, ResourceType }: Props) {
 
         {sections.map((section, sectionIndex) => (
           <SectionBlock
+          form={form}
             key={section.id}
             sectionIndex={sectionIndex}
             control={control}
@@ -171,7 +176,17 @@ function ResourceQuestions({ form, id, setId, onBack, ResourceType }: Props) {
             append({
               title: "",
               questions: [
-                { text: "", type: "", options: [], correctAnswerIndex: null },
+                {
+                  text: "",
+                  type: "",
+                  options: [],
+                  correctAnswerIndex: null,
+                  curriculumId: "",
+                  educationLevelId: "",
+                  gradeLevelId: "",
+                  subjectId: "",
+                  topicId: "",
+                },
               ],
             })
           }
@@ -201,7 +216,7 @@ export default ResourceQuestions;
 
 /* ================= SECTION BLOCK ================= */
 
-function SectionBlock({ sectionIndex, control, register, removeSection }: any) {
+function SectionBlock({ sectionIndex, control, register, removeSection, form }: any) {
   const { fields, append, remove } = useFieldArray({
     control,
     name: `sections.${sectionIndex}.questions`,
@@ -217,6 +232,7 @@ function SectionBlock({ sectionIndex, control, register, removeSection }: any) {
 
       {fields.map((question, questionIndex) => (
         <QuestionBlock
+        form={form}
           key={question.id}
           sectionIndex={sectionIndex}
           questionIndex={questionIndex}
@@ -229,7 +245,17 @@ function SectionBlock({ sectionIndex, control, register, removeSection }: any) {
       <button
         type="button"
         onClick={() =>
-          append({ text: "", type: "", options: [], correctAnswerIndex: null })
+          append({
+            text: "",
+            type: "",
+            options: [],
+            correctAnswerIndex: null,
+            curriculumId: "",
+            educationLevelId: "",
+            gradeLevelId: "",
+            subjectId: "",
+            topicId: "",
+          })
         }
         className="flex items-center gap-2 text-blue-600 text-sm"
       >
@@ -255,62 +281,171 @@ function QuestionBlock({
   control,
   register,
   removeQuestion,
+  form,
 }: any) {
+
+
+
+
+
+
+
+
   const questionType = useWatch({
     control,
     name: `sections.${sectionIndex}.questions.${questionIndex}.type`,
   });
 
+  const curriculumId = useWatch({
+    control,
+    name: `sections.${sectionIndex}.questions.${questionIndex}.curriculumId`,
+  });
+  const educationLevelId = useWatch({
+    control,
+    name: `sections.${sectionIndex}.questions.${questionIndex}.educationLevelId`,
+  });
+  const gradeLevelId = useWatch({
+    control,
+    name: `sections.${sectionIndex}.questions.${questionIndex}.gradeLevelId`,
+  });
   const subjectId = useWatch({
     control,
     name: `sections.${sectionIndex}.questions.${questionIndex}.subjectId`,
   });
 
+  const [curriculums, setCurriculums] = useState<LookupItem[]>([]);
   const [educationLevels, setEducationLevels] = useState<LookupItem[]>([]);
   const [gradeLevels, setGradeLevels] = useState<LookupItem[]>([]);
   const [subjects, setSubjects] = useState<LookupItem[]>([]);
   const [topics, setTopics] = useState<LookupItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState({
+    curriculum: false,
     education: false,
     grade: false,
     subject: false,
     topic: false,
   });
 
-  useEffect(() => {
-    setLoading({ education: true, grade: true, subject: true, topic: false });
+  // Tracks whether the initial hydration pass (for edit mode) is complete.
+  // Cascade useEffects bail out until this is true to avoid wiping
+  // options that were loaded in parallel on mount.
+  const [hydrated, setHydrated] = useState(false);
 
-    Promise.all([getEducationLevels(), getGradeLevels(), getSubjects()])
-      .then(([edu, grades, subs]) => {
-        setEducationLevels(edu);
-        setGradeLevels(grades);
-        setSubjects(subs);
-      })
-      .catch(() => setError("Failed to load lookup data"))
-      .finally(() =>
-        setLoading({
-          education: false,
-          grade: false,
-          subject: false,
-          topic: false,
-        })
+  /* ---- MOUNT: load curriculums; if editing, eagerly load all levels ---- */
+  useEffect(() => {
+    // Capture current watched values synchronously at mount time.
+    // At this point RHF has already called reset(), so these hold
+    // the saved IDs when editing, or empty strings when creating.
+    const initCurriculumId = curriculumId;
+    const initEducationLevelId = educationLevelId;
+    const initGradeLevelId = gradeLevelId;
+    const initSubjectId = subjectId;
+
+    const isEditMode =
+      !!initCurriculumId &&
+      !!initEducationLevelId &&
+      !!initGradeLevelId &&
+      !!initSubjectId;
+
+    setLoading((p) => ({
+      ...p,
+      curriculum: true,
+      ...(isEditMode
+        ? { education: true, grade: true, subject: true, topic: true }
+        : {}),
+    }));
+
+    const promises: Promise<void>[] = [
+      getMyCurriculums()
+        .then(setCurriculums)
+        .finally(() => setLoading((p) => ({ ...p, curriculum: false }))),
+    ];
+
+    if (isEditMode) {
+     
+      promises.push(
+        getEducationLevels({ curriculumId: Number(initCurriculumId) })
+          .then(setEducationLevels)
+          .finally(() => setLoading((p) => ({ ...p, education: false }))),
+
+        getGradeLevels({ educationLevelId: Number(initEducationLevelId) })
+          .then(setGradeLevels)
+          .finally(() => setLoading((p) => ({ ...p, grade: false }))),
+
+        getSubjects({ gradeLevelId: Number(initGradeLevelId) })
+          .then(setSubjects)
+          .finally(() => setLoading((p) => ({ ...p, subject: false }))),
+
+        getTopics({ subjectId: Number(initSubjectId) })
+          .then(setTopics)
+          .finally(() => setLoading((p) => ({ ...p, topic: false })))
       );
-  }, []);
-
-  useEffect(() => {
-    if (!subjectId) {
-      setTopics([]);
-      return;
     }
 
-    setLoading((p) => ({ ...p, topic: true }));
+    Promise.all(promises)
+      .catch(() => setError("Failed to load lookup data"))
+      .finally(() => setHydrated(true));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // intentionally empty — runs once on mount only
 
+  /* ---- CASCADE: curriculum → education levels ---- */
+  useEffect(() => {
+    if (!hydrated) return;
+    setEducationLevels([]);
+    setGradeLevels([]);
+    setSubjects([]);
+    setTopics([]);
+    if (!curriculumId) return;
+
+    setLoading((p) => ({ ...p, education: true }));
+    getEducationLevels({ curriculumId: Number(curriculumId) })
+      .then(setEducationLevels)
+      .catch(() => setError("Failed to load education levels"))
+      .finally(() => setLoading((p) => ({ ...p, education: false })));
+  }, [curriculumId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /* ---- CASCADE: education level → grade levels ---- */
+  useEffect(() => {
+    if (!hydrated) return;
+    setGradeLevels([]);
+    setSubjects([]);
+    setTopics([]);
+    if (!educationLevelId) return;
+
+    setLoading((p) => ({ ...p, grade: true }));
+    getGradeLevels({ educationLevelId: Number(educationLevelId) })
+      .then(setGradeLevels)
+      .catch(() => setError("Failed to load grade levels"))
+      .finally(() => setLoading((p) => ({ ...p, grade: false })));
+  }, [educationLevelId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /* ---- CASCADE: grade level → subjects ---- */
+  useEffect(() => {
+    if (!hydrated) return;
+    setSubjects([]);
+    setTopics([]);
+    if (!gradeLevelId) return;
+
+    setLoading((p) => ({ ...p, subject: true }));
+    getSubjects({ gradeLevelId: Number(gradeLevelId) })
+      .then(setSubjects)
+      .catch(() => setError("Failed to load subjects"))
+      .finally(() => setLoading((p) => ({ ...p, subject: false })));
+  }, [gradeLevelId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /* ---- CASCADE: subject → topics ---- */
+  useEffect(() => {
+    if (!hydrated) return;
+    setTopics([]);
+    if (!subjectId) return;
+
+    setLoading((p) => ({ ...p, topic: true }));
     getTopics({ subjectId: Number(subjectId) })
       .then(setTopics)
       .catch(() => setError("Failed to load topics"))
       .finally(() => setLoading((p) => ({ ...p, topic: false })));
-  }, [subjectId]);
+  }, [subjectId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="border rounded-md p-4 space-y-4 bg-white">
@@ -340,14 +475,33 @@ function QuestionBlock({
         </select>
       </div>
 
-      {/* Metadata */}
-      <div className="grid md:grid-cols-4 gap-4">
+      {/* Cascading Metadata */}
+      <div className="grid md:grid-cols-5 gap-4">
+        {/* 1. Curriculum */}
+        <select
+          {...register(
+            `sections.${sectionIndex}.questions.${questionIndex}.curriculumId`
+          )}
+          disabled={loading.curriculum}
+          className="border rounded-md px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <option value="">
+            {loading.curriculum ? "Loading..." : "Curriculum"}
+          </option>
+          {curriculums.map((c) => (
+            <option key={c.id} value={String(c.id)}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+
+        {/* 2. Education Level */}
         <select
           {...register(
             `sections.${sectionIndex}.questions.${questionIndex}.educationLevelId`
           )}
-          disabled={loading.education}
-          className="border rounded-md px-3 py-2"
+          disabled={!curriculumId || loading.education}
+          className="border rounded-md px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <option value="">
             {loading.education ? "Loading..." : "Education Level"}
@@ -359,12 +513,13 @@ function QuestionBlock({
           ))}
         </select>
 
+        {/* 3. Grade Level */}
         <select
           {...register(
             `sections.${sectionIndex}.questions.${questionIndex}.gradeLevelId`
           )}
-          disabled={loading.grade}
-          className="border rounded-md px-3 py-2"
+          disabled={!educationLevelId || loading.grade}
+          className="border rounded-md px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <option value="">
             {loading.grade ? "Loading..." : "Grade Level"}
@@ -376,12 +531,13 @@ function QuestionBlock({
           ))}
         </select>
 
+        {/* 4. Subject */}
         <select
           {...register(
             `sections.${sectionIndex}.questions.${questionIndex}.subjectId`
           )}
-          disabled={loading.subject}
-          className="border rounded-md px-3 py-2"
+          disabled={!gradeLevelId || loading.subject}
+          className="border rounded-md px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <option value="">{loading.subject ? "Loading..." : "Subject"}</option>
           {subjects.map((s) => (
@@ -391,12 +547,13 @@ function QuestionBlock({
           ))}
         </select>
 
+        {/* 5. Topic */}
         <select
           {...register(
             `sections.${sectionIndex}.questions.${questionIndex}.topicId`
           )}
-          disabled={!topics.length || loading.topic}
-          className="border rounded-md px-3 py-2"
+          disabled={!subjectId || loading.topic}
+          className="border rounded-md px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <option value="">{loading.topic ? "Loading..." : "Topic"}</option>
           {topics.map((t) => (
@@ -479,7 +636,7 @@ function MCQOptions({ control, register, sectionIndex, questionIndex }: any) {
       <button
         type="button"
         onClick={() => append({ text: "" })}
-        className="text-blue-600 text-sm"
+        className="text-blue-600 text-sm flex items-center gap-1"
       >
         <Plus size={14} /> Add Option
       </button>
@@ -493,7 +650,6 @@ function TrueFalseOptions({ register, sectionIndex, questionIndex }: any) {
   return (
     <div className="ml-4 border-l pl-4 space-y-2">
       <p className="text-sm font-medium">Select correct answer</p>
-
       <label className="flex items-center gap-2">
         <input
           type="radio"
@@ -504,7 +660,6 @@ function TrueFalseOptions({ register, sectionIndex, questionIndex }: any) {
         />
         True
       </label>
-
       <label className="flex items-center gap-2">
         <input
           type="radio"

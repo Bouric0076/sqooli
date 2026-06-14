@@ -105,10 +105,16 @@ export default function LessonCardStudent({
         />
       </div>
 
+{/* date */}
+{lesson?.date && (
+  <p className="text-sm text-gray-500">
+    Date: {lesson.date}
+  </p>
+)}
       <div className="flex items-center justify-between text-xs text-gray-500">
         <div>
-          <p>Date Created: {lesson?.createdAt}</p>
-          <p>Last Updated: {lesson?.updatedAt}</p>
+          <p>Starts At {lesson?.createdAt}</p>
+          <p>Ends At {lesson?.updatedAt}</p>
         </div>
         <div>
           <button

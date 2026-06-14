@@ -40,7 +40,12 @@ type AddLessonForm = {
 
 /* ---------------- COMPONENT ---------------- */
 
-export default function AddLessonModal() {
+interface LinkBank {
+
+  link:string;
+}
+
+export default function AddLessonModal({link = "school"}:LinkBank) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -198,7 +203,7 @@ export default function AddLessonModal() {
           //   onClick={() => setOpen(true)}
           onClick={() => {
             clearActiveLesson();
-            router.push("/school/curriculum/cbc/lessons/create-lesson");
+            router.push(`/${link}/curriculum/cbc/lessons/create-lesson`);
           }}
           className="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-md flex items-center gap-2"
         >

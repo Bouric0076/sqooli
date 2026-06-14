@@ -21,7 +21,7 @@ import {
 
 import { useCurriculumStore } from "@/app/store/useCurriculumStore";
 import { AddLessonForm } from "../page";
-import { getLessonBasicInfo } from "@/app/lib/lessonContent";
+import { getLessonBasicInfo, getLessonBasicInfoToken } from "@/app/lib/lessonContent";
 
 import { getCPrograms, getInvitedProgramSlots } from "@/app/helpers/program";
 
@@ -56,7 +56,7 @@ export default function BasicInformationStep({
   const activeCurriculum = useCurriculumStore(
     (state) => state.activeCurriculum
   );
-  const { setActiveLesson } = useCurriculumStore();
+  const { setActiveLesson,clearActiveLesson } = useCurriculumStore();
 
   const [lessonTypes, setLessonTypes] = useState<any[]>([]);
   const [programs, setPrograms] = useState<any[]>([]);
@@ -80,7 +80,9 @@ export default function BasicInformationStep({
   useEffect(() => {
     if (!lessonId) return;
 
-    getLessonBasicInfo(lessonId).then((res) => {
+    // clearActiveLesson();
+
+    getLessonBasicInfo(lessonId).then(async (res) => {
       form.setValue("name", res.data.name);
       form.setValue("description", res.data.description);
       form.setValue("requirements", res.data.requirements);
@@ -93,14 +95,44 @@ export default function BasicInformationStep({
       form.setValue("Date", res.data.date);
       form.setValue("start", res.data.start.slice(0, 16));
       form.setValue("end", res.data.end.slice(0, 16));
+
+      await setLessonId(res.data.id);
+      await setActiveLesson(res.data);
     });
+
+
+
+
   }, [lessonId]);
 
   /* ---------------- SLOT PREFILL ---------------- */
   useEffect(() => {
     if (!token) return;
 
+
+
+        getLessonBasicInfoToken(token).then(async (res) => {
+      form.setValue("name", res.data.name);
+      form.setValue("description", res.data.description);
+      form.setValue("requirements", res.data.requirements);
+      form.setValue("lessonTypeId", res.data.lessonTypeId);
+      form.setValue("programId", res.data.programId);
+      form.setValue("educationLevelId", res.data.educationLevelId);
+      form.setValue("gradeLevelId", res.data.gradeLevelId);
+      form.setValue("subjectId", res.data.subjectId);
+      form.setValue("topicId", res.data.topicId);
+      form.setValue("Date", res.data.date);
+      form.setValue("start", res.data.start);
+      form.setValue("end", res.data.end);
+      await setLessonId(res.data.id);
+      await setActiveLesson(res.data);
+    });
+
+
     const fetchSlot = async () => {
+
+      
+      
       try {
         const res = await getInvitedProgramSlots({ token });
         const slot = res.data;
@@ -115,7 +147,7 @@ export default function BasicInformationStep({
         setValue("programId", slot.programId);
 
 
-      setActiveCurriculum({
+      await setActiveCurriculum({
       id: slot.curriculumId,
       name: slot.curriculum,
       acronym: slot.curriculum,
@@ -229,7 +261,6 @@ useEffect(() => {
       body: JSON.stringify({
         lessonId: lessonId || null,
         token: token,
-
         lessonTypeId: data.lessonTypeId,
         curriculumId: activeCurriculum?.id,
         subjectId: data.subjectId,
@@ -252,8 +283,8 @@ useEffect(() => {
 
     if (!lessonId_new) return;
 
-    setActiveLesson(result?.data);
-    setLessonId(lessonId_new);
+    await setActiveLesson(result?.data);
+    await setLessonId(lessonId_new);
     setBasicInfoSubmitted(true);
   };
 

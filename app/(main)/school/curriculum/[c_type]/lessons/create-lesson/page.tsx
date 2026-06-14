@@ -85,6 +85,8 @@ export default function CreateLessonPage() {
      Navigation Guards
   --------------------------------------- */
   const canNavigateToStep = (targetStep: number) => {
+    // alert(lessonId);
+    
     if (targetStep === 1) return true;
     return lessonId !== null;
   };

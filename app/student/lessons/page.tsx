@@ -13,15 +13,18 @@ import LessonCard, {
 import LessonsHeader from "@/app/(main)/school/curriculum/[c_type]/lessons/components/LessonsHeader";
 import AddLessonModal from "@/app/(main)/school/curriculum/[c_type]/lessons/partials/AddLessonModal";
 import LessonCardStudent from "./components/LessonCardStudent";
+import { useSpinnerStore } from "@/app/store/useSpinnerStore";
 
 export default function LessonsList() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
-  const [loading, setLoading] = useState(true);
+const { loading, setLoading } =
+    useSpinnerStore();
   const [search, setSearch] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [status, setStatus] = useState<"Active" | "Inactive">("Active");
 
   useEffect(() => {
+    setLoading(true);
     getBookingLessons()
       .then((data) => {
         // console.log("API Lessons Data:", data);
@@ -30,8 +33,9 @@ export default function LessonsList() {
           payment_status: item?.status,
           title: item?.lesson?.name,
           subtitle: item.meetingLink,
-          createdAt: new Date(item.start).toLocaleDateString(),
-          updatedAt: new Date(item.end).toLocaleTimeString(),
+          date: item?.lesson?.date,
+          createdAt: item.start,
+          updatedAt: item.end,
           image:
             "https://www.teachingenglish.org.uk/sites/teacheng/files/RS7853_ThinkstockPhotos-827490826-hig.jpg",
           status: item.isApproved ? "Active" : "Inactive",

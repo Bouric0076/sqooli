@@ -50,6 +50,14 @@ export default function TeacherSidebar() {
       //     label: "Assignments",
       //     link: "/teacher/assignments",
       //   },
+
+      {
+        icon: BookOpen,
+        label: "Curriculum & Subjects",
+        link: "/teacher/curriculum",
+      },
+
+
       {
         icon: Calendar,
         label: "Lessons",
@@ -57,8 +65,8 @@ export default function TeacherSidebar() {
       },
       {
         icon: FolderOpen,
-        label: "Programs",
-        link: "/teacher/programs",
+        label: "Slots",
+        link: "/teacher/slots",
       },
       {
         icon: CheckSquare,
@@ -73,7 +81,7 @@ export default function TeacherSidebar() {
       //   },
     ],
     ADMINISTRATION: [
-      { icon: Users, label: "Resource Centre", link: "/teacher/resources" },
+      // { icon: Users, label: "Resource Centre", link: "/teacher/resources" },
       //   { icon: BarChart3, label: "Performance", link: "/teacher/performance" },
       { icon: CreditCard, label: "Wallet", link: "/teacher/wallet" },
     ],

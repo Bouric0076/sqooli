@@ -10,7 +10,9 @@ export async function GET() {
 
 // console.log(curriculumId)
 
-    const backendUrl = `${process.env.BACKEND_API_URL}/Lesson?curriculumId=`+curriculumId;
+    const backendUrl = curriculumId
+      ? `${process.env.BACKEND_API_URL}/Lesson?curriculumId=${curriculumId}`  
+      : `${process.env.BACKEND_API_URL}/Lesson`;
     //console.log(backendUrl)
 
     const res = await axiosClient.get(backendUrl);
@@ -22,8 +24,10 @@ export async function GET() {
     if (error.response) {
       return NextResponse.json(
         {
+          status: false,
           message:
-            error.response.data?.message || "Failed to fetch Lessons",
+            error.response.data?.message || "Failed to fetch lesson(s)",
+            error: error.response.data || null,
         },
         { status: error.response.status }
       );

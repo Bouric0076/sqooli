@@ -91,7 +91,7 @@ export default function StudentTopmenu() {
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 via-pink-400 to-orange-400 flex items-center justify-center">
               <div className="w-7 h-7 rounded-full bg-gray-200"></div>
             </div>
-            <span className="text-sm font-medium text-gray-800">John Juma</span>
+            <span className="text-sm font-medium text-gray-800">{user?.firstName}</span>
             <ChevronDown className="w-4 h-4 text-gray-600" />
           </button>
 

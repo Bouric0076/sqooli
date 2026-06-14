@@ -12,7 +12,7 @@ import LessonCard, {
 } from "@/app/(main)/school/curriculum/[c_type]/lessons/components/LessonCard";
 import LessonsHeader from "@/app/(main)/school/curriculum/[c_type]/lessons/components/LessonsHeader";
 import AddLessonModal from "@/app/(main)/school/curriculum/[c_type]/lessons/partials/AddLessonModal";
-import LessonCardStudent from "@/app/student/lessons/components/LessonCardStudent";
+import LessonCardTeacher from "./components/LessonCardTeacher";
 
 export default function LessonsList() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
@@ -22,16 +22,18 @@ export default function LessonsList() {
   const [status, setStatus] = useState<"Active" | "Inactive">("Active");
 
   useEffect(() => {
-    getBookingLessons()
+    getLessons()
       .then((data) => {
-        console.log("API Lessons Data:", data);
+        // console.log("API Lessons Data:", data);
         const apiLessons: Lesson[] = data.map((item: any) => ({
           id: item.id,
           payment_status: item?.status,
-          title: item?.lesson?.name,
+          title: item?.name,
           subtitle: item.meetingLink,
-          createdAt: new Date(item.start).toLocaleDateString(),
-          updatedAt: new Date(item.end).toLocaleTimeString(),
+          date: item?.date,
+          createdAt: item.start,
+          updatedAt: item.end,
+          curriculum: item?.curriculum?.acronym || "cbc",
           image:
             "https://www.teachingenglish.org.uk/sites/teacheng/files/RS7853_ThinkstockPhotos-827490826-hig.jpg",
           status: item.isApproved ? "Active" : "Inactive",
@@ -63,7 +65,7 @@ export default function LessonsList() {
             }
           >
             {filteredLessons.map((lesson) => (
-              <LessonCardStudent
+              <LessonCardTeacher
                 key={lesson.id}
                 lesson={lesson}
                 viewMode={viewMode}

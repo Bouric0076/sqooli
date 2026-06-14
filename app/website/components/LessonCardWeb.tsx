@@ -5,6 +5,7 @@ import { MoreVertical, Star } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { renderStars } from "./renderStars";
 
 export type LessonStatus = "Active" | "Inactive";
 export type ViewMode = "grid" | "list";
@@ -24,9 +25,10 @@ export interface Lesson {
 interface LessonCardProps {
   lessonId: number;
   viewMode: ViewMode;
+  item?: Lesson;
 }
 
-export default function LessonCardWeb({ lessonId, viewMode }: LessonCardProps) {
+export default function LessonCardWeb({ lessonId, viewMode, item }: LessonCardProps) {
   const { setActiveLesson, clearActiveLesson } = useCurriculumStore();
   const [assignedTeacher, setAssignedTeacher] = useState<Teacher | null>(null);
   const [loading, setLoading] = useState(false);
@@ -65,6 +67,60 @@ export default function LessonCardWeb({ lessonId, viewMode }: LessonCardProps) {
     });
   };
 
+
+  return (
+                <div className="tutor-card" key={item.id}>
+              <div className="tutor-card-header">
+                <h3 className="tutor-name">{item.title}</h3>
+                <button className="more-btn" onClick={() => alert('Options menu clicked')}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="tutor-tags">
+                {item?.tags?.map((tag, index) => (
+                  <span className="tag-badge" key={index}>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              <div className="tutor-image-container">
+                <img 
+                  className="tutor-image" 
+                  src={item?.image} 
+                  alt={item?.name} 
+                  loading="lazy" 
+                />
+              </div>
+
+              <div className="tutor-card-footer">
+                <div className="tutor-stats">
+                  <div className="rating-container">
+                    <span className="rating-value">{item?.rating?.toFixed(1)}</span>
+                    <div className="stars-row">
+                      {renderStars(item?.rating)}
+                    </div>
+                  </div>
+                  <span className="lessons-taught">{item?.lessons}</span>
+                </div>
+                
+                <button 
+                  className="btn-connect" 
+                  onClick={handleBookLesson}
+                >
+                  Connect
+                </button>
+              </div>
+            </div>
+  )
+
+
+
+  
+
   /* LIST VIEW (simple) */
   if (viewMode === "list") {
     return (
@@ -81,7 +137,7 @@ export default function LessonCardWeb({ lessonId, viewMode }: LessonCardProps) {
             <h3 className="font-semibold">{lesson?.name}</h3>
             <p className="text-xs text-gray-500">
               {" "}
-              {lesson?.start ? formatDate(lesson.start) : ""}
+              {lesson?.date ? formatDate(lesson.date) : ""}
             </p>
           </div>
         </div>
@@ -103,7 +159,7 @@ export default function LessonCardWeb({ lessonId, viewMode }: LessonCardProps) {
         <div>
           <h3 className=" font-bold text-gray-900">{lesson?.name}</h3>
           <p className="text-sm font-semibold text-gray-800">
-            {lesson?.start ? formatDate(lesson.start) : ""}
+            {lesson?.date ? formatDate(lesson.date) : ""} {lesson?.start}
           </p>
         </div>
         <MoreVertical className="h-5 w-5 text-gray-400 cursor-pointer" />

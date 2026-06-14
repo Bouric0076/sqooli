@@ -1,4 +1,5 @@
 import axiosClient from "@/app/lib/axiosClient";
+import { stat } from "fs";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -39,12 +40,15 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
+    const token = searchParams.get("token");
 
     // If id exists → fetch single lesson
     const backendUrl = id
-      ? `${process.env.BACKEND_API_URL}/Lesson/${id}`
+      ? `${process.env.BACKEND_API_URL}/Lesson/${id}` : token
+      ? `${process.env.BACKEND_API_URL}/Lesson/token/${token}`
       : `${process.env.BACKEND_API_URL}/Lesson`;
 
+      console.log("Fetching from backend URL:", backendUrl);
     const res = await axiosClient.get(backendUrl);
 
     return NextResponse.json(res.data, { status: 200 });
@@ -54,8 +58,10 @@ export async function GET(req: Request) {
     if (error.response) {
       return NextResponse.json(
         {
+          status: false,
           message:
             error.response.data?.message || "Failed to fetch lesson(s)",
+            error: error.response.data || null,
         },
         { status: error.response.status }
       );

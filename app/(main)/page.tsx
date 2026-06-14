@@ -7,9 +7,11 @@ import PageHeader from "@/app/components/ui/navigation/PageHeader";
 
 import { getBookingLessons, getLessons } from "@/app/helpers/lookups";
 import { Lesson } from "../store/useCurriculumStore";
-import { ViewMode } from "../website/components/LessonCardWeb";
-import LessonCard from "./school/curriculum/[c_type]/lessons/components/LessonCard";
+import LessonCardWeb, { ViewMode } from "../website/components/LessonCardWeb";
+
 import { useSpinnerStore } from "../store/useSpinnerStore";
+import LessonsList from "../website/components/LessonList";
+import SqooliLandingPage from "../website/page";
 
 export default function Home() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
@@ -21,9 +23,11 @@ export default function Home() {
 
   useEffect(() => {
     setLoading(true);
+
     getLessons()
       .then((data) => {
         console.log("API Lessons Data:", data);
+   
         const apiLessons: Lesson[] = data.map((item: any) => ({
           id: item.id,
           payment_status: item?.status,
@@ -50,9 +54,9 @@ export default function Home() {
     <div className="h-screen">
       <div className="">
 
-            {filteredLessons.map((lesson) => (
-              <LessonCard key={lesson.id} lesson={lesson} viewMode={viewMode} />
-            ))}
+        
+             <SqooliLandingPage />
+     
           </div>
     
     </div>

@@ -111,6 +111,35 @@ export const getCurriculums = (filters?: LookupFilters) =>
   lookupFetcher<LookupItem>("/api/lookups/curriculums", filters);
 
 
+export const getSchoolCurriculums = (schoolId: any) =>
+  lookupFetcher<LookupItem>(`/api/school/${schoolId}`);
+
+
+
+    export const getMyCurriculums = async () => {
+      try {
+
+
+        const res = await fetch(`/api/school/me`, {
+          credentials: "include", // httpOnly cookie
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.message || "Failed to load curriculums");
+        }
+
+        const data = await res.json();
+        return data.curriculums ?? [];
+      } catch (err: any) {
+          throw new Error(err.message || "Something went wrong");
+      } 
+    };
+
+
+
+
+
 export const getEducationLevels = (filters?: LookupFilters) =>
   lookupFetcher<LookupItem>("/api/lookups/education-levels", filters);
 

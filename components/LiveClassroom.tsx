@@ -71,8 +71,8 @@ export default function LiveClassroom({
   const fetchAttendance = async () => {
     try {
       const res = await getAttendance(lessonId);
-      const json = await res.json();
-      setAttendance(json.data ?? []);
+      // const json = await res.json();
+      setAttendance(res.data ?? []);
     } catch (err) {
       console.error("Failed to load attendance", err);
     }
@@ -301,9 +301,9 @@ export default function LiveClassroom({
 
                       <div className="text-xs text-gray-500">
                         Joined{" "}
-                        {new Date(
+                        {
                           s.joinedAt
-                        ).toLocaleTimeString()}
+                        }
                       </div>
                     </li>
                   ))}
