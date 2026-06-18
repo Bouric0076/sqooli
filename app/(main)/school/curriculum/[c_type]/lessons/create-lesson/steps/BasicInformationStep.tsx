@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { useSearchParams } from "next/navigation";
 
@@ -23,7 +23,8 @@ import { useCurriculumStore } from "@/app/store/useCurriculumStore";
 import { AddLessonForm } from "../page";
 import { getLessonBasicInfo, getLessonBasicInfoToken } from "@/app/lib/lessonContent";
 
-import { getCPrograms, getInvitedProgramSlots } from "@/app/helpers/program";
+import { getCProgram, getCPrograms, getCProgramSlots, getInvitedProgramSlots } from "@/app/helpers/program";
+import { getAvailableSlots } from "@/app/lib/slots";
 
 type Props = {
   form: UseFormReturn<AddLessonForm>;
@@ -53,90 +54,96 @@ export default function BasicInformationStep({
   const token = searchParams.get("token");
   const isSlotFlow = !!token;
 
-  const activeCurriculum = useCurriculumStore(
-    (state) => state.activeCurriculum
-  );
-  const { setActiveLesson,clearActiveLesson } = useCurriculumStore();
+  const activeCurriculum = useCurriculumStore((state) => state.activeCurriculum);
+  const { setActiveLesson, clearActiveLesson } = useCurriculumStore();
+  const setActiveCurriculum = useCurriculumStore((state) => state.setActiveCurriculum);
 
   const [lessonTypes, setLessonTypes] = useState<any[]>([]);
   const [programs, setPrograms] = useState<any[]>([]);
+  const [subPrograms, setSubPrograms] = useState<any[]>([]);
+  const [slots, setSlots] = useState<any[]>([]);
+  const [slot, setSlot] = useState<any>(null);
   const [educationLevels, setEducationLevels] = useState<any[]>([]);
   const [gradeLevels, setGradeLevels] = useState<any[]>([]);
   const [subjects, setSubjects] = useState<any[]>([]);
   const [topics, setTopics] = useState<any[]>([]);
   const [message, setMessage] = useState<any>(null);
-
   const [slotDetails, setSlotDetails] = useState<any>(null);
+    const [info, setInfo] = useState<any>(null);
 
-        const setActiveCurriculum = useCurriculumStore(
-          (state) => state.setActiveCurriculum
-        );
+  // Refs to preserve intended values across the async cascade:
+  // programId → subPrograms load → SubProgramId → slots load → slotId
+  const pendingSubProgramId = useRef<number | null>(null);
+  const pendingSlotId = useRef<number | null>(null);
 
   const educationLevelId = watch("educationLevelId");
   const gradeLevelId = watch("gradeLevelId");
   const subjectId = watch("subjectId");
+  const programId = watch("programId");
+  const SubProgramId = watch("SubProgramId");
+  const slotId = watch("slotId");
 
   /* ---------------- LOAD EDIT DATA ---------------- */
   useEffect(() => {
     if (!lessonId) return;
 
-    // clearActiveLesson();
-
     getLessonBasicInfo(lessonId).then(async (res) => {
-      form.setValue("name", res.data.name);
-      form.setValue("description", res.data.description);
-      form.setValue("requirements", res.data.requirements);
-      form.setValue("lessonTypeId", res.data.lessonTypeId);
-      form.setValue("programId", res.data.programId);
-      form.setValue("educationLevelId", res.data.educationLevelId);
-      form.setValue("gradeLevelId", res.data.gradeLevelId);
-      form.setValue("subjectId", res.data.subjectId);
-      form.setValue("topicId", res.data.topicId);
-      form.setValue("Date", res.data.date);
-      form.setValue("start", res.data.start.slice(0, 16));
-      form.setValue("end", res.data.end.slice(0, 16));
+      const d = res.data;
+      console.log(d);
+      setInfo(d);
 
-      await setLessonId(res.data.id);
-      await setActiveLesson(res.data);
+      // Capture the dependent values in refs BEFORE setting programId,
+      // which will trigger the cascade and may wipe them via reset effects.
+      pendingSubProgramId.current = d.SubProgramId ?? null;
+      pendingSlotId.current = d.slotId ?? null;
+
+      form.setValue("name", d.name);
+      form.setValue("description", d.description);
+      form.setValue("requirements", d.requirements);
+      form.setValue("lessonTypeId", d.lessonTypeId);
+      form.setValue("programId", d.programId);       // triggers subPrograms fetch
+      form.setValue("SubProgramId", d.subProgramId); // may be overwritten — saved in ref
+      form.setValue("educationLevelId", d.educationLevelId);
+      form.setValue("gradeLevelId", d.gradeLevelId);
+      form.setValue("subjectId", d.subjectId);
+      form.setValue("topicId", d.topicId);
+      form.setValue("Date", d.date);
+      form.setValue("start", d.start.slice(0, 16));
+      form.setValue("end", d.end.slice(0, 16));
+
+      await setLessonId(d.id);
+      await setActiveLesson(d);
     });
-
-
-
-
   }, [lessonId]);
 
   /* ---------------- SLOT PREFILL ---------------- */
   useEffect(() => {
     if (!token) return;
 
-
-
-        getLessonBasicInfoToken(token).then(async (res) => {
-      form.setValue("name", res.data.name);
-      form.setValue("description", res.data.description);
-      form.setValue("requirements", res.data.requirements);
-      form.setValue("lessonTypeId", res.data.lessonTypeId);
-      form.setValue("programId", res.data.programId);
-      form.setValue("educationLevelId", res.data.educationLevelId);
-      form.setValue("gradeLevelId", res.data.gradeLevelId);
-      form.setValue("subjectId", res.data.subjectId);
-      form.setValue("topicId", res.data.topicId);
-      form.setValue("Date", res.data.date);
-      form.setValue("start", res.data.start);
-      form.setValue("end", res.data.end);
-      await setLessonId(res.data.id);
-      await setActiveLesson(res.data);
+    getLessonBasicInfoToken(token).then(async (res) => {
+      const d = res.data;
+        setInfo(d);
+      form.setValue("name", d.name);
+      form.setValue("description", d.description);
+      form.setValue("requirements", d.requirements);
+      form.setValue("lessonTypeId", d.lessonTypeId);
+      form.setValue("programId", d.programId);
+      form.setValue("SubProgramId", d.subProgramId);
+      form.setValue("educationLevelId", d.educationLevelId);
+      form.setValue("gradeLevelId", d.gradeLevelId);
+      form.setValue("subjectId", d.subjectId);
+      form.setValue("topicId", d.topicId);
+      form.setValue("Date", d.date);
+      form.setValue("start", d.start);
+      form.setValue("end", d.end);
+      await setLessonId(d.id);
+      await setActiveLesson(d);
     });
 
-
     const fetchSlot = async () => {
-
-      
-      
       try {
         const res = await getInvitedProgramSlots({ token });
         const slot = res.data;
-
         console.log("Fetched slot details:", slot);
 
         setSlotDetails(slot);
@@ -146,24 +153,15 @@ export default function BasicInformationStep({
         setValue("subjectId", slot.subjectId);
         setValue("programId", slot.programId);
 
+        await setActiveCurriculum({
+          id: slot.curriculumId,
+          name: slot.curriculum,
+          acronym: slot.curriculum,
+        });
 
-      await setActiveCurriculum({
-      id: slot.curriculumId,
-      name: slot.curriculum,
-      acronym: slot.curriculum,
-    });
-
-
-       
-// ✅ Format for input[type=datetime-local]
-
-
-setValue("Date",slot.slotDate);
-setValue("start", (slot.startTime));
-setValue("end", (slot.endTime));
-
-
-
+        setValue("Date", slot.slotDate);
+        setValue("start", slot.startTime);
+        setValue("end", slot.endTime);
       } catch (err) {
         console.error("Failed to fetch slot details");
       }
@@ -178,13 +176,11 @@ setValue("end", (slot.endTime));
 
     Promise.all([
       getLessonTypes(),
-      // getPrograms({ curriculumId: activeCurriculum.id }),
       getCPrograms({ curriculumId: activeCurriculum.id }),
-      
       getEducationLevels({ curriculumId: activeCurriculum.id }),
     ]).then(([lt, pr, el]) => {
       setLessonTypes(lt);
-      console.log(pr)
+      console.log(pr);
       setPrograms(pr);
       setEducationLevels(el);
     });
@@ -192,11 +188,11 @@ setValue("end", (slot.endTime));
 
   /* ---------------- DEPENDENT LOOKUPS ---------------- */
 
-useEffect(() => {
-  if (!isSlotFlow || !slotDetails || !programs.length) return;
-
-  setValue("programId", slotDetails.programId);
-}, [programs, slotDetails, isSlotFlow]);
+  // Slot flow: re-apply programId once programs list is ready
+  useEffect(() => {
+    if (!isSlotFlow || !slotDetails || !programs.length) return;
+    setValue("programId", slotDetails.programId);
+  }, [programs, slotDetails, isSlotFlow]);
 
   useEffect(() => {
     if (!educationLevelId || !activeCurriculum?.id) {
@@ -243,16 +239,73 @@ useEffect(() => {
     }).then(setTopics);
   }, [subjectId, activeCurriculum]);
 
+  // Fetch subPrograms when programId changes
+  useEffect(() => {
+    if (!programId || !activeCurriculum?.id) return;
+
+    // alert(programId)
+
+    getCProgram(programId).then((data) => {
+      const subs = data?.data?.subPrograms || [];
+      setSubPrograms(subs);
+    });
+  }, [programId, activeCurriculum]);
+
+  // Once subPrograms are loaded, restore the pending SubProgramId (edit mode)
+  // or fall back to whatever is currently in the form
+  useEffect(() => {
+          
+    if (!subPrograms.length) return;
+
+    
+
+    const target = pendingSubProgramId.current ?? watch("SubProgramId");
+    if (target) {
+
+      setValue("SubProgramId", target, { shouldValidate: false });
+      // Don't clear pendingSubProgramId yet — the SubProgramId watch
+      // below needs to fire to trigger the slots fetch
+    }
+  }, [subPrograms]);
+
+  // Fetch slots when SubProgramId changes
+  useEffect(() => {
+    if (!SubProgramId) return;
+
+    // Now safe to clear — slots fetch is in motion
+    pendingSubProgramId.current = null;
+
+    getAvailableSlots({ id: SubProgramId.toString() }).then((data) => {
+      setSlots(data?.data || []);
+    });
+  }, [SubProgramId]);
+
+  // Once slots are loaded, restore the pending slotId (edit mode)
+  // or fall back to whatever is currently in the form
+  useEffect(() => {
+    if (!slots.length) return;
+
+    const target = pendingSlotId.current ?? watch("slotId");
+    if (target) {
+      setValue("slotId", target, { shouldValidate: false });
+      pendingSlotId.current = null; // fully resolved
+    }
+  }, [slots]);
+
+  // When slotId changes (user picks a slot manually), populate date/time fields
+  useEffect(() => {
+    if (!slotId || !activeCurriculum?.id) return;
+
+    const selectedSlot = slots.find((s) => s.id === slotId);
+    if (!selectedSlot) return;
+
+    setValue("Date", selectedSlot.slotDate);
+    setValue("start", selectedSlot.startTime);
+    setValue("end", selectedSlot.endTime);
+  }, [slotId, activeCurriculum]);
+
   /* ---------------- SUBMIT ---------------- */
-
   const submitBasicInfo = async (data: AddLessonForm) => {
-
-
-// const dateOnly = new Date(data.start).toISOString().split("T")[0];
-// const startDate = new Date(slot.slotDate).toISOString().split("T")[1].split(".")[0];
-// const endDate = new Date(slot.slotDate).toISOString().split("T")[1].split(".")[0];
-
-
     const res = await fetch("/api/lesson", {
       method: "POST",
       headers: {
@@ -268,9 +321,11 @@ useEffect(() => {
         educationLevelId: data.educationLevelId,
         topicId: data.topicId,
         programId: data.programId,
+        SubProgramId: data.SubProgramId,
+        SlotId: data.slotId,
         name: data.name,
         description: data.description,
-        Date:data.Date,
+        Date: data.Date,
         start: data.start,
         end: data.end,
       }),
@@ -280,7 +335,6 @@ useEffect(() => {
     setMessage(result?.message);
 
     const lessonId_new = result?.data?.id;
-
     if (!lessonId_new) return;
 
     await setActiveLesson(result?.data);
@@ -289,10 +343,6 @@ useEffect(() => {
   };
 
   /* ---------------- UI ---------------- */
-
-//   console.log("programId RHF:", watch("programId"));
-// console.log("program options:", programs);
-
   return (
     <>
       <PageHeader
@@ -348,25 +398,67 @@ useEffect(() => {
             />
           </FormField>
         </div>
- <div className="col-span-2">
-        <FormField label="Program">
-          <Controller
-            name="programId"
-            control={control}
-            render={({ field }) => (
-              <SelectInput
-                value={field.value?.toString()}
-                options={programs.map((p) => ({
-                  label: p.programName,
-                  value: p.id.toString(),
-                }))}
-                onChange={(v) => field.onChange(Number(v))}
-                disabled={isSlotFlow}
-        
-              />
-            )}
-          />
-        </FormField>
+
+        <div className="col-span-2 ">
+          <FormField label="Program">
+            <Controller
+              name="programId"
+              control={control}
+              render={({ field }) => (
+                <SelectInput
+                  value={field.value?.toString()}
+                  options={programs.map((p) => ({
+                    label: p.programName,
+                    value: p.id.toString(),
+                  }))}
+                  onChange={(v) => field.onChange(Number(v))}
+                  disabled={isSlotFlow}
+                />
+              )}
+            />
+          </FormField>
+
+          <FormField label="SubProgram">
+            <Controller
+              name="SubProgramId"
+              control={control}
+              render={({ field }) => (
+                <SelectInput
+                  value={field.value?.toString()}
+                  options={subPrograms.map((p) => ({
+                    label: p.name,
+                    value: p.id.toString(),
+                  }))}
+                  onChange={(v) => field.onChange(Number(v))}
+                  disabled={isSlotFlow}
+                />
+              )}
+            />
+          </FormField>
+
+          <FormField label="Slot">
+            <Controller
+              name="slotId"
+              control={control}
+              render={({ field }) => (
+                <SelectInput
+                  value={field.value?.toString()}
+                  options={slots.map((p) => ({
+                    label: `${p.slotDate} => ${p.startTime} - ${p.endTime}`,
+                    value: p.id.toString(),
+                  }))}
+                  onChange={(v) => {
+                    const selectedSlot = slots.find(
+                      (s) => s.id.toString() === v
+                    );
+                    field.onChange(Number(v));
+                    setSlot(selectedSlot);
+                  }}
+                  disabled={isSlotFlow}
+                />
+              )}
+            />
+          </FormField>
         </div>
 
         <FormField label="Education Level">
@@ -376,7 +468,7 @@ useEffect(() => {
             render={({ field }) => (
               <SelectInput
                 value={field.value?.toString()}
-                options={educationLevels.map((e) => ({
+                options={educationLevels?.map((e) => ({
                   label: e.name,
                   value: e.id.toString(),
                 }))}
@@ -394,7 +486,7 @@ useEffect(() => {
             render={({ field }) => (
               <SelectInput
                 value={field.value?.toString()}
-                options={gradeLevels.map((g) => ({
+                options={gradeLevels?.map((g) => ({
                   label: g.name,
                   value: g.id.toString(),
                 }))}
@@ -412,7 +504,7 @@ useEffect(() => {
             render={({ field }) => (
               <SelectInput
                 value={field.value?.toString()}
-                options={subjects.map((s) => ({
+                options={subjects?.map((s) => ({
                   label: s.name,
                   value: s.id.toString(),
                 }))}
@@ -430,7 +522,7 @@ useEffect(() => {
             render={({ field }) => (
               <SelectInput
                 value={field.value?.toString()}
-                options={topics.map((t) => ({
+                options={topics?.map((t) => ({
                   label: t.name,
                   value: t.id.toString(),
                 }))}
@@ -440,22 +532,21 @@ useEffect(() => {
           />
         </FormField>
 
-
-  <div className="col-span-2">
-        <FormField label="Lesson Date">
-          <TextInput
-            type="date"
-            {...register("Date")}
-            readOnly={isSlotFlow}
-          />
-        </FormField>
+        <div className="col-span-2">
+          <FormField label="Lesson Date">
+            <TextInput
+              type="date"
+              {...register("Date")}
+              readOnly={true}
+            />
+          </FormField>
         </div>
 
         <FormField label="Start Time">
           <TextInput
             type="time"
             {...register("start")}
-            readOnly={isSlotFlow}
+            readOnly={true}
           />
         </FormField>
 
@@ -463,7 +554,7 @@ useEffect(() => {
           <TextInput
             type="time"
             {...register("end")}
-            readOnly={isSlotFlow}
+            readOnly={true}
           />
         </FormField>
 

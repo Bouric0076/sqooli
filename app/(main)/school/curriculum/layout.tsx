@@ -23,28 +23,28 @@ export default function RootLayout({
     {
       icon: Users,
       label: "Teachers",
-      link: `/school/curriculum/${activeCurriculum?.name}/teachers`,
+      link: `/school/curriculum/${activeCurriculum?.name.toLocaleLowerCase()}/teachers`,
     },
     {
       icon: GraduationCap,
       label: "Students",
-      link: `/school/curriculum/${activeCurriculum?.name}/students`,
+      link: `/school/curriculum/${activeCurriculum?.name.toLocaleLowerCase()}/students`,
     },
     {
       icon: BookOpen,
       label: "Lessons",
-      link: `/school/curriculum/${activeCurriculum?.name}/lessons`,
+      link: `/school/curriculum/${activeCurriculum?.name.toLocaleLowerCase()}/lessons`,
     },
-    {
-      icon: Layers,
-      label: "Extra Curricula",
-      link: `/school/curriculum/${activeCurriculum?.name}/extra-curricula`,
-    },
-    {
-      icon: Calendar,
-      label: "Schedule",
-      link: `/school/curriculum/${activeCurriculum?.name}/schedule`,
-    },
+    // {
+    //   icon: Layers,
+    //   label: "Extra Curricula",
+    //   link: `/school/curriculum/${activeCurriculum?.name.toLocaleLowerCase()}/extra-curricula`,
+    // },
+    // {
+    //   icon: Calendar,
+    //   label: "Schedule",
+    //   link: `/school/curriculum/${activeCurriculum?.name.toLocaleLowerCase()}/schedule`,
+    // },
   ];
 
   return (

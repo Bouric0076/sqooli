@@ -20,7 +20,9 @@ export type AddLessonForm = {
   description: string;
   requirements?: string;
   lessonTypeId: number | null;
+  SubProgramId: number | null;
   programId: number | null;
+  slotId: number | null;
   subjectId: number | null;
   teacherId: number | null;
   topicId: number | null;

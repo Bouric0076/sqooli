@@ -9,7 +9,6 @@ import { Plus, Trash2, Copy, Eye } from "lucide-react";
 
 import {
   LookupItem,
-  getCurriculums,
   getEducationLevels,
   getGradeLevels,
   getMyCurriculums,
@@ -161,7 +160,7 @@ function ResourceQuestions({ form, id, setId, onBack, ResourceType }: Props) {
 
         {sections.map((section, sectionIndex) => (
           <SectionBlock
-          form={form}
+            form={form}
             key={section.id}
             sectionIndex={sectionIndex}
             control={control}
@@ -216,7 +215,13 @@ export default ResourceQuestions;
 
 /* ================= SECTION BLOCK ================= */
 
-function SectionBlock({ sectionIndex, control, register, removeSection, form }: any) {
+function SectionBlock({
+  sectionIndex,
+  control,
+  register,
+  removeSection,
+  form,
+}: any) {
   const { fields, append, remove } = useFieldArray({
     control,
     name: `sections.${sectionIndex}.questions`,
@@ -232,7 +237,7 @@ function SectionBlock({ sectionIndex, control, register, removeSection, form }: 
 
       {fields.map((question, questionIndex) => (
         <QuestionBlock
-        form={form}
+          form={form}
           key={question.id}
           sectionIndex={sectionIndex}
           questionIndex={questionIndex}
@@ -283,35 +288,14 @@ function QuestionBlock({
   removeQuestion,
   form,
 }: any) {
+  const basePath = `sections.${sectionIndex}.questions.${questionIndex}`;
 
-
-
-
-
-
-
-
-  const questionType = useWatch({
-    control,
-    name: `sections.${sectionIndex}.questions.${questionIndex}.type`,
-  });
-
-  const curriculumId = useWatch({
-    control,
-    name: `sections.${sectionIndex}.questions.${questionIndex}.curriculumId`,
-  });
-  const educationLevelId = useWatch({
-    control,
-    name: `sections.${sectionIndex}.questions.${questionIndex}.educationLevelId`,
-  });
-  const gradeLevelId = useWatch({
-    control,
-    name: `sections.${sectionIndex}.questions.${questionIndex}.gradeLevelId`,
-  });
-  const subjectId = useWatch({
-    control,
-    name: `sections.${sectionIndex}.questions.${questionIndex}.subjectId`,
-  });
+  // useWatch drives cascade effects and conditional rendering reactively
+  const questionType = useWatch({ control, name: `${basePath}.type` });
+  const curriculumId = useWatch({ control, name: `${basePath}.curriculumId` });
+  const educationLevelId = useWatch({ control, name: `${basePath}.educationLevelId` });
+  const gradeLevelId = useWatch({ control, name: `${basePath}.gradeLevelId` });
+  const subjectId = useWatch({ control, name: `${basePath}.subjectId` });
 
   const [curriculums, setCurriculums] = useState<LookupItem[]>([]);
   const [educationLevels, setEducationLevels] = useState<LookupItem[]>([]);
@@ -334,13 +318,13 @@ function QuestionBlock({
 
   /* ---- MOUNT: load curriculums; if editing, eagerly load all levels ---- */
   useEffect(() => {
-    // Capture current watched values synchronously at mount time.
-    // At this point RHF has already called reset(), so these hold
-    // the saved IDs when editing, or empty strings when creating.
-    const initCurriculumId = curriculumId;
-    const initEducationLevelId = educationLevelId;
-    const initGradeLevelId = gradeLevelId;
-    const initSubjectId = subjectId;
+    // ✅ Read synchronously from RHF's internal store.
+    // reset() writes values synchronously, so getValues() sees them
+    // immediately — unlike useWatch which needs a render cycle to propagate.
+    const initCurriculumId = form.getValues(`${basePath}.curriculumId`);
+    const initEducationLevelId = form.getValues(`${basePath}.educationLevelId`);
+    const initGradeLevelId = form.getValues(`${basePath}.gradeLevelId`);
+    const initSubjectId = form.getValues(`${basePath}.subjectId`);
 
     const isEditMode =
       !!initCurriculumId &&
@@ -363,7 +347,6 @@ function QuestionBlock({
     ];
 
     if (isEditMode) {
-     
       promises.push(
         getEducationLevels({ curriculumId: Number(initCurriculumId) })
           .then(setEducationLevels)
@@ -392,10 +375,6 @@ function QuestionBlock({
   /* ---- CASCADE: curriculum → education levels ---- */
   useEffect(() => {
     if (!hydrated) return;
-    setEducationLevels([]);
-    setGradeLevels([]);
-    setSubjects([]);
-    setTopics([]);
     if (!curriculumId) return;
 
     setLoading((p) => ({ ...p, education: true }));
@@ -408,9 +387,6 @@ function QuestionBlock({
   /* ---- CASCADE: education level → grade levels ---- */
   useEffect(() => {
     if (!hydrated) return;
-    setGradeLevels([]);
-    setSubjects([]);
-    setTopics([]);
     if (!educationLevelId) return;
 
     setLoading((p) => ({ ...p, grade: true }));
@@ -423,8 +399,6 @@ function QuestionBlock({
   /* ---- CASCADE: grade level → subjects ---- */
   useEffect(() => {
     if (!hydrated) return;
-    setSubjects([]);
-    setTopics([]);
     if (!gradeLevelId) return;
 
     setLoading((p) => ({ ...p, subject: true }));
@@ -437,7 +411,6 @@ function QuestionBlock({
   /* ---- CASCADE: subject → topics ---- */
   useEffect(() => {
     if (!hydrated) return;
-    setTopics([]);
     if (!subjectId) return;
 
     setLoading((p) => ({ ...p, topic: true }));
@@ -454,18 +427,16 @@ function QuestionBlock({
       {/* Question Text & Type */}
       <div className="grid md:grid-cols-3 gap-4">
         <textarea
-          {...register(
-            `sections.${sectionIndex}.questions.${questionIndex}.text`,
-            { required: "Question is required" }
-          )}
+          {...register(`${basePath}.text`, {
+            required: "Question is required",
+          })}
           placeholder="Type question"
           className="md:col-span-2 border rounded-md px-3 py-2 h-20"
         />
         <select
-          {...register(
-            `sections.${sectionIndex}.questions.${questionIndex}.type`,
-            { required: "Question type is required" }
-          )}
+          {...register(`${basePath}.type`, {
+            required: "Question type is required",
+          })}
           className="border rounded-md px-3 py-2"
         >
           <option value="">Question Type</option>
@@ -479,9 +450,7 @@ function QuestionBlock({
       <div className="grid md:grid-cols-5 gap-4">
         {/* 1. Curriculum */}
         <select
-          {...register(
-            `sections.${sectionIndex}.questions.${questionIndex}.curriculumId`
-          )}
+          {...register(`${basePath}.curriculumId`)}
           disabled={loading.curriculum}
           className="border rounded-md px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -497,9 +466,7 @@ function QuestionBlock({
 
         {/* 2. Education Level */}
         <select
-          {...register(
-            `sections.${sectionIndex}.questions.${questionIndex}.educationLevelId`
-          )}
+          {...register(`${basePath}.educationLevelId`)}
           disabled={!curriculumId || loading.education}
           className="border rounded-md px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -515,9 +482,7 @@ function QuestionBlock({
 
         {/* 3. Grade Level */}
         <select
-          {...register(
-            `sections.${sectionIndex}.questions.${questionIndex}.gradeLevelId`
-          )}
+          {...register(`${basePath}.gradeLevelId`)}
           disabled={!educationLevelId || loading.grade}
           className="border rounded-md px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -533,13 +498,13 @@ function QuestionBlock({
 
         {/* 4. Subject */}
         <select
-          {...register(
-            `sections.${sectionIndex}.questions.${questionIndex}.subjectId`
-          )}
+          {...register(`${basePath}.subjectId`)}
           disabled={!gradeLevelId || loading.subject}
           className="border rounded-md px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <option value="">{loading.subject ? "Loading..." : "Subject"}</option>
+          <option value="">
+            {loading.subject ? "Loading..." : "Subject"}
+          </option>
           {subjects.map((s) => (
             <option key={s.id} value={String(s.id)}>
               {s.name}
@@ -549,9 +514,7 @@ function QuestionBlock({
 
         {/* 5. Topic */}
         <select
-          {...register(
-            `sections.${sectionIndex}.questions.${questionIndex}.topicId`
-          )}
+          {...register(`${basePath}.topicId`)}
           disabled={!subjectId || loading.topic}
           className="border rounded-md px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >

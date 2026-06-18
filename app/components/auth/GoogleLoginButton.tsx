@@ -84,25 +84,26 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
         return;
       }
 
-      switch (role) {
-        case "Admin":
-          router.push("/admin/dashboard");
-          break;
-        case "Teacher":
-          router.push("/teacher/dashboard");
-          break;
-        case "Student":
-          router.push("/student");
-          break;
-        case "Parent":
-          router.push("/parent");
-          break;
-        case "SchoolAdmin":
-          router.push("/school");
-          break;
-        default:
-          router.push(redirectTo);
-      }
+        const dashboard = result.user?.dashboard;
+        switch (dashboard) {
+          case "admin":
+            router.push("/admin");
+            break;
+          case "teacher":
+            router.push("/teacher/dashboard");
+            break;
+          case "student":
+            router.push("/student");
+            break;
+          case "parent":
+            router.push("/parent");
+            break;
+          case "school":
+            router.push("/school");
+            break;
+          default:
+            router.push("/onboarding");
+        }
     } catch (err: any) {
       setError(err.message || "Something went wrong during login.");
     } finally {

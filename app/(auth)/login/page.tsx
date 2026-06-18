@@ -77,20 +77,21 @@ export default function Loginpage() {
           return;
         }
 
-        switch (role) {
-          case "Admin":
+        const dashboard = result.user?.dashboard;
+        switch (dashboard) {
+          case "admin":
             router.push("/admin");
             break;
-          case "Teacher":
+          case "teacher":
             router.push("/teacher/dashboard");
             break;
-          case "Student":
+          case "student":
             router.push("/student");
             break;
-          case "Parent":
+          case "parent":
             router.push("/parent");
             break;
-          case "SchoolAdmin":
+          case "school":
             router.push("/school");
             break;
           default:

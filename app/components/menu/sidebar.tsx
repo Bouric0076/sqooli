@@ -76,8 +76,8 @@ export default function StudentSidebar() {
       { icon: CreditCard, label: "Payments", link: "/school/payments" },
     ],
     MANAGEMENT: [
-      { icon: User, label: "User Management", link: "/school/users" },
-      // { icon: Users, label: "Partners", link: "/school/partners" },
+      { icon: User, label: "Roles", link: "/school/roles" },
+      { icon: Users, label: "Users", link: "/school/users" },
       { icon: BarChart3, label: "Reports", link: "/school/reports" },
     ],
   };
