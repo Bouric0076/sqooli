@@ -15,11 +15,12 @@ import {
   unlockUser,
 } from "@/app/lib/users";
 import { getRoles } from "@/app/lib/roles";
+import { Can } from "@/app/lib/auth/Can";
 
 export interface User {
   id: string;
-  FirstName:string,
-  LastName:string;
+  firstName:string,
+  lastName:string;
   userName: string | null;
   email: string | null;
   phoneNumber: string | null;
@@ -37,8 +38,8 @@ export interface Role {
 type FormValues = {
   id: string;
   email: string;
-    FirstName:string,
-  LastName:string;
+  firstName:string,
+  lastName:string;
   password: string;
   phoneNumber: string;
   emailConfirmed: boolean;
@@ -69,8 +70,8 @@ export default function UsersPage() {
       email: "",
       password: "",
       phoneNumber: "",
-        FirstName:"",
-  LastName:"",
+      firstName:"",
+      lastName:"",
       emailConfirmed: false,
       roles: [],
     },
@@ -123,8 +124,8 @@ export default function UsersPage() {
     reset();
     setValue("id", user.id);
     setValue("email", user.email || "");
-    setValue("FirstName", user.FirstName || "");
-    setValue("LastName", user.LastName || "");
+    setValue("firstName", user.firstName || "");
+    setValue("lastName", user.lastName || "");
     setValue("phoneNumber", user.phoneNumber || "");
     setValue("emailConfirmed", user.emailConfirmed);
     setValue("roles", user.roles || []);
@@ -166,8 +167,8 @@ export default function UsersPage() {
         await updateUser({
           id: values.id,
           email: values.email,
-          LastName: values.LastName,
-          FirstName: values.FirstName,
+          lastName: values.lastName,
+          firstName: values.firstName,
           phoneNumber: values.phoneNumber,
           emailConfirmed: values.emailConfirmed,
           roles: values.roles,
@@ -176,8 +177,8 @@ export default function UsersPage() {
       } else {
         await addUser({
           email: values.email,
-        LastName: values.LastName,
-          FirstName: values.FirstName,
+          lastName: values.lastName,
+          firstName: values.firstName,
           password: values.password,
           phoneNumber: values.phoneNumber,
           emailConfirmed: values.emailConfirmed,
@@ -239,8 +240,8 @@ export default function UsersPage() {
     const matchesSearch =
       u.email?.toLowerCase().includes(search.toLowerCase()) ||
       u.userName?.toLowerCase().includes(search.toLowerCase()) ||
-      u.FirstName?.toLowerCase().includes(search.toLowerCase()) ||
-      u.LastName?.toLowerCase().includes(search.toLowerCase()) ||
+      u.firstName?.toLowerCase().includes(search.toLowerCase()) ||
+      u.lastName?.toLowerCase().includes(search.toLowerCase()) ||
       u.phoneNumber?.toLowerCase().includes(search.toLowerCase());
 
     const isLocked = u.lockoutEnabled && u.lockoutEnd && new Date(u.lockoutEnd) > new Date();
@@ -270,6 +271,8 @@ export default function UsersPage() {
           </p>
         </div>
 
+<Can permission="users.create">
+
         <button
           onClick={openCreateModal}
           style={{
@@ -282,6 +285,8 @@ export default function UsersPage() {
           <span style={{ fontSize: "18px", lineHeight: 1, fontWeight: 300 }}>+</span>
           Create User
         </button>
+
+        </Can>
       </div>
 
       {/* ── Search Bar ── */}
@@ -370,8 +375,9 @@ export default function UsersPage() {
 
                     {/* Username */}
                     <td style={{ padding: "16px 20px", fontSize: "13.5px", color: "#475569" }}>
-                      {user.userName || "—"}
+                      {user?.firstName || "—"}
                     </td>
+
 
                     {/* Phone */}
                     <td style={{ padding: "16px 20px", fontSize: "13.5px", color: "#475569" }}>
@@ -469,24 +475,24 @@ export default function UsersPage() {
       >
         <form onSubmit={handleSubmit(handleSave)} className="space-y-4">
 
-   <div className="grid  grid-cols-2 mb-5 gap-5 ">
-            <FormField className="text-sm font-medium text-gray-700" label="First name" error={errors.FirstName?.message}>
+          <div className="grid  grid-cols-2 mb-5 gap-5 ">
+            <FormField className="text-sm font-medium text-gray-700" label="First name" error={errors.firstName?.message}>
               <TextInput
                 type="text"
                 placeholder="Enter First name"
-                {...register("FirstName", { required: "First name is required" })}
+                {...register("firstName", { required: "First name is required" })}
               />
             </FormField>
 
 
-            <FormField className="text-sm font-medium text-gray-700" label="First name" error={errors.LastName?.message}>
+            <FormField className="text-sm font-medium text-gray-700" label="Last name" error={errors.lastName?.message}>
               <TextInput
                 type="text"
                 placeholder="Enter Last Name"
-                {...register("LastName", { required: "Last Name is required" })}
+                {...register("lastName", { required: "Last Name is required" })}
               />
             </FormField>
-</div>
+          </div>
 
 
           <div className="flex flex-col mb-5 gap-5">

@@ -62,6 +62,7 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
 
       // Save user
       useAuthStore.getState().setUser(result.user);
+      await useAuthStore.getState().fetchMe();   
 
       // Email verification
       if (!result.user.isEmailConfirmed) {

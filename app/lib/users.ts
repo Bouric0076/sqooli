@@ -11,8 +11,8 @@ export interface User {
 
 export interface CreateUser {
   email: string;
-      FirstName:string,
-  LastName:string;
+      firstName:string,
+  lastName:string;
   password: string;
   phoneNumber?: string;
   emailConfirmed?: boolean;
@@ -21,8 +21,8 @@ export interface CreateUser {
 
 export interface UpdateUser {
   id: string;
-      FirstName:string,
-  LastName:string;
+      firstName:string,
+  lastName:string;
   email?: string;
   phoneNumber?: string;
   emailConfirmed?: boolean;

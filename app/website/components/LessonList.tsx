@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { Search } from "lucide-react";
 
 import Breadcrumb from "@/app/components/ui/navigation/Breadcrumb";
 import PageHeader from "@/app/components/ui/navigation/PageHeader";
@@ -50,40 +51,28 @@ export default function LessonsList() {
     );
   }, [lessons, search, status]);
 
+  return (
+    <div>
+<div className=" " style={{marginBottom:10}}>
+  <div className="relative w-full ">
+<input
+style={{padding:20}}
+  type="text"
+  value={search}
+  onChange={(e) => setSearch(e.target.value)}
+  placeholder="Search lessons..."
+  className="w-full h-11 rounded-xl border border-gray-300 bg-white pl-5 pr-11 text-sm shadow-sm transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
+/>
 
+    <Search className="pointer-events-none absolute right-4  top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+  </div>
+</div>
 
-
-  return(
-            <div className="cards-grid">
-          {filteredLessons.map((item) => (
-<LessonCardWeb key={item.id} lessonId={item.id} item={item} viewMode={viewMode} />
-          ))}
-        </div>
+      <div className="cards-grid ">
+        {filteredLessons.map((item) => (
+          <LessonCardWeb key={item.id} lessonId={item.id} item={item} viewMode={viewMode} />
+        ))}
+      </div>
+    </div>
   );
-
-  // return (
-  //   <div className="h-screen w-full">
-  //     <div className="bg-white  border-gray-200 px-6 py-3">
-  //       {loading ? (
-  //         <p className="text-gray-500 py-4">Loading lessons...</p>
-  //       ) : (
-  //         <div
-  //           className={
-  //             viewMode === "grid"
-  //               ? "grid grid-cols-1 gap-8  grid-cols-3 sm:grid-cols-2 lg:grid-cols-3"
-  //               : "flex flex-col gap-4"
-  //           }
-  //         >
-  //           {filteredLessons.map((lesson) => (
-  //             <LessonCardWeb
-  //               key={lesson.id}
-  //               lessonId={lesson.id}
-  //               viewMode={viewMode}
-  //             />
-  //           ))}
-  //         </div>
-  //       )}
-  //     </div>
-  //   </div>
-  // );
 }

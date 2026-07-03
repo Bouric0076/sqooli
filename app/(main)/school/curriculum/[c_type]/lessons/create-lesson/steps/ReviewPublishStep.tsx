@@ -12,6 +12,7 @@ import {
 } from "@/app/lib/lessonContent";
 import { getLessonObjectives } from "@/app/lib/lessonObjectives";
 import { getTeachers, Teacher } from "@/app/helpers/lookups";
+import { useAuthStore } from "@/app/store/useAuthStore";
 
 type Props = {
   form: UseFormReturn<AddLessonForm>;
@@ -38,6 +39,7 @@ export function ReviewPublishStep({ form, lessonId }: Props) {
 
   const [assignedTeacher, setAssignedTeacher] = useState<Teacher | null>(null);
   const [publishing, setPublishing] = useState(false);
+  const {user} = useAuthStore();
 
   // Notification state
   const [notification, setNotification] = useState<{
@@ -270,7 +272,7 @@ export function ReviewPublishStep({ form, lessonId }: Props) {
                 <Edit className="w-4 h-4" />
                 Edit
               </button> */}
-              {assignedTeacher  && <button
+              {assignedTeacher ==null && user?.userRole =="SchoolAdmin" && <button
                 onClick={() => setShowAssignModal(true)}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 shadow-lg transition-colors text-sm font-medium"
               >
@@ -278,7 +280,7 @@ export function ReviewPublishStep({ form, lessonId }: Props) {
                 Assign Teacher
               </button>
               }
-              {lesson?.assignedTeachers &&
+              {lesson?.assignedTeachers  && user?.userRole =="SchoolAdmin"  && 
               lesson.assignedTeachers.length > 0 ? (
                 <button
                   onClick={handlePublish}

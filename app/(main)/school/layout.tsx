@@ -6,6 +6,8 @@ import { Roboto } from "next/font/google";
 import AuthWrapper from "@/app/components/auth/AuthWrapper";
 import TopMenu from "@/app/components/menu/topmenu";
 import Sidebar from "@/app/components/menu/sidebar";
+import { PermissionProvider } from "@/app/lib/auth/PermissionContext";
+import AuthInitializer from "@/app/components/auth/AuthInitializer";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -33,8 +35,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={roboto.className}>
+
         <div className="flex h-screen bg-gray-100 relative">
           {/* Toggle button - always visible, positioned independently */}
           <Sidebar />
@@ -46,11 +47,15 @@ export default function RootLayout({
 
             {/* Page Content */}
             <main className="flex-1 overflow-auto bg-white relative h-screen">
-              <AuthWrapper>{children}</AuthWrapper>
+              <AuthWrapper>     
+                <AuthInitializer>
+                        <PermissionProvider>{children}</PermissionProvider>
+                        </AuthInitializer>
+
+                </AuthWrapper>
             </main>
           </div>
         </div>
-      </body>
-    </html>
+
   );
 }

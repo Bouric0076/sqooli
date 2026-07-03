@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import './page.css';
 import LessonsList from './components/LessonList';
 import { useRouter } from 'next/navigation';
+import Header from './components/Header';
 
 // Importing the generated background image
 const heroBg = './sqooli_hero.png';
@@ -72,39 +73,8 @@ export default function SqooliLandingPage() {
   return (
     <div className="sqooli-wrapper">
       {/* Header / Navigation bar */}
-      <header className="header-container">
-        <div className="logo-container" onClick={() => setActiveTab('Home')}>
-   <img src="/logo.svg" alt="Sqooli Logo" className="h-12 mb-6" />
-        </div>
 
-        <nav>
-          <ul className="nav-menu">
-            {['Home', 'Schools', 'Partners', 'Contact Us'].map((tab) => (
-              <li key={tab}>
-                <a
-                  href={`#${tab.toLowerCase().replace(/\s+/g, '-')}`}
-                  className={`nav-link ${activeTab === tab ? 'active' : ''}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setActiveTab(tab);
-                  }}
-                >
-                  {tab}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <div className="auth-buttons">
-          <button className="btn-login" onClick={() => router.push('/login')}>
-            Login
-          </button>
-          <button className="btn-get-started" onClick={() => router.push('/register')}>
-            Get Started
-          </button>
-        </div>
-      </header>
+<Header/>
 
       {/* Hero Section */}
       <section 
@@ -137,7 +107,7 @@ export default function SqooliLandingPage() {
           </div>
 
           {/* Action Trigger */}
-          <button className="btn-find-lessons" onClick={() => alert('Search and find lessons...')}>
+          <button className="btn-find-lessons" onClick={() => router.push('/website/search')}>
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
               fill="none" 
@@ -290,7 +260,7 @@ export default function SqooliLandingPage() {
             </button>
           </div>
         </div>
-<LessonsList />
+        <LessonsList />
 
       </section>
 

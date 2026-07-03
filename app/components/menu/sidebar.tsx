@@ -13,12 +13,6 @@ import {
   User,
   CreditCard,
   BarChart3,
-  MessageSquare,
-  Bell,
-  ShoppingCart,
-  Settings,
-  ChevronDown,
-  ChevronLeft,
 } from "lucide-react";
 import { useAuthStore } from "@/app/store/useAuthStore";
 import { useCurriculumStore } from "@/app/store/useCurriculumStore";
@@ -28,18 +22,17 @@ export default function StudentSidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
-  const { user, activeSchool } = useAuthStore();
+  const { user, activeSchool, hasPermission, isSuperAdmin } = useAuthStore();
 
   const isActive = (link: string) => {
-    if (link === "/school") {
-      return pathname === "/school";
-    }
-
+    if (link === "/school") return pathname === "/school";
     return pathname === link || pathname.startsWith(link + "/");
   };
 
   const { clearActiveCurriculum } = useCurriculumStore();
-  // school menu items (UNCHANGED)
+
+  // Each item can optionally declare a required permission.
+  // No `permission` key = always visible to any logged-in school user.
   const menuItems = {
     "CORE ACADEMICS": [
       { icon: Home, label: "Dashboard", link: "/school" },
@@ -47,40 +40,68 @@ export default function StudentSidebar() {
         icon: BookOpen,
         label: "Curriculum & Subjects",
         link: "/school/curriculum",
+        permission: "curriculums.view",
       },
       {
         icon: Calendar,
         label: "Lesson Scheduling",
         link: "/school/scheduling",
+        permission: "scheduling.view",
       },
       {
         icon: FolderOpen,
         label: "Resource Management",
         link: "/school/resources",
+        permission: "resources.view",
       },
       {
         icon: CheckSquare,
         label: "Attendance Management",
         link: "/school/attendance",
+        permission: "attendance.view",
       },
-      { icon: Grid, label: "Programs", link: "/school/programs" },
+      {
+        icon: Grid,
+        label: "Programs",
+        link: "/school/programs",
+        permission: "programs.view",
+      },
       {
         icon: Users,
         label: "Slot Invitations",
         link: "/school/slots",
+        permission: "slots.view",
       },
     ],
     ADMINISTRATION: [
-      // { icon: Users, label: "Students", link: "/school/students" },
-      // { icon: User, label: "Teacher Management", link: "/school/teachers" },
-      { icon: CreditCard, label: "Payments", link: "/school/payments" },
+      {
+        icon: CreditCard,
+        label: "Payments",
+        link: "/school/payments",
+        permission: "payments.view",
+      },
     ],
     MANAGEMENT: [
-      { icon: User, label: "Roles", link: "/school/roles" },
-      { icon: Users, label: "Users", link: "/school/users" },
-      { icon: BarChart3, label: "Reports", link: "/school/reports" },
+      { icon: User, label: "Roles", link: "/school/roles", permission: "roles.view" },
+      { icon: Users, label: "Users", link: "/school/users", permission: "users.view" },
+      {
+        icon: BarChart3,
+        label: "Reports",
+        link: "/school/reports",
+        permission: "reports.view",
+      },
     ],
   };
+
+  // Filter each section's items by permission, then drop empty sections
+  const visibleMenuItems = Object.fromEntries(
+    Object.entries(menuItems)
+      .map(([section, items]) => [
+        section,
+        items.filter((item) => !item.permission || hasPermission(item.permission)),
+      ])
+      .filter(([, items]) => (items as unknown[]).length > 0)
+  ) as typeof menuItems;
 
   return (
     <div>
@@ -107,24 +128,16 @@ export default function StudentSidebar() {
         </svg>
       </button>
 
-      {/* Sidebar */}
       <aside
         className={`${
           sidebarOpen ? "w-64" : "w-0"
         } bg-white transition-all duration-300 overflow-hidden flex flex-col border-r border-gray-200 relative z-30`}
       >
-        {/* Logo */}
         <div className="p-5 flex items-center gap-3">
           <div className="w-12 h-12 rounded-full flex items-center justify-center relative">
             <svg width="48" height="48" viewBox="0 0 48 48">
               <defs>
-                <linearGradient
-                  id="logoGradient"
-                  x1="0%"
-                  y1="0%"
-                  x2="100%"
-                  y2="100%"
-                >
+                <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" style={{ stopColor: "#A78BFA" }} />
                   <stop offset="50%" style={{ stopColor: "#F472B6" }} />
                   <stop offset="100%" style={{ stopColor: "#FB923C" }} />
@@ -136,20 +149,16 @@ export default function StudentSidebar() {
             </svg>
           </div>
           <div>
-            <div className="font-semibold text-sm text-gray-900">
-              {activeSchool?.name}
-            </div>
-            <div className="font-semibold text-sm text-gray-900">
-              {activeSchool?.code}
-            </div>
+            <div className="font-semibold text-sm text-gray-900">{activeSchool?.name}</div>
+            <div className="font-semibold text-sm text-gray-900">{activeSchool?.code}</div>
             <div className="bg-purple-600 text-white text-[10px] px-2 py-0.5 rounded-full mt-1 inline-block">
               {activeSchool?.schoolTypeName} School
             </div>
           </div>
         </div>
-        {/* Navigation */}
+
         <nav className="flex-1 overflow-y-auto py-4 px-3">
-          {Object.entries(menuItems).map(([section, items]) => (
+          {Object.entries(visibleMenuItems).map(([section, items]) => (
             <div key={section} className="mb-6">
               <h3 className="px-2 text-[11px] font-semibold text-gray-400 mb-3 tracking-wider">
                 {section}
@@ -164,7 +173,6 @@ export default function StudentSidebar() {
                     key={idx}
                     onClick={() => {
                       clearActiveCurriculum();
-
                       router.push(item.link);
                     }}
                     className={`w-full flex items-center gap-3 px-4 py-3 text-[14px] font-normal rounded-full
@@ -186,7 +194,7 @@ export default function StudentSidebar() {
         </nav>
 
         <QrcodeComponent />
-        {/* Footer */}
+
         <div className="p-4 border-t border-gray-200">
           <div className="text-[11px] text-gray-500 flex items-center gap-1">
             <span>Powered by</span>

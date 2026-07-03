@@ -1,30 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Mpesa from "../payment/components/Mpesa";
+import { addEnrollment, getEnrollmentCountries, getEnrollmentIntakes, getEnrollmentPrograms } from "../lib/enrollment";
 
-const COUNTRY_REGIONS: Record<string, string[]> = {
-  Kenya: [
-    "Nairobi","Mombasa","Kisumu","Nakuru","Eldoret","Thika","Nyeri","Meru",
-    "Kitale","Garissa","Kakamega","Kisii","Machakos","Malindi","Lamu","Other",
-  ],
-  Tanzania: [
-    "Dar es Salaam","Dodoma","Mwanza","Arusha","Mbeya","Morogoro","Tanga",
-    "Zanzibar","Kilimanjaro","Tabora","Kigoma","Shinyanga","Kagera","Iringa","Other",
-  ],
-};
-const COUNTRIES = Object.keys(COUNTRY_REGIONS);
 
-const PROGRAMS = [
-  { id: "cs",      name: "Computer Science",        duration: "4 Yrs", level: "Bachelor's", emoji: "💻" },
-  { id: "bba",     name: "Business Administration", duration: "3 Yrs", level: "Bachelor's", emoji: "📊" },
-  { id: "eng",     name: "Civil Engineering",        duration: "4 Yrs", level: "Bachelor's", emoji: "🏗️" },
-  { id: "nursing", name: "Nursing",                  duration: "4 Yrs", level: "Bachelor's", emoji: "🏥" },
-  { id: "law",     name: "Law (LLB)",                duration: "4 Yrs", level: "Bachelor's", emoji: "⚖️" },
-  { id: "med",     name: "Medicine & Surgery",       duration: "6 Yrs", level: "Bachelor's", emoji: "🩺" },
-  { id: "edu",     name: "Education",                duration: "4 Yrs", level: "Bachelor's", emoji: "📚" },
-  { id: "data",    name: "Data Science & AI",        duration: "3 Yrs", level: "Bachelor's", emoji: "🤖" },
-  { id: "mba",     name: "MBA",                      duration: "2 Yrs", level: "Master's",   emoji: "🎯" },
-  { id: "mcs",     name: "MSc Computer Science",     duration: "2 Yrs", level: "Master's",   emoji: "🖥️" },
-];
 
 const ADMISSION_FEE = 2000;
 type Step = "enrollment" | "review" | "payment" | "success";
@@ -49,9 +28,24 @@ export default function EnrollmentPage() {
   const [cardData, setCardData] = useState({ number:"",expiry:"",cvv:"",name:"" });
   const [paying, setPaying] = useState(false);
   const [refNumber] = useState(`SQ-${Date.now().toString().slice(-8)}`);
-  const [programsOpen, setProgramsOpen] = useState(true);
 
-  const prog = PROGRAMS.find(p => p.id === form.program);
+  const [programs,setPrograms] = useState([]);
+    const [intakes,setIntakes] = useState([]);
+  const [programsOpen, setProgramsOpen] = useState(true);
+  const [enrollmentID, setEnrollmentID] = useState(null);
+  const [referenceNumber, setReferenceNumber] = useState('');
+   const [countries, setCountries] = useState<Record<string, string[]>>({});
+
+
+
+useEffect(()=>{
+  getEnrollmentPrograms().then((res)=>setPrograms(res));
+  getEnrollmentCountries().then((res)=>setCountries(res));
+  getEnrollmentIntakes().then((res)=>setIntakes(res));
+
+},[]);
+
+  const prog = programs?.find(p => p?.id === form.program);
 
   function validate() {
     const e: Partial<FormData> = {};
@@ -69,7 +63,11 @@ export default function EnrollmentPage() {
     if (!form.studyMode)                                   e.studyMode = "Required";
     setErrors(e);
     if (e.program) setProgramsOpen(true);
+
+
+
     return Object.keys(e).length === 0;
+
   }
 
   function set(field: keyof FormData, val: string) {
@@ -103,6 +101,47 @@ export default function EnrollmentPage() {
     {key:"success",   label:"Confirm",  n:4},
   ];
   const si = STEPS.findIndex(s => s.key === step);
+
+
+
+
+
+const submit = async()=>{
+                  
+                    console.log(form);
+
+addEnrollment({
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          phone: form.phone,
+          idNumber: form.idNumber,
+          dob: form.dob,
+          gender: form.gender,
+          country: form.country,
+          county: form.county,
+          subProgramId: form.program,
+          intake: form.intake,
+          studyMode: form.studyMode,
+          previousSchool: form.previousSchool,
+          grade: form.grade,
+          subjectIds: []
+      })
+      .then((res) => {
+        console.log(res);
+          setEnrollmentID(res?.enrollmentId);
+          setReferenceNumber(res?.referenceNumber);
+            setStep("payment")
+      })
+      .catch((err) => {
+          console.error("Enrollment failed:", err);
+      });
+
+              
+}
+
+
+
 
   return (
     <div className="min-h-screen" style={{fontFamily:"'Plus Jakarta Sans','Nunito',sans-serif",background:"#f8fafc"}}>
@@ -289,7 +328,7 @@ export default function EnrollmentPage() {
                       <select className={inp("country")} value={form.country}
                         onChange={e=>{ set("country", e.target.value); set("county",""); }}>
                         <option value="">Select country</option>
-                        {COUNTRIES.map(c=><option key={c}>{c}</option>)}
+{Object.keys(countries).map(c => <option key={c}>{c}</option>)}
                       </select>
                       {errors.country&&<p style={{color:"#ef4444",fontSize:11,marginTop:4}}>{errors.country}</p>}
                     </div>
@@ -301,7 +340,7 @@ export default function EnrollmentPage() {
                         onChange={e=>set("county",e.target.value)}
                         disabled={!form.country}>
                         <option value="">{form.country ? "Select county / district" : "Select a country first"}</option>
-                        {(COUNTRY_REGIONS[form.country]||[]).map(c=><option key={c}>{c}</option>)}
+                        {(countries[form.country]||[])?.map(c=><option key={c}>{c}</option>)}
                       </select>
                       {errors.county&&<p style={{color:"#ef4444",fontSize:11,marginTop:4}}>{errors.county}</p>}
                     </div>
@@ -321,7 +360,7 @@ export default function EnrollmentPage() {
                     {!programsOpen && form.program && (
                       <span style={{background:"rgba(255,255,255,0.2)",color:"#fff",fontSize:12,fontWeight:600,
                         padding:"2px 10px",borderRadius:999,marginRight:8,whiteSpace:"nowrap"}}>
-                        {PROGRAMS.find(p=>p.id===form.program)?.emoji} {PROGRAMS.find(p=>p.id===form.program)?.name}
+                        {programs.find(p=>p.id===form.program)?.emoji} {programs.find(p=>p.id===form.program)?.name}
                       </span>
                     )}
                     {!programsOpen && !form.program && (
@@ -339,17 +378,17 @@ export default function EnrollmentPage() {
                     <div className="card-body slide-down">
                       {errors.program&&<div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:8,padding:"8px 12px",color:"#dc2626",fontSize:12,marginBottom:14}}>{errors.program}</div>}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
-                        {PROGRAMS.map(p=>(
+                        {programs.map(p=>(
                           <div key={p.id} onClick={()=>set("program",p.id)} className={`prog-tile${form.program===p.id?" on":""}`}>
                             <div className="flex items-start gap-3">
-                              <div style={{fontSize:24,lineHeight:1}}>{p.emoji}</div>
+                              <div style={{fontSize:24,lineHeight:1}}>{p?.emoji} 📚</div>
                               <div style={{flex:1}}>
                                 <div className="flex items-center gap-2 mb-1">
-                                  <span style={{fontWeight:700,fontSize:13,color:"var(--sq-text)"}}>{p.name}</span>
+                                  <span style={{fontWeight:700,fontSize:13,color:"var(--sq-text)"}}>{p?.name}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <span className="tag">{p.level}</span>
-                                  <span style={{fontSize:11,color:"var(--sq-muted)"}}>{p.duration}</span>
+                                  <span className="tag">{p?.level}</span>
+                                  <span style={{fontSize:11,color:"var(--sq-muted)"}}>{p?.duration}</span>
                                 </div>
                               </div>
                               <div style={{width:20,height:20,borderRadius:"50%",border:`2px solid ${form.program===p.id?"var(--sq-green)":"#cbd5e1"}`,background:form.program===p.id?"var(--sq-green)":"#fff",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:2}}>
@@ -364,7 +403,7 @@ export default function EnrollmentPage() {
                           <label className={lbl}>Intake <span style={{color:"#f97316"}}>*</span></label>
                           <select className={inp("intake")} value={form.intake} onChange={e=>set("intake",e.target.value)}>
                             <option value="">Select intake</option>
-                            <option>January 2026</option><option>May 2026</option><option>September 2026</option><option>January 2027</option>
+                            {intakes?.map(c=><option key={c?.id}>{c?.name}</option>)}
                           </select>
                           {errors.intake&&<p style={{color:"#ef4444",fontSize:11,marginTop:4}}>{errors.intake}</p>}
                         </div>
@@ -519,136 +558,14 @@ export default function EnrollmentPage() {
 
             <div style={{display:"flex",gap:12}}>
               <button className="btn btn-out" style={{flex:1}} onClick={()=>setStep("enrollment")}>← Edit Details</button>
-              <button className="btn btn-g" style={{flex:2}} onClick={()=>setStep("payment")}>Proceed to Payment →</button>
+              <button className="btn btn-g" style={{flex:2}} onClick={()=>submit()}>Proceed to Payment →</button>
             </div>
           </div>
         )}
 
         {/* ══════════════ STEP 3: PAYMENT ══════════════ */}
         {step==="payment"&&(
-          <div className="fu" style={{maxWidth:520,margin:"0 auto"}}>
-            <div className="card mb-4">
-              <div className="card-head">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                <div>
-                  <div style={{color:"#fff",fontWeight:700,fontSize:15}}>Complete Payment</div>
-                  <div style={{color:"#86efac",fontSize:12}}>Secure · KES {ADMISSION_FEE.toLocaleString()}</div>
-                </div>
-              </div>
-              <div className="card-body">
-                <div style={{display:"flex",background:"#f1f5f9",borderRadius:12,padding:4,marginBottom:20}}>
-                  {[{k:"mpesa",l:"📱 M-Pesa"},{k:"card",l:"💳 Card"}].map(m=>(
-                    <button key={m.k} onClick={()=>setPayMethod(m.k as any)}
-                      style={{flex:1,padding:"10px",borderRadius:9,fontWeight:700,fontSize:13,border:"none",cursor:"pointer",transition:"all 0.15s",
-                        background:payMethod===m.k?"#fff":"transparent",
-                        color:payMethod===m.k?"var(--sq-text)":"#64748b",
-                        boxShadow:payMethod===m.k?"0 1px 6px rgba(0,0,0,0.1)":"none"}}>
-                      {m.l}
-                    </button>
-                  ))}
-                </div>
-
-                {payMethod==="mpesa"&&(
-                  <div>
-                    <div style={{background:"#f0fdf4",border:"1.5px solid #86efac",borderRadius:12,padding:14,display:"flex",alignItems:"center",gap:12,marginBottom:16}}>
-                      <div style={{width:44,height:44,background:"#16a34a",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                        <span style={{color:"#fff",fontWeight:900,fontSize:18}}>M</span>
-                      </div>
-                      <div>
-                        <div style={{fontWeight:700,color:"#15803d",fontSize:14}}>Lipa na M-Pesa</div>
-                        <div style={{fontSize:12,color:"#16a34a"}}>STK Push sent to your Safaricom line</div>
-                      </div>
-                    </div>
-                    <div style={{marginBottom:14}}>
-                      <label className={lbl}>M-Pesa Phone Number</label>
-                      <input style={{width:"100%",padding:"12px 16px",border:"2px solid #e2e8f0",borderRadius:12,fontSize:14,outline:"none",transition:"border 0.15s"}}
-                        onFocus={e=>(e.target.style.borderColor="var(--sq-green)")} onBlur={e=>(e.target.style.borderColor="#e2e8f0")}
-                        value={mpesaPhone} onChange={e=>setMpesaPhone(e.target.value)} placeholder="07XX XXX XXX"/>
-                    </div>
-                    <div style={{background:"#f8fafc",borderRadius:10,padding:12,fontSize:12,color:"#475569",marginBottom:16,lineHeight:1.6}}>
-                      <strong style={{color:"var(--sq-text)"}}>How it works:</strong><br/>
-                      1. Enter your Safaricom number<br/>
-                      2. Tap "Pay Now" to receive STK Push<br/>
-                      3. Enter your M-Pesa PIN to confirm <strong>KES {ADMISSION_FEE.toLocaleString()}</strong>
-                    </div>
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",background:"var(--sq-green-l)",borderRadius:12,padding:"12px 16px",marginBottom:16}}>
-                      <span style={{fontWeight:700,color:"var(--sq-text)"}}>Total</span>
-                      <span style={{fontWeight:900,color:"var(--sq-green-d)",fontSize:22}}>KES {ADMISSION_FEE.toLocaleString()}</span>
-                    </div>
-                    <button className="btn btn-g w-full" onClick={pay} disabled={paying||!mpesaPhone}>
-                      {paying?<><svg className="spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" opacity=".3"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>Sending STK Push...</>
-                       :<>Pay KES {ADMISSION_FEE.toLocaleString()} via M-Pesa</>}
-                    </button>
-                  </div>
-                )}
-
-                {payMethod==="card"&&(
-                  <div>
-                    <div style={{borderRadius:16,padding:20,marginBottom:18,position:"relative",overflow:"hidden",background:"#2b7bb9"}}>
-                      <div style={{position:"absolute",top:-30,right:-30,width:120,height:120,borderRadius:"50%",background:"rgba(22,163,74,0.15)"}}/>
-                      <div style={{position:"absolute",bottom:-30,left:-30,width:100,height:100,borderRadius:"50%",background:"rgba(249,115,22,0.12)"}}/>
-                      <div style={{display:"flex",justifyContent:"space-between",marginBottom:20,position:"relative"}}>
-                        <span style={{fontSize:10,color:"#64748b",fontWeight:700,letterSpacing:"0.1em"}}>SQOOLI STUDENT</span>
-                        <span style={{color:"#94a3b8",fontWeight:700,fontSize:13}}>VISA</span>
-                      </div>
-                      <div style={{fontFamily:"monospace",fontSize:17,color:"#e2e8f0",letterSpacing:"0.15em",marginBottom:16,position:"relative"}}>
-                        {(cardData.number.replace(/\s/g,"").padEnd(16,"•")).match(/.{1,4}/g)?.join(" ")}
-                      </div>
-                      <div style={{display:"flex",justifyContent:"space-between",fontSize:12,color:"#64748b",position:"relative"}}>
-                        <span>{cardData.name||"CARDHOLDER NAME"}</span>
-                        <span>{cardData.expiry||"MM/YY"}</span>
-                      </div>
-                    </div>
-                    <div style={{display:"grid",gap:12,marginBottom:16}}>
-                      <div>
-                        <label className={lbl}>Card Number</label>
-                        <input style={{width:"100%",padding:"12px 16px",border:"2px solid #e2e8f0",borderRadius:12,fontSize:14,fontFamily:"monospace",outline:"none",transition:"border 0.15s"}}
-                          onFocus={e=>(e.target.style.borderColor="var(--sq-green)")} onBlur={e=>(e.target.style.borderColor="#e2e8f0")}
-                          value={cardData.number} maxLength={19}
-                          onChange={e=>setCardData(d=>({...d,number:e.target.value.replace(/\D/g,"").replace(/(\d{4})/g,"$1 ").trim()}))}
-                          placeholder="1234 5678 9012 3456"/>
-                      </div>
-                      <div>
-                        <label className={lbl}>Cardholder Name</label>
-                        <input style={{width:"100%",padding:"12px 16px",border:"2px solid #e2e8f0",borderRadius:12,fontSize:14,outline:"none",transition:"border 0.15s"}}
-                          onFocus={e=>(e.target.style.borderColor="var(--sq-green)")} onBlur={e=>(e.target.style.borderColor="#e2e8f0")}
-                          value={cardData.name} onChange={e=>setCardData(d=>({...d,name:e.target.value.toUpperCase()}))} placeholder="JANE KAMAU"/>
-                      </div>
-                      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-                        <div>
-                          <label className={lbl}>Expiry</label>
-                          <input style={{width:"100%",padding:"12px 16px",border:"2px solid #e2e8f0",borderRadius:12,fontSize:14,fontFamily:"monospace",outline:"none",transition:"border 0.15s"}}
-                            onFocus={e=>(e.target.style.borderColor="var(--sq-green)")} onBlur={e=>(e.target.style.borderColor="#e2e8f0")}
-                            value={cardData.expiry} maxLength={5}
-                            onChange={e=>{let v=e.target.value.replace(/\D/g,"");if(v.length>=3)v=v.slice(0,2)+"/"+v.slice(2,4);setCardData(d=>({...d,expiry:v}));}}
-                            placeholder="MM/YY"/>
-                        </div>
-                        <div>
-                          <label className={lbl}>CVV</label>
-                          <input type="password" maxLength={3}
-                            style={{width:"100%",padding:"12px 16px",border:"2px solid #e2e8f0",borderRadius:12,fontSize:14,fontFamily:"monospace",outline:"none",transition:"border 0.15s"}}
-                            onFocus={e=>(e.target.style.borderColor="var(--sq-green)")} onBlur={e=>(e.target.style.borderColor="#e2e8f0")}
-                            value={cardData.cvv} onChange={e=>setCardData(d=>({...d,cvv:e.target.value.replace(/\D/,"")}))} placeholder="•••"/>
-                        </div>
-                      </div>
-                    </div>
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",background:"var(--sq-green-l)",borderRadius:12,padding:"12px 16px",marginBottom:16}}>
-                      <span style={{fontWeight:700,color:"var(--sq-text)"}}>Total</span>
-                      <span style={{fontWeight:900,color:"var(--sq-green-d)",fontSize:22}}>KES {ADMISSION_FEE.toLocaleString()}</span>
-                    </div>
-                    <button className="btn btn-g w-full" onClick={pay} disabled={paying}>
-                      {paying?<><svg className="spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" opacity=".3"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>Processing...</>
-                       :<>Pay KES {ADMISSION_FEE.toLocaleString()} Securely</>}
-                    </button>
-                    <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6,marginTop:10,fontSize:11,color:"#94a3b8"}}>
-                      🔒 Secured with 256-bit SSL encryption
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-            <button style={{width:"100%",background:"none",border:"none",color:"#64748b",fontSize:13,cursor:"pointer",padding:"8px 0"}} onClick={()=>setStep("review")}>← Back to Review</button>
-          </div>
+        <Mpesa referenceNumber={referenceNumber} step={step} setStep={setStep} enrollmentID={enrollmentID}  setEnrollmentID={setEnrollmentID} phone={form.phone}  />
         )}
 
         {/* ══════════════ STEP 4: SUCCESS ══════════════ */}

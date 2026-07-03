@@ -22,21 +22,21 @@ import { useCurriculumStore } from "@/app/store/useCurriculumStore";
 /* ---------------- TYPES ---------------- */
 
 type RecruitTeacherForm = {
-  fullName: string;
-  email: string;
-  phone: string;
-  role: string;
-  educationLevelId: number | null;
-  gradeLevelId: number | null;
-  subjectId: number | null; // ✅ ADD THIS
-  nationalId: string;
-  dob: string;
-  bio: string;
-  gender: string;
-  address: string;
-  tscNumber: string;
-  certificateLevelId: number | null;
-  workplace: string;
+    fullName: string;
+    email: string;
+    phone: string;
+    role: string;
+    educationLevelId: number | null;
+    gradeLevelId: number | null;
+    subjectId: number | null; //
+    nationalId: string;
+    dob: string | null;
+    bio: string;
+    gender: string;
+    address: string;
+    tscNumber: string;
+    certificateLevelId: number | null;
+    workplace: string;
 };
 
 /* ---------------- COMPONENT ---------------- */
@@ -69,6 +69,7 @@ export default function RecruitTeacherModal() {
       educationLevelId: null,
       gradeLevelId: null,
       certificateLevelId: null,
+      dob:null
     },
   });
 
@@ -193,14 +194,17 @@ useEffect(() => {
           className="grid grid-cols-2 gap-4"
         >
           {/* Name */}
+          <div className="col-span-2">
           <FormField label="Name" error={errors.fullName?.message}>
             <TextInput
               placeholder="Enter full name"
               {...register("fullName", { required: "Name is required" })}
             />
           </FormField>
+          </div>
 
           {/* Email */}
+          <div className="col-span-2">
           <FormField label="Email Address" error={errors.email?.message}>
             <TextInput
               type="email"
@@ -208,8 +212,10 @@ useEffect(() => {
               {...register("email", { required: "Email is required" })}
             />
           </FormField>
+          </div>
 
           {/* Phone */}
+          <div className="col-span-2">
           <FormField label="Phone Number" error={errors.phone?.message}>
             <PhoneField
               control={control}
@@ -217,9 +223,10 @@ useEffect(() => {
               error={errors.phone?.message}
             />
           </FormField>
+          </div>
 
           {/* National ID */}
-          <FormField label="National ID" error={errors.nationalId?.message}>
+          {/* <FormField label="National ID" error={errors.nationalId?.message}>
             <TextInput
               placeholder="Enter National ID"
               type="number"
@@ -227,18 +234,18 @@ useEffect(() => {
                 required: "National ID is required",
               })}
             />
-          </FormField>
+          </FormField> */}
 
           {/* DOB */}
-          <FormField label="Date of Birth" error={errors.dob?.message}>
+          {/* <FormField label="Date of Birth" error={errors.dob?.message}>
             <TextInput
               type="date"
               {...register("dob", { required: "Date of birth is required" })}
             />
-          </FormField>
+          </FormField> */}
 
           {/* Gender */}
-          <FormField label="Gender" error={errors.gender?.message}>
+          {/* <FormField label="Gender" error={errors.gender?.message}>
             <Controller
               name="gender"
               control={control}
@@ -256,37 +263,38 @@ useEffect(() => {
                 />
               )}
             />
-          </FormField>
+          </FormField> */}
 
           {/* Address (span 2 columns) */}
-          <div className="col-span-2">
+          {/* <div className="col-span-2">
             <FormField label="Address" error={errors.address?.message}>
               <TextInput
                 placeholder="Enter address"
                 {...register("address", { required: "Address is required" })}
               />
             </FormField>
-          </div>
+          </div> */}
 
           {/* Bio (span 2 columns) */}
-          <div className="col-span-2">
+          {/* <div className="col-span-2">
             <FormField label="Bio" error={errors.bio?.message}>
               <TextInput
                 placeholder="Enter short bio"
                 {...register("bio", { required: "Bio is required" })}
               />
             </FormField>
-          </div>
+          </div> */}
 
           {/* TSC Number */}
-          <FormField label="TSC Number" error={errors.tscNumber?.message}>
+          {/* <FormField label="TSC Number" error={errors.tscNumber?.message}>
             <TextInput
               placeholder="Enter TSC Number"
               {...register("tscNumber", { required: "TSC Number is required" })}
             />
-          </FormField>
+          </FormField> */}
 
           {/* Role */}
+          <div className="col-span-2">
           <FormField label="Role" error={errors.role?.message}>
             <Controller
               name="role"
@@ -302,9 +310,10 @@ useEffect(() => {
               )}
             />
           </FormField>
+          </div>
 
           {/* Education Level */}
-          <FormField
+          {/* <FormField
             label="Education Level"
             error={errors.educationLevelId?.message}
           >
@@ -324,10 +333,10 @@ useEffect(() => {
                 />
               )}
             />
-          </FormField>
+          </FormField> */}
 
           {/* Grade Level */}
-          <FormField label="Grade Level" error={errors.gradeLevelId?.message}>
+          {/* <FormField label="Grade Level" error={errors.gradeLevelId?.message}>
             <Controller
               name="gradeLevelId"
               control={control}
@@ -349,11 +358,11 @@ useEffect(() => {
                 />
               )}
             />
-          </FormField>
+          </FormField> */}
 
 
           {/* Subject */}
-<FormField label="Subject" error={errors.subjectId?.message}>
+{/* <FormField label="Subject" error={errors.subjectId?.message}>
   <Controller
     name="subjectId"
     control={control}
@@ -375,10 +384,10 @@ useEffect(() => {
       />
     )}
   />
-</FormField>
+</FormField> */}
 
           {/* Certificate Level */}
-          <FormField
+          {/* <FormField
             label="Certificate Level"
             error={errors.certificateLevelId?.message}
           >
@@ -398,17 +407,17 @@ useEffect(() => {
                 />
               )}
             />
-          </FormField>
+          </FormField> */}
 
           {/* TSC Number */}
-          <div className="col-span-2">
+          {/* <div className="col-span-2">
           <FormField label="Workplace" error={errors.workplace?.message}>
             <TextInput
               placeholder="Workplace"
               {...register("workplace", { required: "Workplace is required" })}
             />
           </FormField>
-          </div>
+          </div> */}
           {/* Messages span 2 columns */}
           <div className="col-span-2">
             {error && (

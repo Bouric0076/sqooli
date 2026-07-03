@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Upload, ArrowLeft } from "lucide-react";
+import { Upload, ArrowLeft, FileText } from "lucide-react";
 import {
   getMyCurriculums,
   getEducationLevels,
@@ -22,6 +22,17 @@ type GradeLevel = { id: number; name: string };
 type Subject = { id: number; name: string };
 type Topic = { id: number; name: string };
 
+type Attachment = {
+  entityType: string;
+  entityId: number;
+  usageType?: string;
+  topic?: { id: number; name: string } | null;
+};
+
+// Prefix for relative file URLs returned by the API (e.g. "/uploads/resource/...").
+// Point this at your API origin if files aren't served from the same host as the frontend.
+const FILE_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
+
 type ResourceUploadComponentProps = {
   resourceType: "Note" | "Book" | "Video";
   titleLabel: string;
@@ -30,7 +41,24 @@ type ResourceUploadComponentProps = {
   onBack?: () => void;
   onSuccess?: (resourceId: number) => void;
 
-  activeResourceId: number;
+  // When this has a value, the component loads & edits that resource
+  // instead of creating a new one.
+  activeResourceId: number | null;
+};
+
+/* ---------------- Prefill target shape ----------------
+   These are the ids we want to land on once each cascading
+   dropdown's options have loaded. We don't set them all at once -
+   we apply each one only after its list has been fetched, the same
+   way getValues()-after-reset works for RHF: read/apply synchronously
+   once the data backing the field actually exists.
+*/
+type PrefillTargets = {
+  curriculumId?: number;
+  educationLevelId?: number;
+  gradeLevelId?: number;
+  subjectId?: number;
+  topicId?: number;
 };
 
 export default function ResourceUploadComponent({
@@ -42,11 +70,20 @@ export default function ResourceUploadComponent({
   activeResourceId,
 }: ResourceUploadComponentProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const isEditMode = !!activeResourceId;
 
   /* ---------------- RESOURCE FORM STATE ---------------- */
   const [title, setTitle] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingResource, setIsLoadingResource] = useState(isEditMode);
+
+  // Existing file info (edit mode) - shown until the user picks a replacement
+  const [existingFileName, setExistingFileName] = useState<string | null>(null);
+  const [existingFileUrl, setExistingFileUrl] = useState<string | null>(null);
+
+  // All attachments returned for this resource (edit mode), shown read-only
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
 
   /* ---------------- LOOKUP STATE ---------------- */
   const [curriculums, setCurriculums] = useState<Curriculum[]>([]);
@@ -55,27 +92,110 @@ export default function ResourceUploadComponent({
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [topics, setTopics] = useState<Topic[]>([]);
 
-  const [curriculumId, setCurriculumId] = useState<number | null>(
-    activeResourceId || null
-  );
-
+  const [curriculumId, setCurriculumId] = useState<number | null>(null);
   const [educationLevelId, setEducationLevelId] = useState<number | null>(null);
   const [gradeLevelId, setGradeLevelId] = useState<number | null>(null);
   const [subjectId, setSubjectId] = useState<number | null>(null);
   const [topicId, setTopicId] = useState<number | null>(null);
+
+  /* ---------------- PREFILL TARGETS (ref, not state) ----------------
+     A ref so updating it doesn't trigger re-renders, and so the
+     cascading effects below can read the *current* target synchronously
+     instead of being stuck with a stale closure value.
+  */
+  const prefillTargets = useRef<PrefillTargets | null>(null);
+
+  /* ---------------- LOAD EXISTING RESOURCE (edit mode) ----------------
+     Response shape:
+     {
+       data: {
+         resource: {
+           id, title, resourceType, isPublic, createdAt,
+           curriculumId, educationLevelId, gradeLevelId, subjectId, topicId
+         },
+         files: [{ id, title, url, mimeType, fileSize }],
+         attachments: [{ entityType, entityId, usageType, topic: { id, name } }]
+       }
+     }
+
+     The full curriculum → topic chain now lives directly on the
+     resource itself, so prefill is a straight read - no extra
+     hierarchy lookup needed.
+  */
+  useEffect(() => {
+    if (!activeResourceId) return;
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        setIsLoadingResource(true);
+
+        const res = await fetch(`/api/resource/${activeResourceId}`, {
+          credentials: "include",
+        });
+        const json = await res.json();
+
+        if (!res.ok) {
+          throw new Error(json.message || "Failed to load resource");
+        }
+
+        if (cancelled) return;
+
+        const { resource, files, attachments: fetchedAttachments } = json.data;
+
+        setTitle(resource.title ?? "");
+
+        const primaryFile = files?.[0];
+        if (primaryFile) {
+          setExistingFileUrl(primaryFile.url);
+          setExistingFileName(primaryFile.title ?? "Current file");
+        }
+
+        setAttachments(fetchedAttachments ?? []);
+
+        if (resource.curriculumId) {
+          prefillTargets.current = {
+            curriculumId: resource.curriculumId,
+            educationLevelId: resource.educationLevelId,
+            gradeLevelId: resource.gradeLevelId,
+            subjectId: resource.subjectId,
+            topicId: resource.topicId,
+          };
+        }
+      } catch (err) {
+        console.error("Failed to load resource for edit", err);
+      } finally {
+        if (!cancelled) setIsLoadingResource(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeResourceId]);
 
   /* ---------------- LOAD CURRICULUMS ---------------- */
   useEffect(() => {
     getMyCurriculums().then((data) => {
       setCurriculums(data);
 
-      if (!curriculumId && data.length > 0) {
+      const target = prefillTargets.current?.curriculumId;
+
+      if (target && data.some((c: Curriculum) => c.id === target)) {
+        setCurriculumId(target);
+      } else if (!isEditMode && !curriculumId && data.length > 0) {
         setCurriculumId(data[0].id);
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /* ---------------- CURRICULUM → EDUCATION LEVELS ---------------- */
+  /* ---------------- CURRICULUM → EDUCATION LEVELS ----------------
+     Combines the fetch + the "reset children when parent changes"
+     logic in one place. If we're mid-prefill and the loaded list
+     contains our target id, apply it. Otherwise, reset as before.
+  */
   useEffect(() => {
     if (!curriculumId) {
       setEducationLevels([]);
@@ -83,19 +203,17 @@ export default function ResourceUploadComponent({
       return;
     }
 
-    getEducationLevels({ curriculumId }).then(setEducationLevels);
-  }, [curriculumId]);
+    getEducationLevels({ curriculumId }).then((data) => {
+      setEducationLevels(data);
 
-  /* ---------------- RESET CASCADE WHEN CURRICULUM CHANGES ---------------- */
-  useEffect(() => {
-    setEducationLevelId(null);
-    setGradeLevelId(null);
-    setSubjectId(null);
-    setTopicId(null);
+      const target = prefillTargets.current?.educationLevelId;
 
-    setGradeLevels([]);
-    setSubjects([]);
-    setTopics([]);
+      if (target && data.some((el: EducationLevel) => el.id === target)) {
+        setEducationLevelId(target);
+      } else {
+        setEducationLevelId(null);
+      }
+    });
   }, [curriculumId]);
 
   /* ---------------- EDUCATION LEVEL → GRADE LEVELS ---------------- */
@@ -106,7 +224,17 @@ export default function ResourceUploadComponent({
       return;
     }
 
-    getGradeLevels({ educationLevelId }).then(setGradeLevels);
+    getGradeLevels({ educationLevelId }).then((data) => {
+      setGradeLevels(data);
+
+      const target = prefillTargets.current?.gradeLevelId;
+
+      if (target && data.some((gl: GradeLevel) => gl.id === target)) {
+        setGradeLevelId(target);
+      } else {
+        setGradeLevelId(null);
+      }
+    });
   }, [educationLevelId]);
 
   /* ---------------- GRADE LEVEL → SUBJECTS ---------------- */
@@ -117,7 +245,17 @@ export default function ResourceUploadComponent({
       return;
     }
 
-    getSubjects({ gradeLevelId }).then(setSubjects);
+    getSubjects({ gradeLevelId }).then((data) => {
+      setSubjects(data);
+
+      const target = prefillTargets.current?.subjectId;
+
+      if (target && data.some((s: Subject) => s.id === target)) {
+        setSubjectId(target);
+      } else {
+        setSubjectId(null);
+      }
+    });
   }, [gradeLevelId]);
 
   /* ---------------- SUBJECT → TOPICS ---------------- */
@@ -128,12 +266,27 @@ export default function ResourceUploadComponent({
       return;
     }
 
-    getTopics({ subjectId }).then(setTopics);
+    getTopics({ subjectId }).then((data) => {
+      setTopics(data);
+
+      const target = prefillTargets.current?.topicId;
+
+      if (target && data.some((t: Topic) => t.id === target)) {
+        setTopicId(target);
+        // Prefill chain fully applied (topic is the leaf) - clear it so
+        // any later, user-driven curriculum change resets normally.
+        prefillTargets.current = null;
+      } else {
+        setTopicId(null);
+      }
+    });
   }, [subjectId]);
 
   /* ---------------- SUBMIT HANDLER ---------------- */
   const handleSubmit = async () => {
-    if (!title || !file || !topicId) {
+    const hasFile = !!file || (isEditMode && !!existingFileName);
+
+    if (!title || !hasFile || !topicId) {
       alert("Title, topic, and file are required");
       return;
     }
@@ -141,56 +294,88 @@ export default function ResourceUploadComponent({
     try {
       setIsSubmitting(true);
 
-      // 1️⃣ Create resource
-      const resourceRes = await fetch("/api/resource/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          title,
-          resourceType,
-          isPublic: false,
-        }),
-      });
+      let resourceId: number;
 
-      const resourceJson = await resourceRes.json();
+      if (isEditMode) {
+        // 1️⃣ Update resource (full hierarchy sent here directly)
+        const resourceRes = await fetch(`/api/resource/${activeResourceId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            title,
+            resourceType,
+            isPublic: false,
+            curriculumId,
+            educationLevelId,
+            gradeLevelId,
+            subjectId,
+            topicId,
+          }),
+        });
 
-      if (!resourceRes.ok) {
-        throw new Error(resourceJson.message);
+        const resourceJson = await resourceRes.json();
+
+        if (!resourceRes.ok) {
+          throw new Error(resourceJson.message);
+        }
+
+        resourceId = activeResourceId as number;
+      } else {
+        // 1️⃣ Create resource (full hierarchy sent here directly)
+        const resourceRes = await fetch("/api/resource/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            title,
+            resourceType,
+            isPublic: false,
+            curriculumId,
+            educationLevelId,
+            gradeLevelId,
+            subjectId,
+            topicId,
+          }),
+        });
+
+        const resourceJson = await resourceRes.json();
+
+        if (!resourceRes.ok) {
+          throw new Error(resourceJson.message);
+        }
+
+        resourceId = resourceJson.data.id;
       }
 
-      const resourceId = resourceJson.data.id;
+      // 2️⃣ Upload file - only if the user picked a new one. In edit
+      // mode, no new file means "keep the existing one".
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("Title", title);
+        formData.append("Category", "resource");
+        formData.append("EntityType", "Resource");
+        formData.append("EntityId", resourceId.toString());
+        formData.append("IsPublic", "false");
 
-      // 2️⃣ Upload file
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("Title", title);
-      formData.append("Category", "resource");
-      formData.append("EntityType", "Resource");
-      formData.append("EntityId", resourceId.toString());
-      formData.append("IsPublic", "false");
+        await fetch("/api/files/upload", {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        });
+      }
 
-      await fetch("/api/files/upload", {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      });
-
-      // 3️⃣ Attach resource to topic
-      await fetch(`/api/resource/${resourceId}/attach`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          entityType: "Topic",
-          entityId: topicId,
-          usageType: "primary",
-        }),
-      });
+      // Note: no separate "attach to topic" call - topicId is sent
+      // directly on the resource above, so it's persisted in one step.
 
       onSuccess?.(resourceId);
 
-      alert("Resource uploaded successfully");
+      alert(
+        isEditMode
+          ? "Resource updated successfully"
+          : "Resource uploaded successfully"
+      );
     } catch (err: any) {
       console.error("Upload error", err);
       alert(err.message || "Upload failed");
@@ -198,6 +383,14 @@ export default function ResourceUploadComponent({
       setIsSubmitting(false);
     }
   };
+
+  if (isLoadingResource) {
+    return (
+      <div className="py-16 text-center text-sm text-neutral-500">
+        Loading resource…
+      </div>
+    );
+  }
 
   /* ---------------- UI ---------------- */
   return (
@@ -232,6 +425,28 @@ export default function ResourceUploadComponent({
             <p className="mt-2 text-xs text-neutral-700">{file.name}</p>
           )}
 
+          {!file && existingFileName && (
+            <div
+              className="mt-2 flex items-center justify-center gap-1.5 text-xs text-neutral-700"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <FileText className="h-3.5 w-3.5" />
+              {existingFileUrl ? (
+                <a
+                  href={`${FILE_BASE_URL}${existingFileUrl}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-neutral-900"
+                >
+                  {existingFileName}
+                </a>
+              ) : (
+                <span>{existingFileName}</span>
+              )}
+              <span className="text-neutral-400">(current — click drop zone to replace)</span>
+            </div>
+          )}
+
           <input
             ref={inputRef}
             type="file"
@@ -240,6 +455,19 @@ export default function ResourceUploadComponent({
             onChange={(e) => setFile(e.target.files?.[0] || null)}
           />
         </div>
+
+        {attachments.length > 0 && (
+          <div className="mt-3 text-xs text-neutral-500">
+            Attached to:{" "}
+            {attachments
+              .map((a) =>
+                a.entityType === "Topic" && a.topic
+                  ? a.topic.name
+                  : `${a.entityType} #${a.entityId}`
+              )
+              .join(", ")}
+          </div>
+        )}
       </div>
 
       {/* -------- Education Flow -------- */}
@@ -249,9 +477,7 @@ export default function ResourceUploadComponent({
           className="border rounded-lg px-3 py-2"
           value={curriculumId ?? ""}
           onChange={(e) =>
-            setCurriculumId(
-              e.target.value ? Number(e.target.value) : null
-            )
+            setCurriculumId(e.target.value ? Number(e.target.value) : null)
           }
         >
           <option value="">Select curriculum</option>
@@ -268,9 +494,7 @@ export default function ResourceUploadComponent({
           className="border rounded-lg px-3 py-2"
           value={educationLevelId ?? ""}
           onChange={(e) =>
-            setEducationLevelId(
-              e.target.value ? Number(e.target.value) : null
-            )
+            setEducationLevelId(e.target.value ? Number(e.target.value) : null)
           }
           disabled={!curriculumId}
         >
@@ -288,9 +512,7 @@ export default function ResourceUploadComponent({
           className="border rounded-lg px-3 py-2"
           value={gradeLevelId ?? ""}
           onChange={(e) =>
-            setGradeLevelId(
-              e.target.value ? Number(e.target.value) : null
-            )
+            setGradeLevelId(e.target.value ? Number(e.target.value) : null)
           }
           disabled={!educationLevelId}
         >
@@ -308,9 +530,7 @@ export default function ResourceUploadComponent({
           className="border rounded-lg px-3 py-2"
           value={subjectId ?? ""}
           onChange={(e) =>
-            setSubjectId(
-              e.target.value ? Number(e.target.value) : null
-            )
+            setSubjectId(e.target.value ? Number(e.target.value) : null)
           }
           disabled={!gradeLevelId}
         >
@@ -328,9 +548,7 @@ export default function ResourceUploadComponent({
           className="border rounded-lg px-3 py-2"
           value={topicId ?? ""}
           onChange={(e) =>
-            setTopicId(
-              e.target.value ? Number(e.target.value) : null
-            )
+            setTopicId(e.target.value ? Number(e.target.value) : null)
           }
           disabled={!subjectId}
         >
@@ -359,7 +577,7 @@ export default function ResourceUploadComponent({
           disabled={isSubmitting}
           className="rounded-full bg-neutral-900 px-6 py-2 text-sm text-white disabled:opacity-50"
         >
-          Save & Submit →
+          {isEditMode ? "Save Changes →" : "Save & Submit →"}
         </button>
       </div>
     </div>

@@ -50,6 +50,8 @@ export default function Loginpage() {
         throw new Error(result.message || "Login failed");
       }
       useAuthStore.getState().setUser(result?.user);
+      await useAuthStore.getState().fetchMe();   
+
 
       setSuccessMessage(result.message || "Login successful!");
 
