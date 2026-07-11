@@ -4,26 +4,23 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getCPrograms } from "@/app/helpers/program";
 import Loader from "@/components/ui/Loader";
-import { Intake } from "../intakes/page";
+import { getPrograms } from "@/app/helpers/lookups";
 
 // Define the interface based on your API structure
-interface Programme {
+export interface Intake {
   id: string;
-  programName: string;
-  programType: string;
-  curriculum: string;
-  programStartDate: string;
-  programEndDate: string;
-  subPrograms: any[];
+  curriculumId: number;
+  name: string;
+  startDate: string;
+  endDate: string;
   createdAt?: string; // Fallback for dateAdded
 }
 
-type Tab = "Active" | "Inactive" | "Pending Approval" | "Drafts";
-const TABS: Tab[] = ["Active", "Inactive", "Pending Approval", "Drafts"];
+type Tab = "Active";
+const TABS: Tab[] = ["Active"];
 
 export default function ProgramsPage() {
   const router = useRouter();
-  const [programmes, setProgrammes] = useState<Programme[]>([]);
   const [intakes, setIntakes] = useState<Intake[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>("Active");
@@ -32,17 +29,18 @@ export default function ProgramsPage() {
   // Fetch real data
   useEffect(() => {
     setLoading(true);
-    getCPrograms({})
+    getPrograms({})
       .then((data) => {
-        setProgrammes(data || []);
+        console.log("Fetched intakes:", data);
+        setIntakes(data || []);
       })
-      .catch((err) => console.error("Error fetching programs:", err))
+      .catch((err) => console.error("Error fetching intakes:", err))
       .finally(() => setLoading(false));
   }, []);
 
   // Filter based on search input
-  const filtered = programmes.filter((p) =>
-    p.programName?.toLowerCase().includes(search.toLowerCase())
+  const filtered = intakes.filter((i) =>
+    i.name?.toLowerCase().includes(search.toLowerCase())
   );
 
   if (loading) {
@@ -67,15 +65,15 @@ export default function ProgramsPage() {
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "24px" }}>
         <div>
           <h1 style={{ margin: 0, fontSize: "22px", fontWeight: 700, color: "#0F172A", lineHeight: "1.25", letterSpacing: "-0.2px" }}>
-            Programs
+            Intakes
           </h1>
           <p style={{ margin: "3px 0 0 0", fontSize: "13px", color: "#94A3B8", fontWeight: 400 }}>
-            Manage and monitor academic programmes
+            Manage and monitor academic intakes
           </p>
         </div>
 
         <button
-          onClick={() => router.push("/school/programs/create")}
+          onClick={() => router.push("/school/intakes/create")}
           style={{
             display: "flex",
             alignItems: "center",
@@ -93,7 +91,7 @@ export default function ProgramsPage() {
           }}
         >
           <span style={{ fontSize: "18px", lineHeight: 1, fontWeight: 300 }}>+</span>
-          Create Program
+          Create Intake
         </button>
       </div>
 
@@ -115,7 +113,7 @@ export default function ProgramsPage() {
 
         <input
           type="text"
-          placeholder="Search programs..."
+          placeholder="Search intakes..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{ flex: 1, border: "none", outline: "none", fontSize: "14px", color: "#374151", backgroundColor: "transparent" }}
@@ -155,7 +153,7 @@ export default function ProgramsPage() {
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ backgroundColor: "#FAFAFA" }}>
-                {["Program Name", "Curriculum", "Duration", "Sub-programs", "Created By", ""].map((h) => (
+                {["Intake Name", "Curriculum", "Duration", "Created By", ""].map((h) => (
                   <th key={h} style={{ textAlign: "left", padding: "12px 20px", fontSize: "12.5px", fontWeight: 500, color: "#94A3B8", borderBottom: "1px solid #F1F5F9" }}>
                     {h}
                   </th>
@@ -166,27 +164,26 @@ export default function ProgramsPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} style={{ padding: "40px", textAlign: "center", color: "#94A3B8" }}>Loading programs...</td>
+                  <td colSpan={6} style={{ padding: "40px", textAlign: "center", color: "#94A3B8" }}>Loading intakes...</td>
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ padding: "40px", textAlign: "center", color: "#94A3B8" }}>No programs found.</td>
+                  <td colSpan={6} style={{ padding: "40px", textAlign: "center", color: "#94A3B8" }}>No intakes found.</td>
                 </tr>
               ) : (
                 filtered.map((row, idx) => (
                   <tr key={row.id} style={{ borderBottom: idx < filtered.length - 1 ? "1px solid #F1F5F9" : "none" }}>
                     <td style={{ padding: "18px 20px", fontSize: "13.5px", color: "#1E293B", fontWeight: 500 }}>
-                      {row.programName}
+                      {row.name}
                     </td>
                     <td style={{ padding: "18px 20px", fontSize: "13.5px", color: "#475569" }}>
-                      {row.curriculum}
+                      {row?.curriculum?.name}
                     </td>
+            
                     <td style={{ padding: "18px 20px", fontSize: "13.5px", color: "#64748B" }}>
-                      {row.programStartDate} — {row.programEndDate}
+                      {row.startDate} — {row.endDate}
                     </td>
-                    <td style={{ padding: "18px 20px", fontSize: "13.5px", color: "#475569" }}>
-                      {row.subPrograms?.length || 0}
-                    </td>
+
                     <td style={{ padding: "18px 20px" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                         <div style={{ width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "#F1F5F9", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", color: "#64748B" }}>
@@ -198,14 +195,33 @@ export default function ProgramsPage() {
                         </div>
                       </div>
                     </td>
-                    <td style={{ padding: "18px 20px", textAlign: "right" }}>
-                      <button 
-                        onClick={() => router.push(`/school/programs/${row.id}/sub-programs`)}
-                        style={{ background: "none", border: "none", color: "#3B9EFF", fontWeight: 500, fontSize: "13.5px", cursor: "pointer" }}
-                      >
-                        View
-                      </button>
-                    </td>
+
+
+                    <td style={{ padding: "18px 20px" }}>
+  <button
+    onClick={() => router.push(`/school/intakes/create?id=${row.id}`)}
+    style={{
+      padding: "8px 14px",
+      borderRadius: "8px",
+      border: "1px solid #D1D5DB",
+      backgroundColor: "#fff",
+      color: "#374151",
+      fontSize: "13px",
+      fontWeight: 500,
+      cursor: "pointer",
+      transition: "all 0.2s ease",
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.backgroundColor = "#F8FAFC";
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.backgroundColor = "#fff";
+    }}
+  >
+    Edit
+  </button>
+</td>
+ 
                   </tr>
                 ))
               )}

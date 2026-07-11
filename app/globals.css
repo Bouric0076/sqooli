@@ -388,3 +388,15 @@ body {
   border-top-left-radius: 0.75rem;
   border-top-right-radius: 0.75rem;
 }
+
+.theme-text-color {
+  color: #627D98;
+}
+
+.theme-sm-text {
+  font-size: 12px;
+}
+
+.default-theme-color {
+   color: #1D3C5B;
+}

@@ -19,6 +19,11 @@ import {
   Settings,
   ChevronDown,
   ChevronLeft,
+  School,
+  Users2,
+  Layers,
+  LineChart,
+  UserSquare,
 } from "lucide-react";
 import { useAuthStore } from "@/app/store/useAuthStore";
 import { useCurriculumStore } from "@/app/store/useCurriculumStore";
@@ -29,6 +34,27 @@ export default function AdminSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useAuthStore();
+
+const [openMenus, setOpenMenus] = useState({
+  userManagement:
+    pathname.startsWith("/admin/users") ||
+    pathname.startsWith("/admin/roles"),
+
+  curriculumSetup:
+    pathname.startsWith("/admin/curriculums") ||
+    pathname.startsWith("/admin/education-levels") ||
+    pathname.startsWith("/admin/grade-levels") ||
+    pathname.startsWith("/admin/subject-categories") ||
+    pathname.startsWith("/admin/subjects") ||
+    pathname.startsWith("/admin/topics"),
+});
+
+const toggleMenu = (menu: keyof typeof openMenus) => {
+  setOpenMenus((prev) => ({
+    ...prev,
+    [menu]: !prev[menu],
+  }));
+};
 
   const isActive = (link: string) => {
     if (link === "/admin") {
@@ -41,11 +67,27 @@ export default function AdminSidebar() {
   const { clearActiveCurriculum } = useCurriculumStore();
   // admin menu items (UNCHANGED)
   const menuItems = {
-    "CORE ACADEMICS": [
+    "Main Menu": [
       { icon: Home, label: "Dashboard", link: "/admin" },
+      { icon: School, label: "Schools", link: "/admin/schools" },
+      { icon: Users2, label: "Students", link: "/admin/students" },
+      { icon: UserSquare, label: "Tutors", link: "/admin/tutors" },
+      { icon: Grid, label: "Programs", link: "/admin/programs" },
+      { icon: Users, label: "Partners", link: "/admin/partners" },
+      { icon: CreditCard, label: "Payments", link: "/admin/payments" },
+      { icon: Layers, label: "Activity Feed", link: "/admin/activity-feed" },
+      { icon: LineChart, label: "Reports", link: "/admin/reports" },
+
+    ],
+   CONFIGURATIONS: [
+  {
+    id: "curriculumSetup",
+    icon: BookOpen,
+    label: "Curriculum Setup",
+    children: [
       {
         icon: BookOpen,
-        label: "Curriculums         ",
+        label: "Curriculums",
         link: "/admin/curriculums",
       },
       {
@@ -63,18 +105,37 @@ export default function AdminSidebar() {
         label: "Subject Categories",
         link: "/admin/subject-categories",
       },
-      { icon: Grid, label: "Subjects", link: "/admin/subjects" },
+      {
+        icon: Grid,
+        label: "Subjects",
+        link: "/admin/subjects",
+      },
       {
         icon: Users,
         label: "Topics",
         link: "/admin/topics",
       },
     ],
-    ADMINISTRATION: [
-      { icon: Users, label: "Roles", link: "/admin/roles" },
-      { icon: User, label: "Users", link: "/admin/users" },
-      // { icon: CreditCard, label: "Payments", link: "/admin/payments" },
+  },
+
+  {
+    id: "userManagement",
+    icon: Users,
+    label: "User Management",
+    children: [
+      {
+        icon: User,
+        label: "Users",
+        link: "/admin/users",
+      },
+      {
+        icon: Users,
+        label: "Roles",
+        link: "/admin/roles",
+      },
     ],
+  },
+],
     // MANAGEMENT: [
     //   { icon: User, label: "User Management", link: "/admin/users" },
     //   // { icon: Users, label: "Partners", link: "/admin/partners" },
@@ -109,13 +170,18 @@ export default function AdminSidebar() {
 
       {/* Sidebar */}
       <aside
-        className={`${
+        className={` h-full  ${
           sidebarOpen ? "w-64" : "w-0"
-        } bg-white transition-all duration-300 overflow-hidden flex flex-col border-r border-gray-200 relative z-30`}
+        } bg-[#255480] transition-all duration-300 overflow-hidden flex flex-col border-r border-gray-200 relative z-30`}
       >
         {/* Logo */}
         <div className="p-5 flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full flex items-center justify-center relative">
+   
+        <img src="/logo.svg" alt="Live Logo" className="w-40 " />
+
+      
+     
+          {/* <div className="w-12 h-12 rounded-full flex items-center justify-center relative">
             <svg width="48" height="48" viewBox="0 0 48 48">
               <defs>
                 <linearGradient
@@ -145,50 +211,108 @@ export default function AdminSidebar() {
             <div className="bg-purple-600 text-white text-[10px] px-2 py-0.5 rounded-full mt-1 inline-block">
               Super Admin
             </div>
-          </div>
+          </div> */}
         </div>
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto py-4 px-3">
           {Object.entries(menuItems).map(([section, items]) => (
             <div key={section} className="mb-6">
-              <h3 className="px-2 text-[11px] font-semibold text-gray-400 mb-3 tracking-wider">
+              <h3 className="px-2 text-[14px] font-semibold text-gray-100 mb-3 tracking-wider">
                 {section}
               </h3>
 
-              {items.map((item, idx) => {
-                const Icon = item.icon;
-                const active = isActive(item.link);
+{items.map((item: any, idx: number) => {
+  const Icon = item.icon;
 
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => {
-                      clearActiveCurriculum();
+  if (item.children) {
+    const active = item.children.some((child: any) => isActive(child.link));
+    const expanded = openMenus[item.id as keyof typeof openMenus];
 
-                      router.push(item.link);
-                    }}
-                    className={`w-full flex items-center gap-3 px-4 py-3 text-[14px] font-normal rounded-full
-                      transition-all duration-200
-                      ${
-                        active
-                          ? "bg-blue-500 text-white"
-                          : "text-gray-700 hover:bg-gray-50 hover:translate-x-1"
-                      }
-                    `}
-                  >
-                    <Icon className="w-5 h-5 flex-shrink-0" strokeWidth={1.5} />
-                    <span className="whitespace-nowrap">{item.label}</span>
-                  </button>
-                );
-              })}
+    return (
+      <div key={idx}>
+        <button
+          onClick={() =>
+            toggleMenu(item.id as keyof typeof openMenus)
+          }
+          className={`w-full flex items-center justify-between px-4 py-3 rounded-md transition-all
+            ${
+              active
+                ? "bg-[#1D3C5B] text-white"
+                : "text-gray-100 hover:bg-gray-700"
+            }`}
+        >
+          <div className="flex items-center gap-3">
+            <Icon className="w-5 h-5" strokeWidth={1.5} />
+            <span>{item.label}</span>
+          </div>
+
+          {expanded ? (
+            <ChevronDown className="w-4 h-4" />
+          ) : (
+            <ChevronLeft className="w-4 h-4" />
+          )}
+        </button>
+
+        {expanded && (
+          <div className="ml-8 mt-1 space-y-1">
+            {item.children.map((child: any, childIdx: number) => {
+              const ChildIcon = child.icon;
+              const childActive = isActive(child.link);
+
+              return (
+                <button
+                  key={childIdx}
+                  onClick={() => {
+                    clearActiveCurriculum();
+                    router.push(child.link);
+                  }}
+                  className={`w-full flex items-center gap-3 px-4 py-2 rounded-md text-sm transition-all
+                    ${
+                      childActive
+                        ? "bg-[#1D3C5B] text-white"
+                        : "text-gray-50 hover:bg-gray-700"
+                    }`}
+                >
+                  <ChildIcon className="w-4 h-4" strokeWidth={1.5} />
+                  <span>{child.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  const active = isActive(item.link);
+
+  return (
+    <button
+      key={idx}
+      onClick={() => {
+        clearActiveCurriculum();
+        router.push(item.link);
+      }}
+      className={`w-full flex items-center gap-3 px-4 py-3 text-[14px] rounded-md transition-all duration-200
+        ${
+          active
+            ? "bg-[#1D3C5B] text-white"
+            : "text-gray-50 hover:bg-gray-700 hover:translate-x-1"
+        }`}
+    >
+      <Icon className="w-5 h-5" strokeWidth={1.5} />
+      <span>{item.label}</span>
+    </button>
+  );
+})}
             </div>
           ))}
         </nav>
 
-        <QrcodeComponent />
+
         {/* Footer */}
         <div className="p-4 border-t border-gray-200">
-          <div className="text-[11px] text-gray-500 flex items-center gap-1">
+          <div className="text-[11px] text-gray-50 flex items-center gap-1">
             <span>Powered by</span>
             <span className="inline-flex gap-0.5 ml-1">
               {["S", "q", "o", "o", "ll"].map((l, i) => (

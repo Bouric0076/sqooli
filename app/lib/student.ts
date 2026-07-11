@@ -1,8 +1,13 @@
-import { Curriculum } from "../admin/curriculums/page";
 
 
-export async function getCurriculums() {
-    const res = await fetch("/api/curriculums", {
+export interface Student{
+    id:number,
+    name:string
+}
+
+
+export async function getStudents() {
+    const res = await fetch("/api/student", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -12,7 +17,7 @@ export async function getCurriculums() {
   
     if (!res.ok) {
       const err = await res.json();
-      throw new Error(err.message || "Failed to get curriculums");
+      throw new Error(err.message || "Failed to get Student");
     }
   
     return res.json();
@@ -20,9 +25,8 @@ export async function getCurriculums() {
 
 
 
-
-export async function addCurriculum(form :Curriculum) {
-    const res = await fetch("/api/curriculums", {
+export async function addStudent(form :Student) {
+    const res = await fetch("/api/student", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -32,7 +36,7 @@ export async function addCurriculum(form :Curriculum) {
   
     if (!res.ok) {
       const err = await res.json();
-      throw new Error(err.message || "Failed to publish Curriculum");
+      throw new Error(err.message || "Failed to publish Student");
     }
   
     return res.json();
@@ -41,8 +45,8 @@ export async function addCurriculum(form :Curriculum) {
   
   
 
-  export async function UpdateCurriculum(form :Curriculum) {
-    const res = await fetch(`/api/curriculums`, {
+  export async function UpdateStudent(form :Student) {
+    const res = await fetch(`/api/student`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -52,14 +56,14 @@ export async function addCurriculum(form :Curriculum) {
   
     if (!res.ok) {
       const err = await res.json();
-      throw new Error(err.message || "Failed to update curriculum");
+      throw new Error(err.message || "Failed to update Student");
     }
   
     return res.json();
   }
   
-    export async function DeleteCurriculum(form :Curriculum) {
-    const res = await fetch(`/api/curriculums`, {
+    export async function DeleteStudent(form :Student) {
+    const res = await fetch(`/api/student`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -69,7 +73,7 @@ export async function addCurriculum(form :Curriculum) {
   
     if (!res.ok) {
       const err = await res.json();
-      throw new Error(err.message || "Failed to delete curriculum");
+      throw new Error(err.message || "Failed to delete Student");
     }
   
     return res.json();

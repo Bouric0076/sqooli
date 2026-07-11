@@ -31,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <div className="flex h-screen bg-gray-100 relative">
+        <div className="flex h-screen bg-white relative">
           {/* Toggle button - always visible, positioned independently */}
           <AdminSidebar />
 

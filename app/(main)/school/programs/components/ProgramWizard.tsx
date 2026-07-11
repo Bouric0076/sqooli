@@ -46,6 +46,7 @@ const [error, setError] = useState("");
 
   const buildPayload = (data: ProgramRequest) => ({
     programId: data.programId || null,
+    IntakeId: data.IntakeId || 0,
     programName: data.programName || "",
     programTypeId: data.programTypeId || 0,
     curriculumId: data.curriculumId || 0,

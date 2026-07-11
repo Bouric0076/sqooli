@@ -62,6 +62,12 @@ export default function StudentSidebar() {
       },
       {
         icon: Grid,
+        label: "Intakes",
+        link: "/school/intakes",
+        permission: "programs.view",
+      },
+      {
+        icon: Grid,
         label: "Programs",
         link: "/school/programs",
         permission: "programs.view",

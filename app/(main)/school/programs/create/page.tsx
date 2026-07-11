@@ -1,19 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Calendar } from "lucide-react";
 import { ProgramRequest } from "../types/program";
 import ProgramDetailsModal from "../components/ProgramDetailsModal";
 import { FormField } from "@/app/components/ui/form/FormField";
 import { TextInput } from "@/app/components/ui/form/TextInput";
-import { getCurriculums, getProgramTypes } from "@/app/helpers/lookups";
+import { getCurriculums, getPrograms, getProgramTypes } from "@/app/helpers/lookups";
 import { SelectInput } from "@/app/components/ui/form/SelectInput";
 import { useRouter } from "next/navigation";
+import { Intake } from "../../intakes/page";
 
 export default function ProgramForm() {
   const [showModal, setShowModal] = useState(false);
   const [programs, setPrograms] = useState<any[]>([]);
+  const [intakes, setIntakes] = useState<Intake[]>([]);
   const [loading, setLoading] = useState(false);
   const [curriculums, setCurriculums] = useState<any[]>([]);
 
@@ -27,18 +29,23 @@ export default function ProgramForm() {
     Promise.all([
       getProgramTypes(),
       getCurriculums(),
-    ]).then(([lt, pr]) => {
+       getPrograms({}),
+    ]).then(([lt, pr, dn]) => {
       setPrograms(lt);
       setCurriculums(pr);
-
+      setIntakes(dn);
+      
     });
   }, []);
+
+
 
 
 
   const form = useForm<ProgramRequest>({
     defaultValues: {
       programName: "",
+      IntakeId: 0,
       programTypeId: 0,
       curriculumId: 0,
       programStartDate: "",
@@ -61,29 +68,18 @@ export default function ProgramForm() {
   } = form;
 
 
-// const form = useForm<WizardFormValues & { days: DaysState }>({
-//   defaultValues: {
-//     subProgram: "",
-//     eduLevel: "",
-//     gradeLevel: "",
-//     subjects: ["Mathematics", "English"],
-//     startDate: "",
-//     endDate: "",
-//     days: Object.fromEntries(
-//       DAYS.map((day, i) => [
-//         day,
-//         {
-//           on: i < 5, // Mon-Fri active
-//           from: { h: "08", m: "30", ap: "AM" },
-//           to: { h: "05", m: "00", ap: "PM" },
-//           breaks: day === "Tuesday" ? [{ name: "Tea Break", from: "10.00 AM", to: "10.30 AM" }] : [],
-//         }
-//       ])
-//     ),
-//   },
-//   mode: "onBlur",
-// });
+  const IntakeId = watch("IntakeId");
 
+  useEffect(() => {
+    if (IntakeId) {
+      const selectedIntake = intakes.find((i) => i.id === IntakeId);
+      if (selectedIntake) {
+        setValue("curriculumId", selectedIntake.curriculumId);
+        setValue("programStartDate", selectedIntake.startDate);
+        setValue("programEndDate", selectedIntake.endDate);
+      } 
+    }
+    }, [IntakeId, intakes, setValue]);
 
 
 
@@ -134,7 +130,7 @@ export default function ProgramForm() {
         {/* Program Type */}
         <div>
    
-
+   <div className="grid grid-cols-2 gap-4">
        <FormField className="text-sm font-medium text-gray-700" label="Program Type" error={errors.programTypeId?.message}>
           <Controller
             name="programTypeId"
@@ -156,6 +152,28 @@ export default function ProgramForm() {
 
 
 
+        <FormField className="text-sm font-medium text-gray-700" label="Program Intake/Enrollment" error={errors.IntakeId?.message}>
+          <Controller
+            name="IntakeId"
+            control={control}
+            rules={{ required: "Intake is required" }}
+            render={({ field }) => (
+              <SelectInput
+                value={field.value?.toString()}
+                options={intakes.map((l) => ({
+                  label: l.name,
+                  value: l.id.toString(),
+                }))}
+                onChange={(v) => field.onChange(Number(v))}
+                placeholder="Select Intake"
+              />
+            )}
+          />
+        </FormField>
+
+
+
+</div>
 
 
         </div>
@@ -170,9 +188,11 @@ export default function ProgramForm() {
           <Controller
             name="curriculumId"
             control={control}
+            
             rules={{ required: "Curriculum is required" }}
             render={({ field }) => (
               <SelectInput
+               disabled={true}
                 value={field.value?.toString()}
                 options={curriculums.map((l) => ({
                   label: l.name,
@@ -198,6 +218,7 @@ export default function ProgramForm() {
             <div className="">
            <FormField className="text-sm font-medium text-gray-700" label=" Program Start Date" error={errors.programStartDate?.message}>
              <TextInput
+             readOnly
                type="date"
                {...register("programStartDate", { required: "Start date is required" })}
              />
@@ -214,6 +235,7 @@ export default function ProgramForm() {
             <div className="">
           <FormField className="text-sm font-medium text-gray-700" label=" Program End Date" error={errors.programEndDate?.message}>
              <TextInput
+              readOnly
                type="date"
                {...register("programEndDate", { required: "End date is required" })}
              />

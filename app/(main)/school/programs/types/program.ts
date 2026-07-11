@@ -33,6 +33,7 @@ export interface SubProgram {
 
 export interface ProgramRequest {
   programId?: number;
+  IntakeId: number;
   lessonDuration?: number;
   programName: string;
   programTypeId: number;
