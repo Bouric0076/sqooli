@@ -34,7 +34,7 @@ type Attachment = {
 const FILE_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 type ResourceUploadComponentProps = {
-  resourceType: "Note" | "Book" | "Video";
+  resourceType: "Note" | "Book" | "Video" | "Short";
   titleLabel: string;
   uploadLabel: string;
 

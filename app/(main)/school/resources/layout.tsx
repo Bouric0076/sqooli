@@ -54,6 +54,11 @@ export default function RootLayout({
       label: "Videos",
       link: "/school/resources/videos",
     },
+        {
+      icon: VideoIcon,
+      label: "Shorts",
+      link: "/school/resources/shorts",
+    },
   ];
 
   return (

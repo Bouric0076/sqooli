@@ -225,15 +225,18 @@ export default function UsersPage() {
       fetchData();
     }
   };
-
+  
   const toggleRole = (roleName: string) => {
-    const current = form.getValues("roles");
-    if (current.includes(roleName)) {
-      setValue("roles", current.filter((r) => r !== roleName));
-    } else {
-      setValue("roles", [...current, roleName]);
-    }
-  };
+  const current = form.getValues("roles");
+
+  if (current[0] === roleName) {
+    // Unselect if clicked again (optional)
+    setValue("roles", []);
+  } else {
+    // Only allow one role
+    setValue("roles", [roleName]);
+  }
+};
 
   // ── Filter by tab ──
   const filtered = users.filter((u) => {

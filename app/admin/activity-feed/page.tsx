@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Search,
   Filter,
@@ -14,6 +14,8 @@ import {
   FileText,
   Clock,
 } from "lucide-react";
+import { getActivities, getActivityStats } from "@/app/lib/activity";
+import { ActivityStats } from "@/app/types/activity";
 
 type ActivityType =
   | "Enrollment"
@@ -36,77 +38,120 @@ export default function ActivityFeedPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
 
-  const activities: Activity[] = [
-    {
-      id: 1,
-      user: "John Kamau",
-      role: "Teacher",
-      action: "published Mathematics Assignment for Grade 8.",
-      time: "2 mins ago",
-      type: "Assignment",
-    },
-    {
-      id: 2,
-      user: "Mary Wanjiku",
-      role: "Administrator",
-      action: "created a new school announcement.",
-      time: "15 mins ago",
-      type: "Announcement",
-    },
-    {
-      id: 3,
-      user: "Brian Otieno",
-      role: "Student",
-      action: "submitted Science Assignment.",
-      time: "30 mins ago",
-      type: "Assignment",
-    },
-    {
-      id: 4,
-      user: "Grace Achieng",
-      role: "Teacher",
-      action: "marked attendance for Grade 6.",
-      time: "1 hour ago",
-      type: "Attendance",
-    },
-    {
-      id: 5,
-      user: "School Admin",
-      role: "Administrator",
-      action: "enrolled 15 new students.",
-      time: "2 hours ago",
-      type: "Enrollment",
-    },
-    {
-      id: 6,
-      user: "James Kiptoo",
-      role: "Teacher",
-      action: "scheduled an English lesson.",
-      time: "3 hours ago",
-      type: "Lesson",
-    },
-    {
-      id: 7,
-      user: "Lucy Njeri",
-      role: "Examination Office",
-      action: "published End Term Examination timetable.",
-      time: "Yesterday",
-      type: "Exam",
-    },
-  ];
+  const [activities, setActivities] = useState<Activity[]>([]);
+const [stats, setStats] = useState<ActivityStats>({
+    todayActivities: 0,
+    assignments: 0,
+    attendance: 0,
+    announcements: 0,
+});
 
-  const filteredActivities = useMemo(() => {
-    return activities.filter((activity) => {
-      const matchesSearch =
-        activity.user.toLowerCase().includes(search.toLowerCase()) ||
-        activity.action.toLowerCase().includes(search.toLowerCase());
+const [loading, setLoading] = useState(true);
 
-      const matchesFilter =
-        filter === "All" || activity.type === filter;
+const [page] = useState(1);
 
-      return matchesSearch && matchesFilter;
-    });
-  }, [activities, filter, search]);
+
+
+
+const loadActivities = async () => {
+
+    setLoading(true);
+
+    try {
+
+        const [activitiesResult, statsResult] = await Promise.all([
+            getActivities(search, filter, page),
+            getActivityStats(),
+        ]);
+
+        setActivities(activitiesResult.data);
+        setStats(statsResult);
+
+    } finally {
+        setLoading(false);
+    }
+};
+
+useEffect(() => {
+
+    const timeout = setTimeout(loadActivities,300);
+
+    return ()=>clearTimeout(timeout);
+
+},[search,filter,page]);
+
+
+  // const activities: Activity[] = [
+  //   {
+  //     id: 1,
+  //     user: "John Kamau",
+  //     role: "Teacher",
+  //     action: "published Mathematics Assignment for Grade 8.",
+  //     time: "2 mins ago",
+  //     type: "Assignment",
+  //   },
+  //   {
+  //     id: 2,
+  //     user: "Mary Wanjiku",
+  //     role: "Administrator",
+  //     action: "created a new school announcement.",
+  //     time: "15 mins ago",
+  //     type: "Announcement",
+  //   },
+  //   {
+  //     id: 3,
+  //     user: "Brian Otieno",
+  //     role: "Student",
+  //     action: "submitted Science Assignment.",
+  //     time: "30 mins ago",
+  //     type: "Assignment",
+  //   },
+  //   {
+  //     id: 4,
+  //     user: "Grace Achieng",
+  //     role: "Teacher",
+  //     action: "marked attendance for Grade 6.",
+  //     time: "1 hour ago",
+  //     type: "Attendance",
+  //   },
+  //   {
+  //     id: 5,
+  //     user: "School Admin",
+  //     role: "Administrator",
+  //     action: "enrolled 15 new students.",
+  //     time: "2 hours ago",
+  //     type: "Enrollment",
+  //   },
+  //   {
+  //     id: 6,
+  //     user: "James Kiptoo",
+  //     role: "Teacher",
+  //     action: "scheduled an English lesson.",
+  //     time: "3 hours ago",
+  //     type: "Lesson",
+  //   },
+  //   {
+  //     id: 7,
+  //     user: "Lucy Njeri",
+  //     role: "Examination Office",
+  //     action: "published End Term Examination timetable.",
+  //     time: "Yesterday",
+  //     type: "Exam",
+  //   },
+  // ];
+
+  // const filteredActivities = useMemo(() => {
+  //   return activities.filter((activity) => {
+  //     const matchesSearch =
+  //       activity.user.toLowerCase().includes(search.toLowerCase()) ||
+  //       activity.action.toLowerCase().includes(search.toLowerCase());
+
+  //     const matchesFilter =
+  //       filter === "All" || activity.type === filter;
+
+  //     return matchesSearch && matchesFilter;
+  //   });
+  // }, [activities, filter, search]);
 
   const getIcon = (type: ActivityType) => {
     switch (type) {
@@ -172,22 +217,22 @@ export default function ActivityFeedPage() {
 
           <div className="bg-white rounded-xl p-5 border shadow-sm">
             <p className="text-slate-500 text-sm">Today's Activities</p>
-            <h2 className="text-3xl font-bold mt-2">128</h2>
+            <h2 className="text-3xl font-bold mt-2">{stats.todayActivities}</h2>
           </div>
 
           <div className="bg-white rounded-xl p-5 border shadow-sm">
             <p className="text-slate-500 text-sm">Assignments</p>
-            <h2 className="text-3xl font-bold mt-2">38</h2>
+            <h2 className="text-3xl font-bold mt-2">{stats.assignments}</h2>
           </div>
 
           <div className="bg-white rounded-xl p-5 border shadow-sm">
             <p className="text-slate-500 text-sm">Attendance</p>
-            <h2 className="text-3xl font-bold mt-2">42</h2>
+            <h2 className="text-3xl font-bold mt-2">{stats.attendance}</h2>
           </div>
 
           <div className="bg-white rounded-xl p-5 border shadow-sm">
             <p className="text-slate-500 text-sm">Announcements</p>
-            <h2 className="text-3xl font-bold mt-2">9</h2>
+            <h2 className="text-3xl font-bold mt-2">{stats.announcements}</h2>
           </div>
 
         </div>
@@ -249,12 +294,12 @@ export default function ActivityFeedPage() {
 
           <div className="relative">
 
-            {filteredActivities.map((activity, index) => (
+            {activities.map((activity, index) => (
               <div
                 key={activity.id}
                 className="relative flex gap-5 px-6 py-6 hover:bg-slate-50 transition"
               >
-                {index !== filteredActivities.length - 1 && (
+                {index !== activities.length - 1 && (
                   <div className="absolute left-[39px] top-16 w-[2px] h-full bg-slate-200"></div>
                 )}
 

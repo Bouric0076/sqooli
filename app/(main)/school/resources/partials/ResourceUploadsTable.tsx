@@ -39,6 +39,10 @@ function ResourceUploadsTable({ ResourceType }: ResourceTableProps) {
     if (ResourceType == "Video") {
       router.push("/school/resources/videos/create-video");
     }
+
+    if (ResourceType == "Short") {
+      router.push("/school/resources/shorts/create-short");
+    }
   };
 
   // Filter resources based on search term
@@ -66,6 +70,10 @@ function ResourceUploadsTable({ ResourceType }: ResourceTableProps) {
 
               if (ResourceType == "Video") {
                 router.push("/school/resources/videos/create-video");
+              }
+
+              if (ResourceType == "Short") {
+                router.push("/school/resources/shorts/create-short");
               }
             }}
             className="bg-blue-600 text-white px-4 py-2 rounded-md"

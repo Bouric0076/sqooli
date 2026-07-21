@@ -57,7 +57,7 @@ export async function POST(req: Request) {
     console.error("Programs creation failedd:", error?.response?.data || error.message);
 
     return NextResponse.json(
-      { message: "Failed to create Programs" },
+      { message: error?.response?.data || error.message},
       { status: 500 }
     );
   }
