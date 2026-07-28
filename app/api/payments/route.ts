@@ -12,6 +12,8 @@ export async function GET() {
       return NextResponse.json(res.data, { status: 200 });
     } catch (error: any) {
       console.error("Payments error:", error);
+
+      
   
       if (error.response) {
         return NextResponse.json(

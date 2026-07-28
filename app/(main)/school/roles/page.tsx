@@ -9,6 +9,7 @@ import { TextInput } from "@/app/components/ui/form/TextInput";
 import { useSpinnerStore } from "@/app/store/useSpinnerStore";
 import { addRole, DeleteRole, getRoles, UpdateRole, getRolePermissions, assignPermissionsToRole } from "@/app/lib/roles";
 import { getPermissions } from "@/app/lib/permissions";
+import { ShowToast } from "@/lib/toast";
 
 export interface Role {
   id: string;
@@ -177,13 +178,17 @@ export default function Page() {
       name: form.getValues("name"),
     };
 
+    var response = null;
     try {
       if (editingInfo) {
-        await UpdateRole(payload);
+       response = await UpdateRole(payload);
       } else {
-        await addRole(payload);
+       response =  await addRole(payload);
       }
       closeAddEditModal();
+
+        // console.error("Succee saving Role:", response);
+      ShowToast.success(response?.message || "Success");
     } catch (error) {
       console.error("Error saving Role:", error);
     } finally {
@@ -197,8 +202,9 @@ export default function Page() {
     setLoading(true);
 
     try {
-      await DeleteRole({ id: infoToDelete.id });
+      var response = await DeleteRole({ id: infoToDelete.id });
       closeDeleteModal();
+       ShowToast.success(response?.message || "Success");
     } catch (error) {
       console.error("Error deleting Role:", error);
     } finally {

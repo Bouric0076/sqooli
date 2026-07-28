@@ -1,3 +1,4 @@
+import { errorShow } from "@/lib/errorHandler";
 import { Role } from "../admin/roles/page";
 
 export async function getRoles() {
@@ -9,7 +10,8 @@ export async function getRoles() {
     });
   
     if (!res.ok) {
-      const err = await res.json();
+            const err = await res.json();
+             errorShow(err);
       throw new Error(err.message || "Failed to get Role");
     }
   
@@ -31,7 +33,8 @@ export async function addRole(form :Role) {
     });
   
     if (!res.ok) {
-      const err = await res.json();
+              const err = await res.json();
+         errorShow(err);
       throw new Error(err.message || "Failed to publish Role");
     }
   
@@ -51,7 +54,8 @@ export async function addRole(form :Role) {
     });
   
     if (!res.ok) {
-      const err = await res.json();
+          const err = await res.json();
+         errorShow(err);
       throw new Error(err.message || "Failed to update Role");
     }
   
@@ -68,7 +72,8 @@ export async function addRole(form :Role) {
     });
   
     if (!res.ok) {
-      const err = await res.json();
+            const err = await res.json();
+         errorShow(err);
       throw new Error(err.message || "Failed to delete Role");
     }
   
@@ -85,7 +90,8 @@ export async function addRole(form :Role) {
   });
 
   if (!res.ok) {
-    const err = await res.json();
+           const err = await res.json();
+         errorShow(err);
     throw new Error(err.message || "Failed to get role permissions");
   }
 
@@ -102,7 +108,8 @@ export async function assignPermissionsToRole(roleId: string, permissionIds: num
   });
 
   if (!res.ok) {
-    const err = await res.json();
+           const err = await res.json();
+         errorShow(err);
     throw new Error(err.message || "Failed to assign permissions");
   }
 

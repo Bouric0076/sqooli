@@ -8,6 +8,8 @@ import StudentSidebar from "../components/menu/studentSidebar";
 import StudentTopmenu from "../components/menu/studentTopmenu";
 import Providers from "../providers/providers";
 import GlobalSpinner from "@/components/GlobalSpinner";
+import GlobalErrorHandler from "@/lib/GlobalErrorHandler";
+import MyToaster from "../components/general/Toast/MyToaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,7 +37,8 @@ export default function RootLayout({
         <div className="flex h-screen bg-gray-100 relative">
           {/* Toggle button - always visible, positioned independently */}
           <StudentSidebar />
-
+          <MyToaster/>
+<GlobalErrorHandler />
           {/* Main Content */}
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Header */}

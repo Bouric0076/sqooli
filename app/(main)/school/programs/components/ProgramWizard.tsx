@@ -11,6 +11,7 @@ import { ProgramRequest } from "../types/program";
 import { useRouter } from "next/navigation";
 import { addCProgram } from "@/app/helpers/program";
 import { ProgramPreview } from "./Programpreview";
+import { ShowToast } from "@/lib/toast";
 
 export type WizardFormValues = {
   subProgram: string;
@@ -106,7 +107,9 @@ const handleFormSubmit = async (formData: WizardFormValues) => {
 
     console.log("Final Payload:", JSON.stringify(payload, null, 2));
 
-    await addCProgram(payload);
+    var response = await addCProgram(payload);
+
+     ShowToast.success(response?.message || "Success");
 
     if (setModalOpen) setModalOpen(false);
 

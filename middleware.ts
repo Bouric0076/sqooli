@@ -13,7 +13,7 @@ export function middleware(request: NextRequest) {
     '/school',
     '/teacher',
     '/student',
-    '/'
+    // '/'
   ];
 
   const isProtectedRoute = protectedRoutes.some(route =>

@@ -29,119 +29,164 @@ import { useAuthStore } from "@/app/store/useAuthStore";
 import { useCurriculumStore } from "@/app/store/useCurriculumStore";
 import QrcodeComponent from "../invite/QrcodeComponent";
 
+// Shape of a leaf (non-expandable) menu item
+type LeafItem = {
+  icon: React.ElementType;
+  label: string;
+  link: string;
+  permission?: string;
+};
+
+// Shape of a parent item that expands into children
+type ParentItem = {
+  id: string;
+  icon: React.ElementType;
+  label: string;
+  children: LeafItem[];
+};
+
+type MenuItem = LeafItem | ParentItem;
+
+const hasChildren = (item: MenuItem): item is ParentItem =>
+  Object.prototype.hasOwnProperty.call(item, "children");
+
 export default function AdminSidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
-  const { user } = useAuthStore();
+  const { user, hasPermission, isSuperAdmin } = useAuthStore();
 
-const [openMenus, setOpenMenus] = useState({
-  userManagement:
-    pathname.startsWith("/admin/users") ||
-    pathname.startsWith("/admin/roles"),
+  const [openMenus, setOpenMenus] = useState({
+    userManagement:
+      pathname.startsWith("/admin/users") || pathname.startsWith("/admin/roles"),
 
-  curriculumSetup:
-    pathname.startsWith("/admin/curriculums") ||
-    pathname.startsWith("/admin/education-levels") ||
-    pathname.startsWith("/admin/grade-levels") ||
-    pathname.startsWith("/admin/subject-categories") ||
-    pathname.startsWith("/admin/subjects") ||
-    pathname.startsWith("/admin/topics"),
-});
+    curriculumSetup:
+      pathname.startsWith("/admin/curriculums") ||
+      pathname.startsWith("/admin/education-levels") ||
+      pathname.startsWith("/admin/grade-levels") ||
+      pathname.startsWith("/admin/subject-categories") ||
+      pathname.startsWith("/admin/subjects") ||
+      pathname.startsWith("/admin/topics"),
+  });
 
-const toggleMenu = (menu: keyof typeof openMenus) => {
-  setOpenMenus((prev) => ({
-    ...prev,
-    [menu]: !prev[menu],
-  }));
-};
+  const toggleMenu = (menu: keyof typeof openMenus) => {
+    setOpenMenus((prev) => ({
+      ...prev,
+      [menu]: !prev[menu],
+    }));
+  };
 
   const isActive = (link: string) => {
     if (link === "/admin") {
       return pathname === "/admin";
     }
-
     return pathname === link || pathname.startsWith(link + "/");
   };
 
   const { clearActiveCurriculum } = useCurriculumStore();
-  // admin menu items (UNCHANGED)
-  const menuItems = {
+
+  // Each leaf item can optionally declare a required permission.
+  // No `permission` key = always visible to any logged-in admin user.
+  const menuItems: Record<string, MenuItem[]> = {
     "Main Menu": [
       { icon: Home, label: "Dashboard", link: "/admin" },
-      { icon: School, label: "Schools", link: "/admin/schools" },
-      { icon: Users2, label: "Students", link: "/admin/students" },
-      { icon: UserSquare, label: "Tutors", link: "/admin/tutors" },
-      { icon: Grid, label: "Programs", link: "/admin/programs" },
-      { icon: Users, label: "Partners", link: "/admin/partners" },
-      { icon: CreditCard, label: "Payments", link: "/admin/payments" },
-      { icon: Layers, label: "Activity Feed", link: "/admin/activity-feed" },
-      { icon: LineChart, label: "Reports", link: "/admin/reports" },
-
-    ],
-   CONFIGURATIONS: [
-  {
-    id: "curriculumSetup",
-    icon: BookOpen,
-    label: "Curriculum Setup",
-    children: [
+      { icon: School, label: "Schools", link: "/admin/schools", permission: "schools.view" },
+      { icon: Users2, label: "Students", link: "/admin/students", permission: "students.view" },
+      { icon: UserSquare, label: "Tutors", link: "/admin/tutors", permission: "tutors.view" },
+      { icon: Grid, label: "Programs", link: "/admin/programs", permission: "programs.view" },
+      { icon: Users, label: "Partners", link: "/admin/partners", permission: "partners.view" },
+      { icon: CreditCard, label: "Payments", link: "/admin/payments", permission: "payments.view" },
       {
+        icon: Layers,
+        label: "Activity Feed",
+        link: "/admin/activity-feed",
+        permission: "activityfeed.view",
+      },
+      { icon: LineChart, label: "Reports", link: "/admin/reports", permission: "reports.view" },
+    ],
+    CONFIGURATIONS: [
+      {
+        id: "curriculumSetup",
         icon: BookOpen,
-        label: "Curriculums",
-        link: "/admin/curriculums",
+        label: "Curriculum Setup",
+        children: [
+          {
+            icon: BookOpen,
+            label: "Curriculums",
+            link: "/admin/curriculums",
+            permission: "curriculums.view",
+          },
+          {
+            icon: Calendar,
+            label: "Education Levels",
+            link: "/admin/education-levels",
+            permission: "educationlevels.view",
+          },
+          {
+            icon: FolderOpen,
+            label: "Grade Levels",
+            link: "/admin/grade-levels",
+            permission: "gradelevels.view",
+          },
+          {
+            icon: CheckSquare,
+            label: "Subject Categories",
+            link: "/admin/subject-categories",
+            permission: "subjectcategories.view",
+          },
+          {
+            icon: Grid,
+            label: "Subjects",
+            link: "/admin/subjects",
+            permission: "subjects.view",
+          },
+          {
+            icon: Users,
+            label: "Topics",
+            link: "/admin/topics",
+            permission: "topics.view",
+          },
+        ],
       },
       {
-        icon: Calendar,
-        label: "Education Levels",
-        link: "/admin/education-levels",
-      },
-      {
-        icon: FolderOpen,
-        label: "Grade Levels",
-        link: "/admin/grade-levels",
-      },
-      {
-        icon: CheckSquare,
-        label: "Subject Categories",
-        link: "/admin/subject-categories",
-      },
-      {
-        icon: Grid,
-        label: "Subjects",
-        link: "/admin/subjects",
-      },
-      {
+        id: "userManagement",
         icon: Users,
-        label: "Topics",
-        link: "/admin/topics",
+        label: "User Management",
+        children: [
+          { icon: User, label: "Users", link: "/admin/users", permission: "users.view" },
+          { icon: Users, label: "Roles", link: "/admin/roles", permission: "roles.view" },
+        ],
       },
     ],
-  },
-
-  {
-    id: "userManagement",
-    icon: Users,
-    label: "User Management",
-    children: [
-      {
-        icon: User,
-        label: "Users",
-        link: "/admin/users",
-      },
-      {
-        icon: Users,
-        label: "Roles",
-        link: "/admin/roles",
-      },
-    ],
-  },
-],
-    // MANAGEMENT: [
-    //   { icon: User, label: "User Management", link: "/admin/users" },
-    //   // { icon: Users, label: "Partners", link: "/admin/partners" },
-    //   { icon: BarChart3, label: "Reports", link: "/admin/reports" },
-    // ],
   };
+
+  // Returns true if the current user is allowed to see this item
+  const isAllowed = (permission?: string) =>
+    !permission || isSuperAdmin || hasPermission(permission);
+
+  // Filter each section: for parent items, filter their children first and
+  // drop the parent if no children remain visible; for leaf items, filter
+  // directly by permission. Sections with no visible items are dropped too.
+  const visibleMenuItems = Object.fromEntries(
+    Object.entries(menuItems)
+      .map(([section, items]) => {
+        const filtered = items
+          .map((item) => {
+            if (hasChildren(item)) {
+              const visibleChildren = item.children.filter((child) =>
+                isAllowed(child.permission)
+              );
+              if (visibleChildren.length === 0) return null;
+              return { ...item, children: visibleChildren };
+            }
+            return isAllowed(item.permission) ? item : null;
+          })
+          .filter((item): item is MenuItem => item !== null);
+
+        return [section, filtered] as const;
+      })
+      .filter(([, items]) => items.length > 0)
+  );
 
   return (
     <div>
@@ -170,145 +215,110 @@ const toggleMenu = (menu: keyof typeof openMenus) => {
 
       {/* Sidebar */}
       <aside
-        className={` h-full  ${
+        className={`h-full ${
           sidebarOpen ? "w-64" : "w-0"
         } bg-[#255480] transition-all duration-300 overflow-hidden flex flex-col border-r border-gray-200 relative z-30`}
       >
         {/* Logo */}
         <div className="p-5 flex items-center gap-3">
-   
-        <img src="/logo.svg" alt="Live Logo" className="w-40 " />
-
-      
-     
-          {/* <div className="w-12 h-12 rounded-full flex items-center justify-center relative">
-            <svg width="48" height="48" viewBox="0 0 48 48">
-              <defs>
-                <linearGradient
-                  id="logoGradient"
-                  x1="0%"
-                  y1="0%"
-                  x2="100%"
-                  y2="100%"
-                >
-                  <stop offset="0%" style={{ stopColor: "#A78BFA" }} />
-                  <stop offset="50%" style={{ stopColor: "#F472B6" }} />
-                  <stop offset="100%" style={{ stopColor: "#FB923C" }} />
-                </linearGradient>
-              </defs>
-              <circle cx="24" cy="24" r="24" fill="url(#logoGradient)" />
-              <circle cx="24" cy="24" r="18" fill="white" />
-              <circle cx="24" cy="24" r="14" fill="url(#logoGradient)" />
-            </svg>
-          </div>
-          <div>
-            <div className="font-semibold text-sm text-gray-900">
-              {user?.firstName}
-            </div>
-            <div className="font-semibold text-sm text-gray-900">
-              {user?.userType}
-            </div>
-            <div className="bg-purple-600 text-white text-[10px] px-2 py-0.5 rounded-full mt-1 inline-block">
-              Super Admin
-            </div>
-          </div> */}
+          <img src="/logo.svg" alt="Live Logo" className="w-40" />
         </div>
+
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto py-4 px-3">
-          {Object.entries(menuItems).map(([section, items]) => (
+          {Object.entries(visibleMenuItems).map(([section, items]) => (
             <div key={section} className="mb-6">
               <h3 className="px-2 text-[14px] font-semibold text-gray-100 mb-3 tracking-wider">
                 {section}
               </h3>
 
-{items.map((item: any, idx: number) => {
-  const Icon = item.icon;
+              {items.map((item, idx) => {
+                const Icon = item.icon;
 
-  if (item.children) {
-    const active = item.children.some((child: any) => isActive(child.link));
-    const expanded = openMenus[item.id as keyof typeof openMenus];
+                if (hasChildren(item)) {
+                  const active = item.children.some((child) => isActive(child.link));
+                  const expanded = openMenus[item.id as keyof typeof openMenus];
 
-    return (
-      <div key={idx}>
-        <button
-          onClick={() =>
-            toggleMenu(item.id as keyof typeof openMenus)
-          }
-          className={`w-full flex items-center justify-between px-4 py-3 rounded-md transition-all
-            ${
-              active
-                ? "bg-[#1D3C5B] text-white"
-                : "text-gray-100 hover:bg-gray-700"
-            }`}
-        >
-          <div className="flex items-center gap-3">
-            <Icon className="w-5 h-5" strokeWidth={1.5} />
-            <span>{item.label}</span>
-          </div>
+                  return (
+                    <div key={idx}>
+                      <button
+                        onClick={() => toggleMenu(item.id as keyof typeof openMenus)}
+                        className={`w-full flex items-center justify-between px-4 py-3 rounded-md transition-all
+                          ${
+                            active
+                              ? "bg-[#1D3C5B] text-white"
+                              : "text-gray-100 hover:bg-gray-700"
+                          }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Icon className="w-5 h-5" strokeWidth={1.5} />
+                          <span>{item.label}</span>
+                        </div>
 
-          {expanded ? (
-            <ChevronDown className="w-4 h-4" />
-          ) : (
-            <ChevronLeft className="w-4 h-4" />
-          )}
-        </button>
+                        {expanded ? (
+                          <ChevronDown className="w-4 h-4" />
+                        ) : (
+                          <ChevronLeft className="w-4 h-4" />
+                        )}
+                      </button>
 
-        {expanded && (
-          <div className="ml-8 mt-1 space-y-1">
-            {item.children.map((child: any, childIdx: number) => {
-              const ChildIcon = child.icon;
-              const childActive = isActive(child.link);
+                      {expanded && (
+                        <div className="ml-8 mt-1 space-y-1">
+                          {item.children.map((child, childIdx) => {
+                            const ChildIcon = child.icon;
+                            const childActive = isActive(child.link);
 
-              return (
-                <button
-                  key={childIdx}
-                  onClick={() => {
-                    clearActiveCurriculum();
-                    router.push(child.link);
-                  }}
-                  className={`w-full flex items-center gap-3 px-4 py-2 rounded-md text-sm transition-all
-                    ${
-                      childActive
-                        ? "bg-[#1D3C5B] text-white"
-                        : "text-gray-50 hover:bg-gray-700"
-                    }`}
-                >
-                  <ChildIcon className="w-4 h-4" strokeWidth={1.5} />
-                  <span>{child.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    );
-  }
+                            return (
+                              <button
+                                key={childIdx}
+                                onClick={() => {
+                                  clearActiveCurriculum();
+                                  router.push(child.link);
+                                }}
+                                className={`w-full flex items-center gap-3 px-4 py-2 rounded-md text-sm transition-all
+                                  ${
+                                    childActive
+                                      ? "bg-[#1D3C5B] text-white"
+                                      : "text-gray-50 hover:bg-gray-700"
+                                  }`}
+                              >
+                                <ChildIcon className="w-4 h-4" strokeWidth={1.5} />
+                                <span>{child.label}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
 
-  const active = isActive(item.link);
+                const active = isActive(item.link);
 
-  return (
-    <button
-      key={idx}
-      onClick={() => {
-        clearActiveCurriculum();
-        router.push(item.link);
-      }}
-      className={`w-full flex items-center gap-3 px-4 py-3 text-[14px] rounded-md transition-all duration-200
-        ${
-          active
-            ? "bg-[#1D3C5B] text-white"
-            : "text-gray-50 hover:bg-gray-700 hover:translate-x-1"
-        }`}
-    >
-      <Icon className="w-5 h-5" strokeWidth={1.5} />
-      <span>{item.label}</span>
-    </button>
-  );
-})}
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      clearActiveCurriculum();
+                      router.push(item.link);
+                    }}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-[14px] rounded-md transition-all duration-200
+                      ${
+                        active
+                          ? "bg-[#1D3C5B] text-white"
+                          : "text-gray-50 hover:bg-gray-700 hover:translate-x-1"
+                      }`}
+                  >
+                    <Icon className="w-5 h-5" strokeWidth={1.5} />
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
             </div>
           ))}
         </nav>
 
+        {/* <QrcodeComponent /> */}
 
         {/* Footer */}
         <div className="p-4 border-t border-gray-200">

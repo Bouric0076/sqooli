@@ -1,3 +1,4 @@
+import { errorShow } from "@/lib/errorHandler";
 import { apiFetcher } from "./apiFetcher";
 
 /* =========================
@@ -95,12 +96,17 @@ export async function lookupFetcher<T>(
   url: string,
   filters?: LookupFilters
 ): Promise<T[]> {
-  const res = await apiFetcher<ApiResponse<T>>(url, {
-    params: filters,
-  });
+  try {
+    const res = await apiFetcher<ApiResponse<T>>(url, {
+      params: filters,
+    });
 
-  // Check if res.data.items is an array, else return empty array
-  return Array.isArray(res.data?.items) ? res.data.items : [];
+    return Array.isArray(res.data?.items) ? res.data.items : [];
+  } catch (error: any) {
+      errorShow(error);
+
+    return [];
+  }
 }
 
 /* =========================

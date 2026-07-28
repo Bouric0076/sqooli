@@ -9,6 +9,7 @@ import { TextInput } from "@/app/components/ui/form/TextInput";
 import { useSpinnerStore } from "@/app/store/useSpinnerStore";
 import { addRole, DeleteRole, getRoles, UpdateRole, getRolePermissions, assignPermissionsToRole } from "@/app/lib/roles";
 import { getPermissions } from "@/app/lib/permissions";
+import { useAuthStore } from "@/app/store/useAuthStore";
 
 export interface Role {
   id: string;
@@ -166,6 +167,9 @@ export default function Page() {
       console.error("Error saving permissions:", error);
     } finally {
       setPermissionLoading(false);
+
+          await useAuthStore.getState().fetchMe(); // refresh store -> sidebar re-renders
+
     }
   };
 

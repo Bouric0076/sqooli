@@ -53,11 +53,11 @@ useEffect(()=>{
     if (!form.lastName.trim())                             e.lastName  = "Required";
     if (!form.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) e.email     = "Valid email required";
     if (!form.phone.match(/^(\+254|0)[17]\d{8}$/))        e.phone     = "Valid Kenyan number required";
-    if (!form.idNumber.trim())                             e.idNumber  = "Required";
-    if (!form.dob)                                         e.dob       = "Required";
-    if (!form.gender)                                      e.gender    = "Required";
+    // if (!form.idNumber.trim())                             e.idNumber  = "Required";
+    // if (!form.dob)                                         e.dob       = "Required";
+    // if (!form.gender)                                      e.gender    = "Required";
     if (!form.country)                                     e.country   = "Required";
-    if (!form.county)                                      e.county    = "Required";
+    // if (!form.county)                                      e.county    = "Required";
     if (!form.program)                                     e.program   = "Please select a program";
     if (!form.intake)                                      e.intake    = "Required";
     if (!form.studyMode)                                   e.studyMode = "Required";
@@ -303,7 +303,7 @@ addEnrollment({
                       <input className={inp("phone")} value={form.phone} onChange={e=>set("phone",e.target.value)} placeholder="07XX XXX XXX"/>
                       {errors.phone&&<p style={{color:"#ef4444",fontSize:11,marginTop:4}}>{errors.phone}</p>}
                     </div>
-                    <div>
+                    {/* <div>
                       <label className={lbl}>ID / Passport <span style={{color:"#f97316"}}>*</span></label>
                       <input className={inp("idNumber")} value={form.idNumber} onChange={e=>set("idNumber",e.target.value)} placeholder="National ID or Passport"/>
                       {errors.idNumber&&<p style={{color:"#ef4444",fontSize:11,marginTop:4}}>{errors.idNumber}</p>}
@@ -312,15 +312,15 @@ addEnrollment({
                       <label className={lbl}>Date of Birth <span style={{color:"#f97316"}}>*</span></label>
                       <input type="date" className={inp("dob")} value={form.dob} onChange={e=>set("dob",e.target.value)}/>
                       {errors.dob&&<p style={{color:"#ef4444",fontSize:11,marginTop:4}}>{errors.dob}</p>}
-                    </div>
-                    <div>
+                    </div> */}
+                    {/* <div>
                       <label className={lbl}>Gender <span style={{color:"#f97316"}}>*</span></label>
                       <select className={inp("gender")} value={form.gender} onChange={e=>set("gender",e.target.value)}>
                         <option value="">Select gender</option>
                         <option>Male</option><option>Female</option><option>Prefer not to say</option>
                       </select>
                       {errors.gender&&<p style={{color:"#ef4444",fontSize:11,marginTop:4}}>{errors.gender}</p>}
-                    </div>
+                    </div> */}
 
                     {/* Country */}
                     <div>
@@ -421,7 +421,7 @@ addEnrollment({
                 </div>
 
                 {/* Academic Background */}
-                <div className="card">
+                {/* <div className="card">
                   <div className="card-head">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
                     <span style={{color:"#e2e8f0",fontWeight:700,fontSize:15}}>Academic Background</span>
@@ -440,7 +440,7 @@ addEnrollment({
                       </select>
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 <button className="btn btn-g w-full" onClick={()=>{if(validate())setStep("review")}}>
                   Review Application
@@ -475,8 +475,12 @@ addEnrollment({
                     <div style={{marginTop:12,paddingTop:12,borderTop:"2px solid var(--sq-green-m)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                       <span style={{fontWeight:700,color:"var(--sq-text)",fontSize:14}}>Admission Fee</span>
                       <div style={{textAlign:"right"}}>
-                        <div style={{fontWeight:900,color:"var(--sq-green)",fontSize:22}}>KES {ADMISSION_FEE.toLocaleString()}</div>
-                        <div style={{fontSize:10,color:"var(--sq-muted)"}}>Non-refundable</div>
+                        <div style={{fontWeight:900,color:"var(--sq-green)",fontSize:22}}>
+                          FREE
+                          {/* KES {ADMISSION_FEE.toLocaleString()} */}
+                          </div>
+                        {/* <div style={{fontSize:10,color:"var(--sq-muted)"}}>Non-refundable</div> */}
+                         <div style={{fontSize:10,color:"var(--sq-muted)"}}>Enroll for free</div>
                       </div>
                     </div>
                   </div>
@@ -509,7 +513,7 @@ addEnrollment({
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                 <div>
                   <div style={{color:"#fff",fontWeight:700,fontSize:15}}>Review Your Application</div>
-                  <div style={{color:"#86efac",fontSize:12}}>Confirm details before payment</div>
+                  <div style={{color:"#86efac",fontSize:12}}>Confirm details before completing</div>
                 </div>
               </div>
               {[
@@ -517,9 +521,9 @@ addEnrollment({
                   ["Full Name",`${form.firstName} ${form.lastName}`],
                   ["Email",form.email],
                   ["Phone",form.phone],
-                  ["ID / Passport",form.idNumber],
-                  ["Date of Birth",form.dob],
-                  ["Gender",form.gender],
+                  // ["ID / Passport",form.idNumber],
+                  // ["Date of Birth",form.dob],
+                  // ["Gender",form.gender],
                   ["Country",form.country],
                   ["County / District",form.county],
                 ]},
@@ -545,7 +549,7 @@ addEnrollment({
               ))}
             </div>
 
-            <div style={{background:"var(--sq-green-l)",border:"2px solid var(--sq-green)",borderRadius:14,padding:"16px 22px",display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+            {/* <div style={{background:"var(--sq-green-l)",border:"2px solid var(--sq-green)",borderRadius:14,padding:"16px 22px",display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
               <div>
                 <div style={{fontSize:11,fontWeight:700,color:"var(--sq-green-d)",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:2}}>Amount Due</div>
                 <div style={{fontWeight:900,color:"var(--sq-green-d)",fontSize:30}}>KES {ADMISSION_FEE.toLocaleString()}</div>
@@ -554,7 +558,7 @@ addEnrollment({
                 <div style={{fontWeight:700}}>Admission Fee</div>
                 <div style={{opacity:0.7}}>One-time · Non-refundable</div>
               </div>
-            </div>
+            </div> */}
 
             <div style={{display:"flex",gap:12}}>
               <button className="btn btn-out" style={{flex:1}} onClick={()=>setStep("enrollment")}>← Edit Details</button>

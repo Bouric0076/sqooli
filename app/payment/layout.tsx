@@ -5,6 +5,7 @@ import "../globals.css";
 import { useAuthStore } from "../store/useAuthStore";
 import { useRouter } from "next/navigation";
 import AuthWrapper from "../components/auth/AuthWrapper";
+import MyToaster from "../components/general/Toast/MyToaster";
 export default function OnboardingLayout({
   children,
 }: {
@@ -33,6 +34,7 @@ export default function OnboardingLayout({
 
           {/* Main Content Area */}
           <main className="flex-1 flex flex-col ">
+            <MyToaster/>
             <div className="w-full">{children}</div>
           </main>
         </div>

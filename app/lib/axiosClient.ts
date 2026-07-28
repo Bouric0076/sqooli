@@ -6,6 +6,7 @@ import Cookies from "js-cookie";
 import { use } from "react";
 import { useAuthStore } from "@/app/store/useAuthStore";
 import { redirect } from "next/navigation";
+import { toast } from "sonner";
 
 
 // Detect if we're in development
@@ -42,10 +43,57 @@ axiosClient.interceptors.request.use(async (config) => {
 axiosClient.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const deleteAccessToken = async () => {
+  
+
+        const deleteAccessToken = async () => {
       const { deleteAuthTokens } = await import("./getAccessToken");
       await deleteAuthTokens();
     };
+
+    if (!error.response) {
+
+    Cookies.remove("access_token");
+      // localStorage.clear();
+      useAuthStore.getState().clearAuth();
+      useAuthStore.getState().logout();
+      // Redirect to login\
+       await deleteAccessToken();
+
+
+
+          return Promise.reject({
+            status:false,
+            errorCode:500,
+            message: "Can't reach the server. Check your connection."
+          });
+    }
+
+
+    const status = error.response.status;
+
+    // Handle all 500-level errors
+    if (status >= 500 && status < 600) {
+
+          Cookies.remove("access_token");
+      // localStorage.clear();
+      useAuthStore.getState().clearAuth();
+      useAuthStore.getState().logout();
+      // Redirect to login\
+       await deleteAccessToken();
+      return Promise.reject({
+        status: false,
+        errorCode: status,
+        message:
+          error.response.data?.message ||
+          "A server error occurred. Please try again later.",
+      });
+    }
+
+
+
+
+    // console.log("main error ",JSON.stringify(error))
+
     if (
       error.response &&
       error.response.status === 401
@@ -59,6 +107,14 @@ axiosClient.interceptors.response.use(
        await deleteAccessToken();
 
     //  redirect("/login");
+
+      return Promise.reject(
+        {
+            status:false,
+            errorCode:401,
+            message: "Unauthorized access"
+          }
+      );
 
 
     }

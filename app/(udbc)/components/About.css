@@ -1,0 +1,103 @@
+.about{ background: var(--yellow); }
+
+.about__top{
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 60px;
+  align-items: start;
+}
+
+.about__title{
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--navy-darker);
+  margin: 16px 0 20px;
+  max-width: 560px;
+}
+
+.about__lead{
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--maroon-dark);
+  border-left: 3px solid var(--navy);
+  padding-left: 16px;
+  margin-bottom: 22px;
+  line-height: 1.6;
+}
+
+.about__body{
+  font-size: 15px;
+  line-height: 1.75;
+  color: #3a3120;
+  margin-bottom: 18px;
+}
+
+.about__media{ position: relative; padding: 10px 24px 24px 0; }
+.about__frame{
+  position: relative;
+  border: 2px solid rgba(255,255,255,0.7);
+  padding: 0;
+  transform: translate(18px, -8px);
+}
+.about__frame img{
+  width: 100%;
+  height: 340px;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.05);
+}
+.about__vm{
+  margin-top: 56px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--maroon);
+  color: #fff;
+}
+.about__vm-col{
+  padding: 34px 40px;
+  border-left: 1px solid rgba(255,255,255,0.15);
+}
+.about__vm-col:first-child{ border-left: none; }
+.about__vm-col p:last-child{
+  margin-top: 14px;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.88);
+  max-width: 420px;
+}
+
+.about__facts{ margin-top: 56px; }
+.about__facts-grid{
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid rgba(20,20,20,0.25);
+}
+.about__fact{
+  padding: 22px 24px;
+  border-right: 1px solid rgba(20,20,20,0.2);
+  border-bottom: 1px solid rgba(20,20,20,0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.about__fact:nth-child(4n){ border-right: none; }
+.about__fact-label{
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  color: rgba(20,20,20,0.55);
+}
+.about__fact-value{
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--navy-darker);
+}
+
+@media (max-width: 900px){
+  .about__top{ grid-template-columns: 1fr; }
+  .about__vm{ grid-template-columns: 1fr; }
+  .about__vm-col{ border-left: none; border-top: 1px solid rgba(255,255,255,0.15); }
+  .about__vm-col:first-child{ border-top: none; }
+  .about__facts-grid{ grid-template-columns: repeat(2, 1fr); }
+  .about__fact:nth-child(2n){ border-right: none; }
+}

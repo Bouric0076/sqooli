@@ -7,6 +7,9 @@ import Providers from "../providers/providers";
 import GlobalSpinner from "@/components/GlobalSpinner";
 import AdminSidebar from "../components/menu/adminSideMenu";
 import AdminTopmenu from "../components/menu/adminTopMenu";
+import MyToaster from "../components/general/Toast/MyToaster";
+import GlobalErrorHandler from "@/lib/GlobalErrorHandler";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +37,8 @@ export default function RootLayout({
         <div className="flex h-screen bg-white relative">
           {/* Toggle button - always visible, positioned independently */}
           <AdminSidebar />
-
+<MyToaster/>
+ <GlobalErrorHandler />
           {/* Main Content */}
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Header */}

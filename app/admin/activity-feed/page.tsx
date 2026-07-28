@@ -67,6 +67,8 @@ const loadActivities = async () => {
         setActivities(activitiesResult.data);
         setStats(statsResult);
 
+    
+
     } finally {
         setLoading(false);
     }

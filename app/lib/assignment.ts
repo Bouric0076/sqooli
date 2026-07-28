@@ -1,3 +1,4 @@
+import { errorShow } from "@/lib/errorHandler";
 import { AddResourceForm } from "../(main)/school/resources/assignments/create-assignment/page";
 
   
@@ -37,7 +38,8 @@ export async function addAssigment(form :AddResourceForm) {
     });
   
     if (!res.ok) {
-      const err = await res.json();
+              const err = await res.json();
+               errorShow(err);
       throw new Error(err.message || "Failed to publish assignment");
     }
   
@@ -57,7 +59,8 @@ export async function addAssigment(form :AddResourceForm) {
     });
   
     if (!res.ok) {
-      const err = await res.json();
+              const err = await res.json();
+         errorShow(err);
       throw new Error(err.message || "Failed to update assignment");
     }
   

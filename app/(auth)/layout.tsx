@@ -2,6 +2,8 @@
 import React, { Suspense } from "react";
 import "../globals.css";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import GlobalErrorHandler from "@/lib/GlobalErrorHandler";
+import MyToaster from "../components/general/Toast/MyToaster";
 
 export default function OnboardingLayout({
   children,
@@ -12,6 +14,7 @@ export default function OnboardingLayout({
     <html lang="en">
       <body>
         <div className="flex min-h-screen bg-white">
+
           {/* Sidebar - Visual/Branding with animated image */}
           <aside className="relative flex-col justify-between text-white hidden md:flex w-1/4 lg:w-3/6 overflow-hidden">
             {/* Animated Background image */}
@@ -45,6 +48,8 @@ export default function OnboardingLayout({
 
           {/* Main Content Area */}
           <main className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12">
+           <MyToaster/>
+            <GlobalErrorHandler />
             <GoogleOAuthProvider
               clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
             >

@@ -1,3 +1,4 @@
+import { errorShow } from "@/lib/errorHandler";
 
 
 export async function getPermissions() {
@@ -9,7 +10,8 @@ export async function getPermissions() {
     });
   
     if (!res.ok) {
-      const err = await res.json();
+        const err = await res.json();
+        errorShow(err);
       throw new Error(err.message || "Failed to get Role");
     }
   

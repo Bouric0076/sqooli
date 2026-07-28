@@ -16,6 +16,7 @@ import {
 } from "@/app/lib/users";
 import { getRoles } from "@/app/lib/roles";
 import { Can } from "@/app/lib/auth/Can";
+import { ShowToast } from "@/lib/toast";
 
 export interface User {
   id: string;
@@ -163,8 +164,9 @@ export default function UsersPage() {
     const values = form.getValues();
 
     try {
+      var response = null;
       if (editingUser) {
-        await updateUser({
+       response = await updateUser({
           id: values.id,
           email: values.email,
           lastName: values.lastName,
@@ -175,7 +177,7 @@ export default function UsersPage() {
           ...(values.password ? { newPassword: values.password } : {}),
         });
       } else {
-        await addUser({
+      response =  await addUser({
           email: values.email,
           lastName: values.lastName,
           firstName: values.firstName,
@@ -186,6 +188,7 @@ export default function UsersPage() {
         });
       }
       closeAddEditModal();
+       ShowToast.success(response?.message || "Success");
     } catch (error) {
       console.error("Error saving user:", error);
     } finally {
@@ -198,8 +201,9 @@ export default function UsersPage() {
     if (!userToDelete) return;
     setLoading(true);
     try {
-      await deleteUser(userToDelete.id);
+      var response =await deleteUser(userToDelete.id);
       closeDeleteModal();
+       ShowToast.success(response?.message || "Success");
     } catch (error) {
       console.error("Error deleting user:", error);
     } finally {
@@ -552,7 +556,7 @@ export default function UsersPage() {
             {allRoles.length > 0 && (
               <div>
                 <p style={{ margin: "0 0 8px 0", fontSize: "14px", fontWeight: 500, color: "#374151" }}>
-                  Assign Roles
+                  Assign Role
                 </p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                   {allRoles.map((role) => {

@@ -1,3 +1,6 @@
+import { errorShow } from "@/lib/errorHandler";
+import { ShowToast } from "@/lib/toast";
+
 export async function getActivities(
     search = "",
     type = "All",
@@ -19,9 +22,16 @@ export async function getActivities(
     if (!res.ok) {
         const err = await res.json();
 
-        throw new Error(
+   
+          const error = new Error(
             err.message || "Failed to fetch activities"
-        );
+            );
+
+            console.log(err)
+            errorShow(error);
+
+            throw error;
+  
     }
 
     return res.json();
@@ -40,9 +50,12 @@ export async function getActivityStats() {
     if (!res.ok) {
         const err = await res.json();
 
-        throw new Error(
+        const error = new Error(
             err.message || "Failed to fetch activity stats"
         );
+           errorShow(error);
+
+           throw error;
     }
 
     return res.json();

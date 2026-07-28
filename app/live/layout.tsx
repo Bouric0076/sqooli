@@ -4,6 +4,8 @@ import "../globals.css";
 import StudentTopmenu from "../components/menu/studentTopmenu";
 import LiveTopMenu from "../components/menu/liveTopMenu";
 import AuthWrapper from "../components/auth/AuthWrapper";
+import GlobalErrorHandler from "@/lib/GlobalErrorHandler";
+import MyToaster from "../components/general/Toast/MyToaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +34,8 @@ export default function RootLayout({
           {/* Main Content */}
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Header */}
-
+            <MyToaster/>
+<GlobalErrorHandler />
             <LiveTopMenu />
             {/* Page Content */}
             <main className="flex-1 overflow-auto bg-white relative h-screen">

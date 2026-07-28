@@ -9,6 +9,7 @@ import {
   getSubjects,
   getTopics,
 } from "@/app/helpers/lookups";
+import { ShowToast } from "@/lib/toast";
 
 /* ---------------- Types ---------------- */
 type Curriculum = {
@@ -319,6 +320,7 @@ export default function ResourceUploadComponent({
         if (!resourceRes.ok) {
           throw new Error(resourceJson.message);
         }
+         ShowToast.success(resourceRes?.message || "Success");
 
         resourceId = activeResourceId as number;
       } else {
@@ -344,7 +346,7 @@ export default function ResourceUploadComponent({
         if (!resourceRes.ok) {
           throw new Error(resourceJson.message);
         }
-
+        ShowToast.success(resourceRes?.message || "Success");
         resourceId = resourceJson.data.id;
       }
 
@@ -376,6 +378,19 @@ export default function ResourceUploadComponent({
           ? "Resource updated successfully"
           : "Resource uploaded successfully"
       );
+
+
+      //       alert(
+      //   isEditMode
+      //     ? "Resource updated successfully"
+      //     : "Resource uploaded successfully"
+      // );
+
+ ShowToast.success(isEditMode
+          ? "Resource updated successfully"
+          : "Resource uploaded successfully")
+
+
     } catch (err: any) {
       console.error("Upload error", err);
       alert(err.message || "Upload failed");

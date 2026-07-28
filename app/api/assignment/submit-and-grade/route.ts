@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     );
 
     return NextResponse.json(
-      { success: true, data: response.data },
+      { success: true, data: response.data, message: response?.data?.message },
       { status: 200 }
     );
   } catch (error: any) {

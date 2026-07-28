@@ -58,7 +58,9 @@ export async function PUT(
     );
 
     return NextResponse.json(
-      { success: true, data: res.data },
+      { success: true, data: res.data,
+         message: res?.data?.message
+       },
       { status: 200 }
     );
   } catch (error: any) {

@@ -50,7 +50,9 @@ export async function POST(req: Request) {
     );
 
     return NextResponse.json(
-      { success: true, data: response.data },
+      { success: true, data: response.data,
+        message: response?.data?.message
+       },
       { status: 200 }
     );
   } catch (error: any) {
@@ -77,12 +79,14 @@ export async function PUT(req: Request) {
     }
 
     // update
-    await axiosClient.put(
+     const response= await axiosClient.put(
       `${process.env.BACKEND_API_URL}/Roles/${body.id}`,
       body
     );
 
-    return NextResponse.json({ success: true }, { status: 200 });
+    return NextResponse.json({ success: true,
+       message: response?.data?.message
+     }, { status: 200 });
   } catch (error: any) {
     console.error("Roles update failed:", error?.response?.data || error.message);
 
@@ -106,11 +110,11 @@ export async function DELETE(req: Request) {
     }
 
     // delete
-    await axiosClient.delete(
+   const response = await axiosClient.delete(
       `${process.env.BACKEND_API_URL}/Roles/${body.id}`
     );
 
-    return NextResponse.json({ success: true }, { status: 200 });
+    return NextResponse.json({ success: true, message: response?.data?.message }, { status: 200 });
   } catch (error: any) {
     console.error("Roles delete failed:", error?.response?.data || error.message);
 

@@ -12,6 +12,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { TextArea } from "@/app/components/ui/form/TextArea";
 import { addIntake, getIntake, UpdateIntake } from "@/app/lib/intake";
 import { useSpinnerStore } from "@/app/store/useSpinnerStore";
+import { ShowToast } from "@/lib/toast";
 export interface IntakeRequest {
   id?: string;
   Name: string;
@@ -89,10 +90,12 @@ useEffect(() => {
 
   const onSubmit = (data: IntakeRequest) => {
     setLoading(true);
+    var response = null;
     if (intakeId) {
       UpdateIntake(data)
         .then((res) => {
             console.log("Intake updated:", res);
+               ShowToast.success(res?.message || "Success");
             router.push("/school/intakes");
         })
         .catch((err) => {
@@ -107,6 +110,7 @@ useEffect(() => {
     addIntake(data)
         .then((res) => {
             console.log("Intake added:", res);
+             ShowToast.success(res?.message || "Success");
             router.push("/school/intakes");
         })
         .catch((err) => {

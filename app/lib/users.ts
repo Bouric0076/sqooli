@@ -1,3 +1,5 @@
+import { errorShow } from "@/lib/errorHandler";
+
 export interface User {
   id: string;
   userName: string | null;
@@ -45,7 +47,8 @@ export async function getUsers(page = 1, pageSize = 10, search = "", role = "") 
   });
 
   if (!res.ok) {
-    const err = await res.json();
+            const err = await res.json();
+             errorShow(err);
     throw new Error(err.message || "Failed to get users");
   }
 
@@ -60,7 +63,8 @@ export async function addUser(form: CreateUser) {
   });
 
   if (!res.ok) {
-    const err = await res.json();
+           const err = await res.json();
+         errorShow(err);
     throw new Error(err.message || "Failed to create user");
   }
 
@@ -75,7 +79,8 @@ export async function updateUser(form: UpdateUser) {
   });
 
   if (!res.ok) {
-    const err = await res.json();
+            const err = await res.json();
+         errorShow(err);
     throw new Error(err.message || "Failed to update user");
   }
 
@@ -90,7 +95,8 @@ export async function deleteUser(id: string) {
   });
 
   if (!res.ok) {
-    const err = await res.json();
+           const err = await res.json();
+         errorShow(err);
     throw new Error(err.message || "Failed to delete user");
   }
 
@@ -104,7 +110,8 @@ export async function lockUser(id: string) {
   });
 
   if (!res.ok) {
-    const err = await res.json();
+           const err = await res.json();
+         errorShow(err);
     throw new Error(err.message || "Failed to lock user");
   }
 
@@ -118,7 +125,8 @@ export async function unlockUser(id: string) {
   });
 
   if (!res.ok) {
-    const err = await res.json();
+           const err = await res.json();
+         errorShow(err);
     throw new Error(err.message || "Failed to unlock user");
   }
 

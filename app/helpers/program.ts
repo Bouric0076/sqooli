@@ -1,3 +1,4 @@
+import { errorShow } from "@/lib/errorHandler";
 import { LookupFilters, lookupFetcher, ContractItem } from "./lookups";
 
 export interface ProgramData extends ContractItem {
@@ -17,7 +18,11 @@ export const getCProgram = async (id: any, filters?: LookupFilters) => {
           "Content-Type": "application/json",
         },
     });
-    if (!res.ok) throw new Error("Failed to get program");
+    if (!res.ok){
+        const err = await res.json();
+         errorShow(err);
+       throw new Error("Failed to get program");
+    }
     return res.json();
 }
 
@@ -27,7 +32,11 @@ export const getCProgram = async (id: any, filters?: LookupFilters) => {
       method: "POST",
       body: JSON.stringify(data),
     });
-    if (!res.ok) throw new Error("Failed to add program");
+    if (!res.ok){
+              const err = await res.json();
+         errorShow(err);
+       throw new Error("Failed to add program");
+    }
     return res.json();
   };
   
@@ -39,7 +48,11 @@ export const getCProgram = async (id: any, filters?: LookupFilters) => {
           "Content-Type": "application/json",
         },
     });
-    if (!res.ok) throw new Error("Failed to get program slots");
+    if (!res.ok) {
+              const err = await res.json();
+         errorShow(err);
+      throw new Error("Failed to get program slots");
+    }
     return res.json();
 }
 
@@ -48,7 +61,11 @@ export const getCProgram = async (id: any, filters?: LookupFilters) => {
       method: "POST",
       body: JSON.stringify(data),
     });
-    if (!res.ok) throw new Error("Failed to send bulk invitations");
+    if (!res.ok){
+              const err = await res.json();
+         errorShow(err);
+       throw new Error("Failed to send bulk invitations");
+    }
     return res.json();
   };
 
@@ -67,7 +84,11 @@ export const getCProgram = async (id: any, filters?: LookupFilters) => {
       "Content-Type": "application/json",
     },
   });
-    if (!res.ok) throw new Error("Failed to get invited program slots");
+    if (!res.ok){
+              const err = await res.json();
+         errorShow(err);
+       throw new Error("Failed to get invited program slots");
+    }
     return res.json();
 }
 
@@ -85,6 +106,8 @@ export const acceptProgramSlot = async (data: any) => {
   const responseData = await res.json(); // parse once
 
   if (!res.ok) {
+            const err = await res.json();
+         errorShow(err);
     throw new Error(responseData?.message || "Request failed");
   }
 
@@ -96,7 +119,11 @@ export const acceptProgramSlot = async (data: any) => {
       method: "POST", 
       body: JSON.stringify(data),
     });
-    if (!res.ok) throw new Error("Failed to reject program slot");
+    if (!res.ok){
+              const err = await res.json();
+         errorShow(err);
+       throw new Error("Failed to reject program slot");
+    }
     return res.json();
   };
 
@@ -114,7 +141,11 @@ export const acceptProgramSlot = async (data: any) => {
       "Content-Type": "application/json",
     },
   });
-    if (!res.ok) throw new Error("Failed to get invited program slots");
+    if (!res.ok){
+              const err = await res.json();
+         errorShow(err);
+       throw new Error("Failed to get invited program slots");
+    }
     return res.json();
 }
 
@@ -136,6 +167,8 @@ export async function moveSlot({ subProgramId, from, to, item }) {
   });
 
   if (!res.ok) {
+            const err = await res.json();
+         errorShow(err);
     throw new Error("Failed to move slot");
   }
 
@@ -153,6 +186,8 @@ export async function getSubprogram({ subProgramId }) {
   });
 
   if (!res.ok) {
+            const err = await res.json();
+         errorShow(err);
     throw new Error("Failed to getSubprogram");
   }
 

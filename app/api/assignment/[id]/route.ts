@@ -56,12 +56,12 @@ export async function PUT(  req: NextRequest,
       }
   
       // Assuming you have an update API endpoint on backend
-      await axiosClient.put(
+      const response = await axiosClient.put(
         `${process.env.BACKEND_API_URL}/Assignment/${id}`,
         body
       );
   
-      return NextResponse.json({ success: true }, { status: 200 });
+      return NextResponse.json({ success: true, message: response?.data?.message }, { status: 200 });
     } catch (error: any) {
       console.error("Assignment update failed:", error?.response?.data || error.message);
   

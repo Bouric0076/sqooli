@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/app/store/useAuthStore";
 import { useCurriculumStore } from "@/app/store/useCurriculumStore";
+import { errorShow } from "@/lib/errorHandler";
 
 interface Curriculum {
   id: number;
@@ -48,6 +49,7 @@ const CurriculumSubjects = () => {
         const data = await res.json();
         setCurriculums(data.curriculums || []);
       } catch (err: any) {
+          errorShow(err);
         setError(err.message || "Something went wrong");
       } finally {
         setLoading(false);

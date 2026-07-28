@@ -7,6 +7,8 @@ import AuthWrapper from "../components/auth/AuthWrapper";
 
 import { Roboto } from "next/font/google";
 import GlobalSpinner from "@/components/GlobalSpinner";
+import GlobalErrorHandler from "@/lib/GlobalErrorHandler";
+import MyToaster from "../components/general/Toast/MyToaster";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -38,7 +40,8 @@ export default function RootLayout({
       <body className={roboto.className}>
         <div className="flex h-screen bg-gray-100 relative">
           {/* Toggle button - always visible, positioned independently */}
-
+       <MyToaster/>   
+ <GlobalErrorHandler />
           {/* Main Content */}
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Header */}
