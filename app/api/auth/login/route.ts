@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json(
-      { message: "Unable to connect to backend" },
+      { message: error?.message},
       { status: 502 }
     );
   }

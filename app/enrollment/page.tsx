@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import Mpesa from "../payment/components/Mpesa";
 import { addEnrollment, getEnrollmentCountries, getEnrollmentIntakes, getEnrollmentPrograms } from "../lib/enrollment";
+import { ShowToast } from "@/lib/toast";
+import { useSpinnerStore } from "../store/useSpinnerStore";
 
 
 
@@ -18,8 +20,12 @@ interface FormData {
 export default function EnrollmentPage() {
   const [step, setStep] = useState<Step>("enrollment");
   const [form, setForm] = useState<FormData>({
-    firstName:"",lastName:"",email:"",phone:"",idNumber:"",
-    dob:"",gender:"",country:"",county:"",
+    firstName:"",lastName:"",email:""
+    ,phone:""
+    ,idNumber:"",
+    dob:"",
+    gender:""
+    ,country:"",county:"",
     program:"",intake:"",studyMode:"",previousSchool:"",grade:"",
   });
   const [errors, setErrors] = useState<Partial<FormData>>({});
@@ -35,6 +41,9 @@ export default function EnrollmentPage() {
   const [enrollmentID, setEnrollmentID] = useState(null);
   const [referenceNumber, setReferenceNumber] = useState('');
    const [countries, setCountries] = useState<Record<string, string[]>>({});
+
+     const { loading, setLoading } = useSpinnerStore();
+   
 
 
 
@@ -97,8 +106,9 @@ useEffect(()=>{
   const STEPS = [
     {key:"enrollment",label:"Details",  n:1},
     {key:"review",    label:"Review",   n:2},
-    {key:"payment",   label:"Payment",  n:3},
-    {key:"success",   label:"Confirm",  n:4},
+    // {key:"payment",   label:"Payment",  n:3},
+    // {key:"success",   label:"Confirm",  n:4},
+      {key:"success",   label:"Welcome",  n:3},
   ];
   const si = STEPS.findIndex(s => s.key === step);
 
@@ -108,16 +118,16 @@ useEffect(()=>{
 
 const submit = async()=>{
                   
-                    console.log(form);
-
+                    // console.log(form);
+setLoading(true);
 addEnrollment({
           firstName: form.firstName,
           lastName: form.lastName,
           email: form.email,
           phone: form.phone,
-          idNumber: form.idNumber,
-          dob: form.dob,
-          gender: form.gender,
+          // idNumber: form.idNumber,
+          // dob: form.dob,
+          // gender: form.gender,
           country: form.country,
           county: form.county,
           subProgramId: form.program,
@@ -131,10 +141,16 @@ addEnrollment({
         console.log(res);
           setEnrollmentID(res?.enrollmentId);
           setReferenceNumber(res?.referenceNumber);
-            setStep("payment")
+            setStep("success")
+            ShowToast.success("Enrollment Successfull");
+
       })
       .catch((err) => {
+        ShowToast.error(err?.message || "Error Occurred while enrolling")
           console.error("Enrollment failed:", err);
+      })
+      .finally(() => {
+        setLoading(false);
       });
 
               
@@ -486,13 +502,13 @@ addEnrollment({
                   </div>
                 </div>
 
-                <div style={{background:"var(--sq-orange-l)",border:"1.5px solid #fed7aa",borderRadius:14,padding:16}}>
+                {/* <div style={{background:"var(--sq-orange-l)",border:"1.5px solid #fed7aa",borderRadius:14,padding:16}}>
                   <p style={{fontWeight:700,color:"#c2410c",fontSize:13,margin:"0 0 8px",display:"flex",alignItems:"center",gap:6}}>
                     <span>⚠️</span> Important Notice
                   </p>
                   <p style={{fontSize:12,color:"#9a3412",margin:"0 0 6px",lineHeight:1.5}}>The admission fee of <strong>KES {ADMISSION_FEE.toLocaleString()}</strong> is non-refundable and must be paid to confirm your place.</p>
                   <p style={{fontSize:12,color:"#9a3412",margin:0,lineHeight:1.5}}>A confirmation email will be sent upon successful payment.</p>
-                </div>
+                </div> */}
 
                 <div style={{background:"#fff",border:"1.5px solid var(--sq-border)",borderRadius:14,padding:16}}>
                   <p style={{fontSize:11,fontWeight:700,color:"var(--sq-muted)",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0 0 10px"}}>Why Sqooli?</p>
@@ -562,7 +578,7 @@ addEnrollment({
 
             <div style={{display:"flex",gap:12}}>
               <button className="btn btn-out" style={{flex:1}} onClick={()=>setStep("enrollment")}>← Edit Details</button>
-              <button className="btn btn-g" style={{flex:2}} onClick={()=>submit()}>Proceed to Payment →</button>
+              <button className="btn btn-g" style={{flex:2}} onClick={()=>submit()}>Everything is Correct - Continue →</button>
             </div>
           </div>
         )}
@@ -597,7 +613,7 @@ addEnrollment({
                   ["County / Mkoa", form.county],
                   ["Intake", form.intake],
                   ["Study Mode", form.studyMode],
-                  ["Amount Paid", `KES ${ADMISSION_FEE.toLocaleString()}`],
+                  // ["Amount Paid", `KES ${ADMISSION_FEE.toLocaleString()}`],
                   ["Status", "✅ Confirmed"],
                 ].map(([l,v])=>(
                   <div key={l} style={{display:"flex",justifyContent:"space-between",padding:"10px 0",borderBottom:"1px solid #f1f5f9",fontSize:14,textAlign:"left"}}>

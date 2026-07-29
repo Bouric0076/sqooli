@@ -108,11 +108,13 @@ axiosClient.interceptors.response.use(
 
     //  redirect("/login");
 
+    // console.log(error.response.data)
+
       return Promise.reject(
         {
             status:false,
             errorCode:401,
-            message: "Unauthorized access"
+            message: error?.response?.data?.message ||  "Unauthorized access"
           }
       );
 
