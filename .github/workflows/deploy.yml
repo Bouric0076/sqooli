@@ -27,9 +27,17 @@ jobs:
         working-directory: sqooli-landing
         run: npm run build
 
+      - name: Create Cloudflare Pages project if missing
+        continue-on-error: true
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages project create sqooli-landing --production-branch=UI
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy sqooli-landing/dist --project-name=sqooli
+          command: pages deploy sqooli-landing/dist --project-name=sqooli-landing --commit-dirty=true
