@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: sqooli-landing
+    runtime: static
+    branch: UI
+    rootDir: sqooli-landing
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    pullRequestPreviewsEnabled: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

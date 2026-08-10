@@ -31,3 +31,9 @@ npm run lint
 npm run build
 git diff --check
 ```
+
+## Render deployment
+
+The repository root contains `render.yaml`, which provisions the static `sqooli-landing` site
+from the `UI` branch. Import the repository in Render and select **Blueprint** deployment. Render
+will use this project’s `rootDir`, build command and SPA fallback automatically.
