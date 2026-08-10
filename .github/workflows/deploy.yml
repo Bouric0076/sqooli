@@ -3,7 +3,7 @@ name: Deploy Sqooli landing to Cloudflare Pages
 on:
   push:
     branches:
-      - main
+      - UI
 
 jobs:
   deploy:
