@@ -22,6 +22,12 @@
 
 # production
 /build
+/sqooli-landing/node_modules/
+/sqooli-landing/dist/
+/sqooli-landing/.vite/
+/sqooli-landing/coverage/
+/sqooli-landing/*.zip
+/sqooli-landing/**/__MACOSX/
 
 # misc
 .DS_Store

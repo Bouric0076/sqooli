@@ -1,4 +1,4 @@
-name: Deploy to Cloudflare Pages
+name: Deploy Sqooli landing to Cloudflare Pages
 
 on:
   push:
@@ -15,12 +15,16 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: sqooli-landing/package-lock.json
 
       - name: Install dependencies
-        run: npm install
+        working-directory: sqooli-landing
+        run: npm ci
 
       - name: Build project
+        working-directory: sqooli-landing
         run: npm run build
 
       - name: Deploy to Cloudflare Pages
@@ -28,4 +32,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy out --project-name=sqooli
+          command: pages deploy sqooli-landing/dist --project-name=sqooli-landing

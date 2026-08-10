@@ -1,0 +1,32 @@
+.leave-comment-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, .58);
+}
+
+.leave-comment-modal {
+  width: min(700px, 100%);
+  padding: 32px;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, .2);
+}
+
+.leave-comment-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 26px; }
+.leave-comment-header h2 { margin: 0; color: #0f172a; font-size: 22px; }
+.leave-comment-header button { display: inline-flex; padding: 4px; border: 0; background: transparent; color: #475569; cursor: pointer; }
+.leave-comment-modal label { display: block; margin-bottom: 8px; color: #334155; font-size: 13px; font-weight: 700; }
+.leave-comment-modal textarea { width: 100%; min-height: 154px; resize: vertical; padding: 14px; border: 1px solid #cbd5e1; border-radius: 12px; background: #f8fafc; color: #0f172a; font: inherit; font-size: 14px; }
+.leave-comment-modal textarea:focus { outline: 2px solid #bae6fd; border-color: #0284c7; background: #fff; }
+.leave-comment-error { margin: 8px 0 0; color: #b91c1c; font-size: 12px; }
+.leave-comment-actions { display: flex; justify-content: flex-end; margin-top: 22px; }
+.leave-comment-submit { min-height: 42px; padding: 0 20px; border: 0; border-radius: 99px; background: #2b9edc; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; }
+
+@media (max-width: 600px) {
+  .leave-comment-modal { padding: 24px 18px; border-radius: 18px; }
+  .leave-comment-header { margin-bottom: 20px; }
+}

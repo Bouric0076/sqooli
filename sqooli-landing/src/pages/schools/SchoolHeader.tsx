@@ -1,0 +1,136 @@
+import { useState } from 'react'
+import { ArrowLeft, Menu, X } from 'lucide-react'
+import sqooliLogo from '../../assets/images/hero/logo.svg'
+
+interface SchoolHeaderProps {
+  variant?: 'main' | 'listings' | 'learning' | 'school-profile'
+  activeTab?: string
+  schoolName?: string
+}
+
+export default function SchoolHeader({ variant = 'main', activeTab = 'Schools', schoolName = 'Makini School' }: SchoolHeaderProps) {
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  // Minimal Header for School Listings (/schools/listings) as per school-listing-detail-nav.png
+  if (variant === 'listings') {
+    return (
+      <header className="school-minimal-header">
+        <div className="container header-inner">
+          <a href="/" className="logo" aria-label="Sqooli home">
+            <img src={sqooliLogo} alt="Sqooli" />
+          </a>
+          <div className="header-actions">
+            <a href="/#login" className="btn-login-pill">Login</a>
+          </div>
+        </div>
+      </header>
+    )
+  }
+
+  // Contextual Header for Tutors & Learning (/schools/tutors) as per tutors-nav.png & Desktop - 107.png
+  if (variant === 'learning') {
+    return (
+      <div className="learning-header-wrapper">
+        <header className="school-topbar">
+          <div className="container header-inner">
+            <a href="/" className="logo" aria-label="Sqooli home">
+              <img src={sqooliLogo} alt="Sqooli" />
+            </a>
+
+            <div className="header-actions">
+              <a href="/popular" className="btn-trending-pill">Trending</a>
+              <a href="/#login" className="btn-login-pill">Login</a>
+            </div>
+          </div>
+        </header>
+
+        {/* Sub-nav strip placed BELOW main nav bar */}
+        <div className="learning-subnav-strip">
+          <div className="container">
+            <nav className="subnav-links">
+              <a href="/search" className={activeTab === 'AI Mode' ? 'active' : ''}>AI Mode</a>
+              <a href="/schools/tutors" className={activeTab === 'Classes' ? 'active' : ''}>Classes</a>
+              <a href="/schools/tutors" className={activeTab === 'Topics' ? 'active' : ''}>Topics</a>
+              <a href="/schools/tutors" className={activeTab === 'Tutors' ? 'active' : ''}>Tutors</a>
+              <a href="/schools/tutors" className={activeTab === 'Questions' ? 'active' : ''}>Questions</a>
+            </nav>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // School Profile Header for Dedicated School Page (/schools/detail) as per Desktop - 109.png
+  if (variant === 'school-profile') {
+    return (
+      <header className="school-profile-header">
+        <div className="container">
+          <div className="profile-top-bar">
+            <a href="/schools" className="back-link-clean">
+              <ArrowLeft size={16} /> Back to Sqooli
+            </a>
+          </div>
+          <div className="header-inner">
+            <div className="profile-brand">
+              <a href="/" className="logo" aria-label="Sqooli home">
+                <img src={sqooliLogo} alt="Sqooli" />
+              </a>
+              <span className="school-badge">{schoolName}</span>
+            </div>
+
+            <button
+              className="menu-toggle"
+              aria-label="Toggle navigation"
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
+              {menuOpen ? <X /> : <Menu />}
+            </button>
+
+            <nav className={`main-nav ${menuOpen ? 'open' : ''}`}>
+              <a href="#home" className="active">Home</a>
+              <a href="#about">About Us</a>
+              <a href="#admissions">Admissions</a>
+              <a href="#contact">Contact Us</a>
+            </nav>
+
+            <div className="header-actions">
+              <a href="#contact" className="btn-primary">Get Started</a>
+            </div>
+          </div>
+        </div>
+      </header>
+    )
+  }
+
+  // Default Main Header for /schools
+  return (
+    <header className="schools-main-header">
+      <div className="container header-inner">
+        <a href="/" className="logo" aria-label="Sqooli home">
+          <img src={sqooliLogo} alt="Sqooli" />
+        </a>
+
+        <button
+          className="menu-toggle"
+          aria-label="Toggle navigation"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          {menuOpen ? <X /> : <Menu />}
+        </button>
+
+        <nav className={`main-nav ${menuOpen ? 'open' : ''}`}>
+          <a href="/" className={activeTab === 'Home' ? 'active' : ''}>Home</a>
+          <a href="/schools" className={activeTab === 'Schools' ? 'active' : ''}>Schools</a>
+          <a href="/partners" className={activeTab === 'Partners' ? 'active' : ''}>Partners</a>
+          <a href="/popular" className={activeTab === 'Popular' ? 'active' : ''}>Popular</a>
+          <a href="/contact" className={activeTab === 'Contact Us' ? 'active' : ''}>Contact Us</a>
+        </nav>
+
+        <div className="header-actions">
+          <a href="/#login" className="btn-login">Login</a>
+          <a href="/#join" className="btn-primary">Get Started</a>
+        </div>
+      </div>
+    </header>
+  )
+}
