@@ -32,4 +32,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy sqooli-landing/dist --project-name=sqooli-landing
+          command: pages deploy sqooli-landing/dist --project-name=sqooli
