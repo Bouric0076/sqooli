@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Search, X, SlidersHorizontal, Star, ChevronLeft, ChevronRight, ShoppingCart, Calendar, Eye, User } from 'lucide-react'
 import SchoolHeader from './SchoolHeader'
 import Footer from '../../components/layout/Footer'
 import BookSlotModal from '../../components/BookSlotModal'
-import teacherAvatar from '../../assets/images/whats-popular/teacher.jpg'
+import teacherAvatar from '../../assets/images/whats-popular/teacher.webp'
 import '../../styles/pages/schools.css'
 import '../../styles/pages/search.css'
 
@@ -18,6 +18,7 @@ interface TutorCourse {
   curriculum: string
   grades: string[]
   yearPosted: string
+  schoolId: string
 }
 
 const TUTOR_COURSES: TutorCourse[] = [
@@ -28,7 +29,7 @@ const TUTOR_COURSES: TutorCourse[] = [
     tutorAvatar: teacherAvatar,
     courseTitle: 'The Ultimate Math Camp Kenya April 2026',
     rating: 4.5,
-    price: 'KES 200.00', curriculum: 'Competency-based Curriculum', grades: ['Grade 9', 'Grade 8'], yearPosted: '2026'
+    price: 'KES 200.00', curriculum: 'Competency-based Curriculum', grades: ['Grade 9', 'Grade 8'], yearPosted: '2026', schoolId: 'udbc'
   },
   {
     id: '2',
@@ -37,7 +38,7 @@ const TUTOR_COURSES: TutorCourse[] = [
     tutorAvatar: teacherAvatar,
     courseTitle: 'The Ultimate Math Camp Kenya April 2026',
     rating: 4.5,
-    price: 'KES 200.00', curriculum: 'Cambridge', grades: ['Grade 7', 'Grade 6'], yearPosted: '2026'
+    price: 'KES 200.00', curriculum: 'Cambridge', grades: ['Grade 7', 'Grade 6'], yearPosted: '2026', schoolId: 'udbc'
   },
   {
     id: '3',
@@ -46,14 +47,17 @@ const TUTOR_COURSES: TutorCourse[] = [
     tutorAvatar: teacherAvatar,
     courseTitle: 'The Ultimate Math Camp Kenya April 2026',
     rating: 4.5,
-    price: 'KES 200.00', curriculum: '8-4-4', grades: ['Grade 5', 'Grade 4'], yearPosted: '2025'
+    price: 'KES 200.00', curriculum: '8-4-4', grades: ['Grade 5', 'Grade 4'], yearPosted: '2025', schoolId: 'udbc'
   }
 ]
 
 export default function SchoolTutorsPage() {
-  const [searchQuery, setSearchQuery] = useState('Math')
-  const [activeFilterChip, setActiveFilterChip] = useState('Valley Anthony Institute')
-  const [showAdvanceSearch, setShowAdvanceSearch] = useState(true)
+  const initialParams = useMemo(() => new URLSearchParams(window.location.search), [])
+  const initialSchool = initialParams.get('school') ?? ''
+  const [searchQuery, setSearchQuery] = useState(initialParams.get('q') ?? '')
+  const [activeFilterChip, setActiveFilterChip] = useState(initialSchool === 'udbc' ? 'Ufufuo Digital Bible College (UDBC)' : '')
+  const [schoolFilter, setSchoolFilter] = useState(initialSchool)
+  const [showAdvanceSearch, setShowAdvanceSearch] = useState(initialParams.get('advance') !== 'false')
 
   // Filter States
   const [selectedRatings, setSelectedRatings] = useState<number[]>([])
@@ -67,6 +71,7 @@ export default function SchoolTutorsPage() {
   const [filterNotice, setFilterNotice] = useState('')
 
   const toggleRating = (stars: number) => {
+    setPage(1)
     if (selectedRatings.includes(stars)) {
       setSelectedRatings(selectedRatings.filter(r => r !== stars))
     } else {
@@ -75,6 +80,7 @@ export default function SchoolTutorsPage() {
   }
 
   const toggleCurriculum = (curr: string) => {
+    setPage(1)
     if (selectedCurriculum.includes(curr)) {
       setSelectedCurriculum(selectedCurriculum.filter(c => c !== curr))
     } else {
@@ -83,6 +89,7 @@ export default function SchoolTutorsPage() {
   }
 
   const toggleGrade = (grade: string) => {
+    setPage(1)
     if (selectedGrades.includes(grade)) {
       setSelectedGrades(selectedGrades.filter(g => g !== grade))
     } else {
@@ -97,6 +104,10 @@ export default function SchoolTutorsPage() {
     setSelectedCurriculum([])
     setSelectedGrades([])
     setYearPosted('')
+    setSearchQuery('')
+    setSchoolFilter('')
+    setActiveFilterChip('')
+    setPage(1)
     setFilterNotice('Filters cleared')
   }
 
@@ -104,14 +115,32 @@ export default function SchoolTutorsPage() {
   const maxPrice = Number.parseFloat(priceTo) || Number.POSITIVE_INFINITY
   const filteredCourses = TUTOR_COURSES.filter(item => {
     const price = Number.parseFloat(item.price.replace(/[^0-9.]/g, ''))
-    const matchesSearch = `${item.courseTitle} ${item.tutorName}`.toLowerCase().includes(searchQuery.toLowerCase())
+    const searchableText = `${item.courseTitle} ${item.tutorName} ${item.curriculum} ${item.grades.join(' ')}`.toLowerCase()
+    const matchesSearch = searchableText.includes(searchQuery.trim().toLowerCase())
     const matchesRating = selectedRatings.length === 0 || selectedRatings.some(rating => item.rating >= rating)
     const matchesPrice = price >= minPrice && price <= maxPrice
     const matchesCurriculum = selectedCurriculum.length === 0 || selectedCurriculum.includes(item.curriculum)
     const matchesGrade = selectedGrades.length === 0 || selectedGrades.some(grade => item.grades.includes(grade))
     const matchesYear = !yearPosted || item.yearPosted === yearPosted
-    return matchesSearch && matchesRating && matchesPrice && matchesCurriculum && matchesGrade && matchesYear
+    const matchesSchool = !schoolFilter || item.schoolId === schoolFilter
+    return matchesSearch && matchesRating && matchesPrice && matchesCurriculum && matchesGrade && matchesYear && matchesSchool
   })
+
+  const pageSize = 2
+  const totalPages = Math.max(1, Math.ceil(filteredCourses.length / pageSize))
+  const visibleCourses = filteredCourses.slice((page - 1) * pageSize, page * pageSize)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (searchQuery.trim()) params.set('q', searchQuery.trim())
+    else params.delete('q')
+    if (schoolFilter) params.set('school', schoolFilter)
+    else params.delete('school')
+    if (showAdvanceSearch) params.set('advance', 'true')
+    else params.delete('advance')
+    params.set('tab', 'classes')
+    window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`)
+  }, [searchQuery, schoolFilter, showAdvanceSearch])
 
   const toggleCart = (id: string) => {
     setCartItems(items => items.includes(id) ? items.filter(itemId => itemId !== id) : [...items, id])
@@ -122,7 +151,7 @@ export default function SchoolTutorsPage() {
 
   return (
     <div className="schools-page-wrapper">
-      <SchoolHeader variant="learning" activeTab="Tutors" />
+      <SchoolHeader variant="learning" activeTab="Classes" />
       <BookSlotModal
         isOpen={bookingModalOpen}
         onClose={() => setBookingModalOpen(false)}
@@ -137,7 +166,7 @@ export default function SchoolTutorsPage() {
             <input
               type="text"
               value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
+              onChange={e => { setSearchQuery(e.target.value); setPage(1) }}
               placeholder="Search subjects, tutors..."
             />
             {searchQuery && (
@@ -159,7 +188,9 @@ export default function SchoolTutorsPage() {
             <div className="filter-chip">
               <img src={teacherAvatar} alt="Avatar" />
               <span>{activeFilterChip}</span>
-              <X className="filter-chip-close" size={14} onClick={() => setActiveFilterChip('')} />
+              <button type="button" className="filter-chip-close" aria-label="Remove school filter" onClick={() => { setActiveFilterChip(''); setSchoolFilter(''); setPage(1) }}>
+                <X size={14} />
+              </button>
             </div>
           </div>
         )}
@@ -285,9 +316,12 @@ export default function SchoolTutorsPage() {
 
           {/* Tutor Results Area */}
           <div className="tutors-results-list">
-            <h2 style={{ fontSize: 24, fontWeight: 700, margin: '0 0 20px' }}>Results</h2>
+            <div className="tutors-results-heading">
+              <h2>Classes</h2>
+              <span>{filteredCourses.length} available</span>
+            </div>
 
-            {filteredCourses.map(item => (
+            {visibleCourses.map(item => (
               <div key={item.id} className="tutor-result-card">
                 <div className="tutor-header-row">
                   <img src={item.tutorAvatar} alt={item.tutorName} className="tutor-avatar" />
@@ -343,13 +377,13 @@ export default function SchoolTutorsPage() {
             {/* Pagination Bar */}
             <div className="pagination-bar">
               <span style={{ fontSize: 14, color: '#64748b' }}>
-                Page <strong>1</strong> of 1
+                Page <strong>{page}</strong> of {totalPages}
               </span>
               <div style={{ display: 'flex', gap: 12 }}>
-                <button type="button" className="btn-page" disabled>
+                <button type="button" className="btn-page" disabled={page <= 1} onClick={() => setPage(current => Math.max(1, current - 1))}>
                   <ChevronLeft size={16} /> Previous
                 </button>
-                <button type="button" className="btn-page" disabled={page >= 1} onClick={() => setPage(1)}>
+                <button type="button" className="btn-page" disabled={page >= totalPages} onClick={() => setPage(current => Math.min(totalPages, current + 1))}>
                   Next <ChevronRight size={16} />
                 </button>
               </div>

@@ -1,14 +1,15 @@
 import { useState } from 'react'
-import { ArrowLeft, Menu, X } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import sqooliLogo from '../../assets/images/hero/logo.svg'
+import '../../styles/pages/schools.css'
 
 interface SchoolHeaderProps {
-  variant?: 'main' | 'listings' | 'learning' | 'school-profile'
+  variant?: 'main' | 'listings' | 'learning' | 'school-profile' | 'tutor-profile'
   activeTab?: string
   schoolName?: string
 }
 
-export default function SchoolHeader({ variant = 'main', activeTab = 'Schools', schoolName = 'Makini School' }: SchoolHeaderProps) {
+export default function SchoolHeader({ variant = 'main', activeTab = 'Schools' }: SchoolHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
 
   // Minimal Header for School Listings (/schools/listings) as per school-listing-detail-nav.png
@@ -49,10 +50,10 @@ export default function SchoolHeader({ variant = 'main', activeTab = 'Schools', 
           <div className="container">
             <nav className="subnav-links">
               <a href="/search" className={activeTab === 'AI Mode' ? 'active' : ''}>AI Mode</a>
-              <a href="/schools/tutors" className={activeTab === 'Classes' ? 'active' : ''}>Classes</a>
-              <a href="/schools/tutors" className={activeTab === 'Topics' ? 'active' : ''}>Topics</a>
-              <a href="/schools/tutors" className={activeTab === 'Tutors' ? 'active' : ''}>Tutors</a>
-              <a href="/schools/tutors" className={activeTab === 'Questions' ? 'active' : ''}>Questions</a>
+              <a href="/schools/tutors?tab=classes" className={activeTab === 'Classes' ? 'active' : ''}>Classes</a>
+              <a href="/search?tab=Topics" className={activeTab === 'Topics' ? 'active' : ''}>Topics</a>
+              <a href="/search?tab=Tutors" className={activeTab === 'Tutors' ? 'active' : ''}>Tutors</a>
+              <a href="/questions" className={activeTab === 'Questions' ? 'active' : ''}>Questions</a>
             </nav>
           </div>
         </div>
@@ -65,38 +66,25 @@ export default function SchoolHeader({ variant = 'main', activeTab = 'Schools', 
     return (
       <header className="school-profile-header">
         <div className="container">
-          <div className="profile-top-bar">
-            <a href="/schools" className="back-link-clean">
-              <ArrowLeft size={16} /> Back to Sqooli
+          <div className="header-inner profile-home-only">
+            <a href="/" className="logo" aria-label="Return to Sqooli home">
+              <img src={sqooliLogo} alt="Sqooli" />
             </a>
           </div>
-          <div className="header-inner">
-            <div className="profile-brand">
-              <a href="/" className="logo" aria-label="Sqooli home">
-                <img src={sqooliLogo} alt="Sqooli" />
-              </a>
-              <span className="school-badge">{schoolName}</span>
-            </div>
+        </div>
+      </header>
+    )
+  }
 
-            <button
-              className="menu-toggle"
-              aria-label="Toggle navigation"
-              onClick={() => setMenuOpen(!menuOpen)}
-            >
-              {menuOpen ? <X /> : <Menu />}
-            </button>
-
-            <nav className={`main-nav ${menuOpen ? 'open' : ''}`}>
-              <a href="#home" className="active">Home</a>
-              <a href="#about">About Us</a>
-              <a href="#admissions">Admissions</a>
-              <a href="#contact">Contact Us</a>
-            </nav>
-
-            <div className="header-actions">
-              <a href="#contact" className="btn-primary">Get Started</a>
-            </div>
-          </div>
+  // Minimal tutor profile header: home mark and account access only.
+  if (variant === 'tutor-profile') {
+    return (
+      <header className="tutor-profile-header">
+        <div className="container header-inner">
+          <a href="/" className="logo" aria-label="Sqooli home">
+            <img src={sqooliLogo} alt="Sqooli" />
+          </a>
+          <a href="/#join" className="btn-primary tutor-profile-start-button">Get Started</a>
         </div>
       </header>
     )
@@ -124,6 +112,7 @@ export default function SchoolHeader({ variant = 'main', activeTab = 'Schools', 
           <a href="/partners" className={activeTab === 'Partners' ? 'active' : ''}>Partners</a>
           <a href="/popular" className={activeTab === 'Popular' ? 'active' : ''}>Popular</a>
           <a href="/contact" className={activeTab === 'Contact Us' ? 'active' : ''}>Contact Us</a>
+          <a href="/#join" className="mobile-nav-cta">Get Started</a>
         </nav>
 
         <div className="header-actions">

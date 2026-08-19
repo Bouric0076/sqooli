@@ -22,7 +22,7 @@ export default function TimetablePage() {
             </a>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 16, fontSize: 13 }}>
+          <div className="timetable-metadata-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 16, fontSize: 13 }}>
             <div>
               <span style={{ color: '#64748b', fontSize: 11 }}>Course Name</span>
               <div style={{ fontWeight: 700, fontSize: 14 }}>CBC First Term 2026</div>
@@ -68,12 +68,12 @@ export default function TimetablePage() {
         </div>
 
         {/* Toolbar Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <div className="timetable-toolbar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <div style={{ fontSize: 15, fontWeight: 700 }}>
             28 Feb 2025 - 1 Mar 2025 <a href="#next" style={{ color: '#0284c7', fontSize: 13, marginLeft: 8 }}>Next Week</a>
           </div>
 
-          <div style={{ display: 'flex', gap: 6 }}>
+          <div className="timetable-months" style={{ display: 'flex', gap: 6 }}>
             {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map(m => (
               <button
                 key={m}
@@ -92,7 +92,7 @@ export default function TimetablePage() {
         </div>
 
         {/* Weekly Grid Schedule Table */}
-        <div style={{ border: '1px solid #e2e8f0', borderRadius: 16, overflow: 'hidden', background: '#fff' }}>
+        <div className="timetable-scroll" style={{ border: '1px solid #e2e8f0', borderRadius: 16, overflow: 'hidden', background: '#fff' }}>
           <div style={{
             display: 'grid', gridTemplateColumns: '100px repeat(5, 1fr)',
             background: '#f8fafc', borderBottom: '1px solid #e2e8f0', padding: '12px 16px',

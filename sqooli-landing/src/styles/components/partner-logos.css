@@ -1,0 +1,56 @@
+.actual-partner-strip {
+  width: 100%;
+  padding: 42px 0 58px;
+  text-align: center;
+  background: #fff;
+}
+
+.actual-partner-strip p {
+  margin: 0 0 28px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.actual-partner-logos {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: center;
+  gap: 28px;
+  width: min(100%, 1120px);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.actual-partner-logo {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  height: 82px;
+}
+
+.actual-partner-logo img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 62px;
+  object-fit: contain;
+}
+
+.actual-partner-logo:nth-child(5) img { max-height: 78px; }
+
+.actual-partner-strip--compact { padding-top: 24px; padding-bottom: 34px; }
+
+@media (max-width: 900px) {
+  .actual-partner-logos { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+}
+
+@media (max-width: 600px) {
+  .actual-partner-strip { padding: 30px 0 38px; }
+  .actual-partner-strip p { margin-bottom: 20px; font-size: 12px; }
+  .actual-partner-logos { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 18px; padding: 0 18px; }
+  .actual-partner-logo { height: 64px; }
+  .actual-partner-logo img { max-height: 48px; }
+  .actual-partner-logo:nth-child(5) img { max-height: 58px; }
+}

@@ -1,0 +1,142 @@
+.teacher-wallet-page { min-height: calc(100svh - 145px); padding: 30px 22px 90px; box-sizing: border-box; color: #29384f; }
+.teacher-wallet-page__back { display: inline-flex; align-items: center; gap: 5px; color: #40516c; text-decoration: none; font-size: 13px; }
+.teacher-wallet-page__layout { max-width: 1322px; margin: 34px auto 0; display: grid; grid-template-columns: 245px minmax(0, 1fr); gap: 20px; }
+.teacher-wallet-page__account { position: relative; padding: 0 16px; color: #26364f; }
+.teacher-wallet-page__school-mark { width: 57px; height: 57px; border-radius: 50%; background: linear-gradient(135deg, #1bb9e8, #ffcf33); display: grid; place-items: center; font-size: 30px; }
+.teacher-wallet-page__account h2 { margin: -58px 0 18px 68px; color: #202631; font-size: 16px; line-height: 1.2; }
+.teacher-wallet-page__account > b { display: block; width: max-content; margin: 0 0 17px 68px; padding: 3px 8px; border-radius: 999px; background: #8f42ea; color: #fff; font-size: 10px; }
+.teacher-wallet-page__account p { margin: 14px 0 7px; font-size: 12px; }
+.teacher-wallet-page__account > span { display: block; margin: 5px 0; color: #202631; font-size: 14px; }
+.teacher-wallet-page__account > button { margin-top: 14px; padding: 9px 14px; border: 0; border-radius: 999px; background: #5143e5; color: #fff; font: inherit; font-size: 12px; cursor: pointer; }
+.teacher-wallet-page__referral { min-height: 111px; margin-top: 39px; padding: 12px 10px; box-sizing: border-box; border-radius: 11px; background: #eeecff; display: grid; grid-template-columns: 62px 1fr; gap: 2px 6px; }
+.teacher-wallet-page__referral img { width: 58px; height: 58px; grid-row: 1 / 4; object-fit: contain; }
+.teacher-wallet-page__referral strong { color: #202631; font-size: 11px; }
+.teacher-wallet-page__referral small { color: #53647c; font-size: 9px; line-height: 1.35; }
+.teacher-wallet-page__referral button { width: max-content; padding: 5px 8px; border: 0; border-radius: 6px; background: #fff; color: #5143e5; font: inherit; font-size: 10px; cursor: pointer; }
+.teacher-wallet-page__content header h1 { margin: 0; color: #202631; font-size: 25px; }
+.teacher-wallet-page__content header p { margin: 4px 0 23px; color: #53647c; font-size: 14px; }
+.teacher-wallet-page__columns { display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: 32px; align-items: start; }
+.teacher-wallet-page__card { overflow: hidden; border-radius: 12px; background: #ededed; }
+.teacher-wallet-page__balance { min-height: 132px; padding: 10px 13px 11px; box-sizing: border-box; position: relative; background: linear-gradient(120deg, #9b9b9b, #c2c2c2); color: #fff; display: grid; grid-template-columns: 1fr auto; gap: 4px; }
+.teacher-wallet-page__card.is-active .teacher-wallet-page__balance { background: linear-gradient(120deg, #8e47ef, #5143e5); }
+.teacher-wallet-page__balance::after { content: ''; position: absolute; right: -10px; bottom: -29px; width: 78px; height: 78px; border-radius: 50%; background: rgb(255 255 255 / 25%); box-shadow: -48px 10px 0 4px rgb(255 255 255 / 18%); }
+.teacher-wallet-page__balance small { font-size: 8px; }
+.teacher-wallet-page__balance span { font-size: 11px; }
+.teacher-wallet-page__balance strong { grid-column: 1 / -1; font-size: 15px; }
+.teacher-wallet-page__balance svg { position: absolute; right: 16px; bottom: 19px; z-index: 1; }
+.teacher-wallet-page__activate { min-height: 106px; padding: 15px; box-sizing: border-box; }
+.teacher-wallet-page__activate p { margin: 0 0 10px; color: #202631; font-size: 12px; }
+.teacher-wallet-page__activate button { padding: 10px 14px; border: 0; border-radius: 999px; background: #ff484c; color: #fff; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+.teacher-wallet-page__saved { min-height: 106px; padding: 14px 15px; box-sizing: border-box; background: #dedcff; font-size: 11px; }
+.teacher-wallet-page__saved > span { display: block; margin-bottom: 6px; }
+.teacher-wallet-page__saved p { margin: 5px 0; }
+.teacher-wallet-page__saved button { margin: 10px 4px 0 0; padding: 9px 13px; border: 0; border-radius: 999px; background: #5143e5; color: #fff; font: inherit; font-size: 11px; }
+.teacher-wallet-page__saved button:last-child { background: #fff; color: #202631; }
+.teacher-wallet-page__search { height: 40px; padding: 0 14px; box-sizing: border-box; border: 1px solid #e0e6ed; border-radius: 999px; display: flex; align-items: center; gap: 10px; color: #40516c; }
+.teacher-wallet-page__search input { min-width: 0; flex: 1; border: 0; outline: 0; font: inherit; font-size: 13px; }
+.teacher-wallet-page__panel { margin-top: 10px; overflow: hidden; border: 1px solid #e0e6ed; border-radius: 12px; background: #fff; }
+.teacher-wallet-page__panel nav { min-height: 55px; padding: 0 23px; border-bottom: 1px solid #e0e6ed; display: flex; align-items: end; gap: 25px; }
+.teacher-wallet-page__panel nav button { height: 39px; padding: 0 0 11px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: #34445f; display: inline-flex; align-items: center; gap: 5px; font: inherit; font-size: 13px; cursor: pointer; }
+.teacher-wallet-page__panel nav button.is-active { border-color: #5143e5; color: #5143e5; }
+.teacher-wallet-page__empty { min-height: 212px; display: grid; place-items: center; align-content: center; color: #53647c; text-align: center; }
+.teacher-wallet-page__empty-art { color: #5143e5; opacity: .9; }
+.teacher-wallet-page__empty p { margin: 12px 0 2px; font-size: 12px; }
+.teacher-wallet-page__empty span { font-size: 11px; }
+.teacher-wallet-page__transactions { padding: 0 23px; }
+.teacher-wallet-page__transactions article { min-height: 67px; border-bottom: 1px solid #e0e6ed; display: flex; align-items: center; gap: 9px; }
+.teacher-wallet-page__transactions article > span { width: 30px; height: 30px; border-radius: 8px; background: linear-gradient(#5347e8, #4d37d2); color: #fff; display: grid; place-items: center; font-size: 18px; }
+.teacher-wallet-page__transactions article > div { display: grid; gap: 3px; }
+.teacher-wallet-page__transactions strong { font-size: 14px; font-weight: 500; }
+.teacher-wallet-page__transactions small { color: #53647c; font-size: 11px; }
+.teacher-wallet-page__transactions em { margin-left: 4px; padding: 3px 7px; border-radius: 999px; background: #20bf75; color: #fff; font-style: normal; font-size: 9px; }
+.teacher-wallet-page__transactions article p { margin: 0 0 0 auto; text-align: right; }
+.teacher-wallet-page__transactions article p b, .teacher-wallet-page__transactions article p small { display: block; }
+.teacher-wallet-page__panel footer { min-height: 67px; padding: 0 23px; display: flex; align-items: center; gap: 5px; color: #53647c; font-size: 11px; }
+.teacher-wallet-page__panel footer b { padding: 6px 9px; border-radius: 5px; background: #f2f4f7; }
+.teacher-wallet-page__panel footer div { margin-left: auto; display: flex; gap: 10px; }
+.teacher-wallet-page__panel footer button { padding: 10px 15px; border: 0; border-radius: 8px; background: #f2f4f7; color: #34445f; font: inherit; font-size: 11px; }
+
+.teacher-wallet-modal-backdrop { position: fixed; z-index: 40; inset: 0; overflow-y: auto; padding: 24px; box-sizing: border-box; background: rgb(15 23 42 / 38%); backdrop-filter: blur(6px); display: grid; place-items: center; }
+.teacher-wallet-modal { width: min(710px, 100%); max-height: calc(100dvh - 48px); overflow-y: auto; border-radius: 22px; background: #fff; box-shadow: 0 18px 50px rgb(15 23 42 / 25%); }
+.teacher-wallet-modal__header { padding: 24px 24px 13px; display: flex; justify-content: space-between; gap: 20px; }
+.teacher-wallet-modal__header h1 { margin: 0; color: #202631; font-size: 20px; }
+.teacher-wallet-modal__header p { margin: 4px 0 0; color: #53647c; font-size: 11px; }
+.teacher-wallet-modal__header button { height: 28px; padding: 0; border: 0; background: transparent; color: #53647c; cursor: pointer; }
+.teacher-wallet-modal__steps { padding: 0 24px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.teacher-wallet-modal__steps div { min-height: 70px; padding-top: 10px; border-top: 4px solid #e5e8ee; color: #34445f; }
+.teacher-wallet-modal__steps div.is-active, .teacher-wallet-modal__steps div.is-complete { border-color: #5143e5; color: #5143e5; }
+.teacher-wallet-modal__steps strong, .teacher-wallet-modal__steps small { display: block; }
+.teacher-wallet-modal__steps strong { font-size: 13px; font-weight: 500; }
+.teacher-wallet-modal__steps small { margin-top: 5px; font-size: 10px; line-height: 1.5; }
+.teacher-wallet-modal__body { padding: 0 24px 22px; }
+.teacher-wallet-modal__body fieldset { margin: 0 0 15px; padding: 0; border: 0; }
+.teacher-wallet-modal__body legend, .teacher-wallet-modal__field > span:first-child { display: block; margin-bottom: 8px; color: #34445f; font-size: 13px; }
+.teacher-wallet-modal__cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.teacher-wallet-modal__choice { min-height: 134px; padding: 14px; position: relative; border: 1px solid #e0e6ed; border-radius: 12px; background: #fff; color: #34445f; display: flex; flex-direction: column; align-items: flex-start; text-align: left; font: inherit; cursor: pointer; }
+.teacher-wallet-modal__choice.is-selected { border: 2px solid #5946ff; padding: 13px; background: #f0efff; color: #202631; }
+.teacher-wallet-modal__choice > span { width: 32px; height: 32px; margin-bottom: 10px; border-radius: 4px; background: #fff; box-shadow: 0 1px 4px rgb(15 23 42 / 12%); display: grid; place-items: center; color: #34445f; }
+.teacher-wallet-modal__choice > span svg { width: 18px; }
+.teacher-wallet-modal__choice strong { font-size: 13px; }
+.teacher-wallet-modal__choice small { margin-top: 4px; font-size: 10px; line-height: 1.55; }
+.teacher-wallet-modal__choice .is-check { position: absolute; top: 14px; right: 12px; color: #5946ff; }
+.teacher-wallet-modal__methods { display: flex; flex-wrap: wrap; gap: 9px; }
+.teacher-wallet-modal__methods button { min-height: 39px; padding: 0 12px; border: 1px solid #e0e6ed; border-radius: 8px; background: #fff; display: inline-flex; align-items: center; gap: 8px; color: #34445f; font: inherit; font-size: 13px; cursor: pointer; }
+.teacher-wallet-modal__methods button.is-selected { border: 2px solid #5946ff; padding-inline: 11px; background: #f0efff; color: #202631; }
+.teacher-wallet-modal__methods b { width: 40px; height: 22px; border-radius: 3px; background: #078b3e; color: #fff; display: grid; place-items: center; font-size: 8px; }
+.teacher-wallet-modal__methods button:last-child b { background: #ed2632; font-size: 15px; }
+.teacher-wallet-modal__radios { display: flex; flex-wrap: wrap; gap: 15px; }
+.teacher-wallet-modal__radios label { display: inline-flex; align-items: center; gap: 6px; color: #202631; font-size: 12px; }
+.teacher-wallet-modal__radios input { accent-color: #5946ff; }
+.teacher-wallet-modal__input { min-height: 40px; padding: 0 12px; box-sizing: border-box; border: 1px solid #ccd5e1; border-radius: 999px; display: flex; align-items: center; gap: 10px; }
+.teacher-wallet-modal__input em { padding-right: 10px; border-right: 1px solid #d9e0e8; color: #53647c; font-style: normal; }
+.teacher-wallet-modal__input input { min-width: 0; flex: 1; border: 0; outline: 0; background: transparent; font: inherit; }
+.teacher-wallet-modal__submit { display: block; margin: 20px 0 0 auto; padding: 11px 17px; border: 0; border-radius: 999px; background: #5143e5; color: #fff; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+.teacher-wallet-modal__error { margin: 8px 0 0; color: #d33d45; font-size: 11px; }
+.teacher-wallet-modal__pin { min-height: 260px; }
+.teacher-wallet-modal__pin-row { display: block; margin: 12px 0 20px; }
+.teacher-wallet-modal__pin-row > span { display: block; margin-bottom: 8px; color: #34445f; font-size: 13px; }
+.teacher-wallet-modal__pin-row > div { display: flex; gap: 14px; }
+.teacher-wallet-modal__pin-row input { width: 56px; height: 56px; box-sizing: border-box; border: 1px solid #e2e6ed; border-radius: 9px; background: #f3f4f7; text-align: center; font-size: 22px; }
+
+@media (max-width: 980px) { .teacher-wallet-page__layout { grid-template-columns: 210px minmax(0, 1fr); } .teacher-wallet-page__columns { grid-template-columns: 1fr; } .teacher-wallet-page__account { grid-row: 2; } }
+@media (max-width: 680px) { .teacher-wallet-page { min-height: calc(100svh - 122px); padding: 22px 16px 60px; } .teacher-wallet-page__layout { margin-top: 26px; grid-template-columns: 1fr; } .teacher-wallet-page__account { grid-row: auto; padding: 0; } .teacher-wallet-page__referral { max-width: 300px; } .teacher-wallet-page__columns { gap: 20px; } .teacher-wallet-page__panel { overflow-x: auto; } .teacher-wallet-page__panel nav, .teacher-wallet-page__transactions, .teacher-wallet-page__panel footer { min-width: 560px; } .teacher-wallet-modal-backdrop { padding: 12px; place-items: start center; } .teacher-wallet-modal { max-height: calc(100dvh - 24px); border-radius: 16px; } .teacher-wallet-modal__header, .teacher-wallet-modal__steps, .teacher-wallet-modal__body { padding-inline: 16px; } .teacher-wallet-modal__steps { gap: 9px; } .teacher-wallet-modal__steps strong { font-size: 11px; } .teacher-wallet-modal__steps small { font-size: 9px; } .teacher-wallet-modal__cards { grid-template-columns: 1fr; } .teacher-wallet-modal__choice { min-height: 94px; } .teacher-wallet-modal__pin-row > div { gap: 7px; } .teacher-wallet-modal__pin-row input { width: calc((100vw - 71px) / 6); height: 48px; } }
+
+.teacher-wallet-page__balance .teacher-wallet-page__more { position: absolute; top: 9px; right: 9px; z-index: 4; padding: 0; border: 0; background: transparent; color: #fff; cursor: pointer; }
+.teacher-wallet-page__actions { position: absolute; z-index: 12; top: 35px; right: 10px; width: 190px; padding: 7px; border: 1px solid #e1e5ed; border-radius: 10px; background: #fff; box-shadow: 0 14px 28px rgb(15 23 42 / 18%); color: #263650; }
+.teacher-wallet-page__actions button { width: 100%; min-height: 35px; padding: 0 8px; border: 0; border-radius: 6px; background: transparent; color: inherit; display: flex; align-items: center; gap: 8px; font: inherit; font-size: 12px; text-align: left; cursor: pointer; }
+.teacher-wallet-page__actions button:hover { background: #f1f2ff; color: #5143e5; }
+.teacher-wallet-page__actions button.is-danger { color: #ef3948; }
+.teacher-wallet-page__saved > div { display: flex; flex-wrap: wrap; gap: 5px; }
+.teacher-wallet-page__saved button { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+.teacher-wallet-page__quick-action { margin: 13px 23px 0 auto; padding: 8px 12px; border: 0; border-radius: 999px; background: #5143e5; color: #fff; display: flex; align-items: center; gap: 6px; font: inherit; font-size: 11px; cursor: pointer; }
+.teacher-wallet-page__warning { margin: 13px 23px 0; color: #ff3f48; font-size: 11px; }
+.shared-wallet-modal__country { width: 20px; height: 20px; padding: 0 !important; border-radius: 50%; background: #111; color: #fff; display: grid; place-items: center; font-size: 8px !important; font-weight: 700; }
+.teacher-wallet-page__transaction { width: 100%; min-height: 67px; padding: 0; border: 0; border-bottom: 1px solid #e0e6ed; background: transparent; color: inherit; display: flex; align-items: center; gap: 9px; font: inherit; text-align: left; cursor: pointer; }
+.teacher-wallet-page__transaction:hover { background: #fafaff; }
+.teacher-wallet-page__transaction > span { flex: 0 0 30px; width: 30px; height: 30px; border-radius: 8px; background: #5143e5; color: #fff; display: grid; place-items: center; font-size: 14px; }
+.teacher-wallet-page__transaction > div { min-width: 0; display: grid; gap: 3px; }
+.teacher-wallet-page__transaction strong { font-size: 14px; font-weight: 500; }
+.teacher-wallet-page__transaction small { color: #53647c; font-size: 11px; }
+.teacher-wallet-page__transaction em { margin-left: 4px; padding: 3px 7px; border-radius: 999px; color: #fff; font-style: normal; font-size: 9px; }
+.teacher-wallet-page__transaction em.is-complete { background: #20bf75; }.teacher-wallet-page__transaction em.is-pending { background: #f2b900; }.teacher-wallet-page__transaction em.is-failed { background: #ff484c; }
+.teacher-wallet-page__transaction p { margin: 0 0 0 auto; text-align: right; white-space: nowrap; }.teacher-wallet-page__transaction p b, .teacher-wallet-page__transaction p small { display: block; }
+.teacher-withdraw-modal { width: min(572px, 100%); max-height: calc(100dvh - 48px); overflow-y: auto; padding: 24px; box-sizing: border-box; border-radius: 22px; background: #fff; color: #34445f; box-shadow: 0 20px 55px rgb(15 23 42 / 24%); }
+.teacher-withdraw-modal > header { display: flex; align-items: center; justify-content: space-between; gap: 20px; }.teacher-withdraw-modal h1 { margin: 0; color: #202631; font-size: 20px; }.teacher-withdraw-modal header button { padding: 0; border: 0; background: transparent; color: #53647c; cursor: pointer; }
+.teacher-withdraw-modal form > label { display: block; margin-top: 16px; font-size: 13px; }.teacher-withdraw-modal__warning { color: #ff3f48; font-size: 12px; }.teacher-withdraw-modal__balance { display: grid; gap: 5px; margin-top: 7px; padding: 12px; border-radius: 8px; background: #eeecff; font-size: 11px; }.teacher-withdraw-modal__balance strong { font-size: 14px; }.teacher-withdraw-modal__input { display: flex; align-items: center; gap: 8px; min-height: 40px; margin-top: 7px; padding: 0 12px; border: 1px solid #ccd5e1; border-radius: 999px; }.teacher-withdraw-modal__input em { padding-right: 8px; border-right: 1px solid #d9e0e8; font-style: normal; }.teacher-withdraw-modal__input input { min-width: 0; flex: 1; border: 0; outline: 0; font: inherit; }.teacher-withdraw-modal label small { display: block; margin-top: 6px; font-size: 11px; }.teacher-withdraw-modal__pin { text-align: center; }.teacher-withdraw-modal__icon { margin: 28px auto 12px; color: #5143e5; }.teacher-withdraw-modal__pin > p { font-size: 13px; }.teacher-withdraw-modal__pin > div:last-of-type { display: flex; justify-content: center; gap: 12px; }.teacher-withdraw-modal__pin input { width: 52px; height: 52px; border: 1px solid #e0e6ed; border-radius: 9px; background: #f3f4f7; text-align: center; font-size: 20px; }.teacher-withdraw-modal__result { min-height: 310px; display: grid; place-items: center; align-content: center; gap: 10px; text-align: center; color: #5143e5; }.teacher-withdraw-modal__result p { margin: 0; color: #40516c; font-size: 13px; }.teacher-withdraw-modal__result h2 { margin: 10px 0 0; color: #202631; font-size: 19px; }.teacher-withdraw-modal__result.is-success { color: #16bd69; }.teacher-withdraw-modal__result.is-fail { color: #ff3f48; }.is-spinning { animation: teacher-wallet-spin 1s linear infinite; }@keyframes teacher-wallet-spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 680px) { .teacher-wallet-page__content header h1 { font-size: 23px; }.teacher-wallet-page__account h2 { margin-left: 68px; }.teacher-wallet-page__panel nav { padding-inline: 14px; gap: 16px; overflow-x: auto; }.teacher-wallet-page__transactions { padding-inline: 14px; }.teacher-wallet-page__transaction { min-height: 76px; }.teacher-wallet-page__transaction p { white-space: normal; }.teacher-wallet-page__transaction p small { max-width: 90px; }.teacher-wallet-page__panel footer { padding-inline: 14px; }.teacher-wallet-page__quick-action, .teacher-wallet-page__warning { margin-left: 14px; margin-right: 14px; }.teacher-withdraw-modal { max-height: calc(100dvh - 24px); padding: 20px; border-radius: 16px; }.teacher-withdraw-modal__pin > div:last-of-type { gap: 6px; }.teacher-withdraw-modal__pin input { width: calc((100vw - 76px) / 6); height: 46px; } }
+
+.shared-modal-backdrop { position: fixed; z-index: 45; inset: 0; overflow-y: auto; padding: 16px; box-sizing: border-box; background: rgb(15 23 42 / 42%); backdrop-filter: blur(4px); display: grid; place-items: center; }
+.shared-reset-pin-request-modal { width: min(500px, 100%); min-height: 290px; padding: 28px 24px 22px; box-sizing: border-box; position: relative; border-radius: 22px; background: #fff; color: #26364f; text-align: center; box-shadow: 0 18px 50px rgb(15 23 42 / 20%); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.shared-reset-pin-request-modal__close { position: absolute; top: 18px; right: 20px; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: #40546e; display: grid; place-items: center; cursor: pointer; }
+.shared-reset-pin-request-modal__close:hover { background: #f1f5f9; }
+.shared-reset-pin-request-modal img { width: 154px; height: auto; margin-bottom: 20px; }
+.shared-reset-pin-request-modal h1 { margin: 0; color: #202631; font-size: 22px; }
+.shared-reset-pin-request-modal p { margin: 12px 0 20px; color: #53647c; font-size: 13px; }
+.shared-reset-pin-request-modal__continue { min-width: 66px; padding: 10px 15px; border: 0; border-radius: 999px; background: #5143e5; color: #fff; font: inherit; cursor: pointer; }
+@media (max-width: 680px) {
+  .teacher-wallet-page__panel nav, .teacher-wallet-page__transactions, .teacher-wallet-page__panel footer { min-width: 0; }
+  .teacher-wallet-page__transactions { overflow: hidden; }
+  .shared-modal-backdrop { padding: 12px; place-items: start center; }
+  .shared-reset-pin-request-modal { min-height: 270px; border-radius: 16px; }
+}

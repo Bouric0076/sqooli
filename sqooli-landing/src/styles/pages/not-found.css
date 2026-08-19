@@ -1,0 +1,69 @@
+.not-found {
+	--not-found-ink: #172236;
+	--not-found-muted: #53647c;
+	--not-found-primary: #5148e8;
+	--not-found-blue: #3498db;
+	--not-found-border: #e0e6ed;
+	min-height: 100svh;
+	box-sizing: border-box;
+	padding: 28px clamp(20px, 5vw, 72px) 48px;
+	background: #fbfcff;
+	color: var(--not-found-ink);
+	font-family: 'DM Sans', Arial, sans-serif;
+	display: flex;
+	flex-direction: column;
+}
+
+.not-found__header {
+	width: min(1280px, 100%);
+	margin: 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 20px;
+}
+
+.not-found__logo { display: inline-flex; line-height: 0; }
+.not-found__logo img { width: 154px; height: auto; display: block; }
+.not-found__home-link { min-height: 44px; padding: 0 4px; color: var(--not-found-muted); display: inline-flex; align-items: center; gap: 7px; font-size: 13px; text-decoration: none; }
+.not-found__home-link:hover, .not-found__support-link:hover { color: var(--not-found-primary); }
+
+.not-found__content {
+	width: min(680px, 100%);
+	margin: auto;
+	padding: 48px 0 28px;
+	text-align: center;
+}
+
+.not-found__art { min-height: 150px; display: flex; align-items: center; justify-content: center; gap: clamp(9px, 2vw, 20px); color: var(--not-found-primary); }
+.not-found__digit { color: var(--not-found-ink); font-size: clamp(110px, 18vw, 176px); font-weight: 700; letter-spacing: -.08em; line-height: .8; }
+.not-found__compass { width: clamp(116px, 17vw, 154px); height: clamp(116px, 17vw, 154px); border: 2px solid var(--not-found-blue); border-radius: 50%; background: #eaf5fc; color: var(--not-found-primary); display: grid; place-items: center; box-shadow: 0 0 0 12px #f2f8fd; }
+.not-found__eyebrow { margin: 42px 0 12px; color: var(--not-found-primary); font-size: 11px; font-weight: 700; letter-spacing: .14em; }
+.not-found h1 { max-width: 600px; margin: 0 auto; color: var(--not-found-ink); font-size: clamp(28px, 4vw, 43px); letter-spacing: -.04em; line-height: 1.12; }
+.not-found__description { max-width: 500px; margin: 18px auto 0; color: var(--not-found-muted); font-size: 15px; line-height: 1.65; }
+.not-found__actions { margin-top: 30px; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.not-found__primary, .not-found__secondary { min-height: 44px; box-sizing: border-box; padding: 0 18px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: inherit; font-size: 13px; text-decoration: none; cursor: pointer; }
+.not-found__primary { border: 1px solid var(--not-found-primary); background: var(--not-found-primary); color: #fff; }
+.not-found__primary:hover { background: #4036d1; border-color: #4036d1; }
+.not-found__secondary { border: 1px solid var(--not-found-border); background: #fff; color: var(--not-found-muted); }
+.not-found__secondary:hover { border-color: var(--not-found-primary); color: var(--not-found-primary); }
+.not-found__support-link { min-height: 32px; margin-top: 18px; color: var(--not-found-muted); display: inline-flex; align-items: center; justify-content: center; font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
+
+.not-found__primary:focus-visible, .not-found__secondary:focus-visible, .not-found__home-link:focus-visible, .not-found__support-link:focus-visible, .not-found__logo:focus-visible { outline: 3px solid #a8d8f4; outline-offset: 4px; }
+
+@media (max-width: 560px) {
+	.not-found { padding: 20px 16px 32px; }
+	.not-found__logo img { width: 132px; }
+	.not-found__home-link { font-size: 12px; }
+	.not-found__content { padding-top: 28px; }
+	.not-found__art { min-height: 112px; }
+	.not-found__compass { box-shadow: 0 0 0 8px #f2f8fd; }
+	.not-found__eyebrow { margin-top: 34px; }
+	.not-found__description { font-size: 14px; }
+	.not-found__actions { flex-direction: column; align-items: stretch; }
+	.not-found__primary, .not-found__secondary { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.not-found__primary, .not-found__secondary, .not-found__home-link, .not-found__support-link { transition: none; }
+}

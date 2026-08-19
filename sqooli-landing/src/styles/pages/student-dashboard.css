@@ -1,0 +1,489 @@
+.student-dashboard {
+	min-height: 100svh;
+	background: #fff;
+	color: #22324d;
+	font-family: 'DM Sans', Arial, sans-serif;
+}
+
+.student-dashboard__sidebar {
+	position: fixed;
+	z-index: 20;
+	inset: 0 auto 0 0;
+	width: 224px;
+	border-right: 1px solid #e2e8f0;
+	background: #fff;
+	display: flex;
+	flex-direction: column;
+	padding: 16px 10px 18px;
+}
+
+.student-dashboard__brand {
+	display: block;
+	width: 154px;
+	height: 45px;
+	margin: 0 0 20px;
+	overflow: hidden;
+}
+
+.student-dashboard__brand img {
+	display: block;
+	width: 154px;
+	height: auto;
+}
+
+.student-dashboard__sidebar nav { display: grid; gap: 12px; }
+
+.student-dashboard__nav-item {
+	min-height: 40px;
+	padding: 0 17px;
+	border-radius: 999px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	color: #44536b;
+	font-size: 14px;
+	text-decoration: none;
+}
+
+.student-dashboard__nav-item:hover { background: #edf6fd; color: #238fce; }
+.student-dashboard__nav-item.is-active { background: #3498db; color: #fff; }
+.student-dashboard__nav-item b { margin-left: auto; width: 20px; height: 20px; border-radius: 50%; background: #ff4d55; color: #fff; display: grid; place-items: center; font-size: 11px; }
+
+.student-dashboard__lesson-card {
+	margin-top: auto;
+	padding: 17px 10px 12px;
+	border: 1px solid #dae7f2;
+	border-radius: 12px;
+	background: #f0f8fe;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 9px;
+	color: #1e293b;
+	font-size: 13px;
+	text-align: center;
+}
+
+.student-dashboard__lesson-art { width: 76px; height: 76px; border-radius: 50%; background: #fdebe8; display: grid; place-items: center; color: #3498db; font-size: 35px; }
+.student-dashboard__lesson-card a { padding: 10px 16px; border-radius: 999px; background: #3498db; color: #fff; font-size: 12px; font-weight: 700; text-decoration: none; }
+
+.student-dashboard__header {
+	position: fixed;
+	z-index: 10;
+	top: 0;
+	right: 0;
+	left: 224px;
+	height: 70px;
+	border-bottom: 1px solid #e2e8f0;
+	background: rgb(255 255 255 / 96%);
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	padding: 0 24px;
+}
+
+.student-dashboard__role { border: 0; background: #f2f4f7; border-radius: 999px; padding: 9px 14px; display: inline-flex; align-items: center; gap: 5px; color: #29384f; font: inherit; font-size: 13px; font-weight: 600; }
+.student-dashboard__menu-button { display: none; border: 0; background: transparent; color: #52647a; }
+.student-dashboard__header-brand { display: inline-flex; align-items: center; flex: 0 0 auto; }
+.student-dashboard__header-brand img { width: 137px; height: auto; display: block; }
+.student-dashboard__header-actions { margin-left: auto; display: flex; align-items: center; gap: 22px; color: #4b5c73; }
+.student-dashboard__header-actions > button { border: 0; padding: 0; background: transparent; color: inherit; cursor: pointer; }
+.student-dashboard__header-actions > button.is-active { width: 36px; height: 36px; border-radius: 9px; background: #edf6fd; color: #258fd6; display: grid; place-items: center; }
+.student-dashboard__search { width: min(280px, 30vw); min-height: 36px; padding: 0 13px; border: 1px solid #258fd6; border-radius: 999px; display: flex; align-items: center; gap: 8px; color: #168dcc; }
+.student-dashboard__search input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: #24344d; font-size: 12px; }
+.student-dashboard__profile { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; border: 0; padding: 0; background: transparent; color: #27364c; font: inherit; font-size: 14px; cursor: pointer; }
+.student-dashboard__avatar { width: 38px; height: 38px; border-radius: 50%; background: #dceaf4; display: grid; place-items: center; color: #53728b; }
+
+.student-dashboard__main { min-height: 100svh; margin-left: 224px; padding: 140px 40px 70px; }
+.student-dashboard__main > * { min-width: 0; }
+.student-dashboard.is-sidebar-hidden .student-dashboard__header { left: 0; }
+.student-dashboard.is-sidebar-hidden .student-dashboard__main { margin-left: 0; }
+.student-dashboard__welcome { width: min(100%, 716px); margin: 0 auto; }
+.student-dashboard__welcome h1 { margin: 0; color: #1e2430; font-size: 25px; letter-spacing: -0.03em; }
+.student-dashboard__welcome > p { margin: 8px 0 26px; color: #27364c; font-size: 13px; }
+.student-dashboard__checklist { display: grid; }
+.student-dashboard__checklist-item { min-height: 78px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 12px; color: #44536b; text-decoration: none; }
+.student-dashboard__step-number { width: 40px; height: 40px; border-radius: 50%; background: #e9edf2; display: grid; place-items: center; flex: 0 0 auto; font-size: 18px; font-weight: 600; }
+.is-current .student-dashboard__step-number { border: 1px solid #3498db; background: #f3f9fe; color: #258fce; }
+.student-dashboard__step-copy { display: flex; flex-direction: column; gap: 5px; }
+.student-dashboard__step-copy strong { color: #202631; font-size: 15px; }
+.student-dashboard__step-copy small { color: #53647c; font-size: 13px; }
+.student-dashboard__go { margin-left: auto; padding: 10px 19px; border-radius: 999px; background: #3498db; color: #fff; font-size: 12px; font-weight: 700; }
+.student-dashboard__checklist-item button { border: 0; cursor: pointer; font: inherit; }
+.student-dashboard__checklist-item.is-complete .student-dashboard__step-number { background: #2acb75; color: #fff; }
+.student-dashboard__checklist-item.is-complete .student-dashboard__step-copy strong { color: #202631; }
+.student-dashboard__step-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.student-dashboard__step-actions .student-dashboard__go { margin-left: 0; }
+.student-dashboard__skip { padding: 10px 17px; border: 1px solid #e0e6ed !important; border-radius: 999px; background: #fff; color: #44536b; font-size: 12px; font-weight: 600; }
+.student-dashboard__next { margin-left: auto; color: #c3ccd6; }
+
+.student-dashboard__modal-backdrop { position: fixed; z-index: 30; inset: 0; overflow-y: auto; padding: 14px 20px; background: rgb(15 23 42 / 27%); backdrop-filter: blur(5px); display: grid; place-items: start center; }
+.student-profile-modal { width: min(700px, 100%); margin: 0 auto 20px; border-radius: 22px; background: #fff; color: #26364f; box-shadow: 0 18px 50px rgb(15 23 42 / 20%); }
+.student-profile-modal__header { padding: 24px 24px 16px; display: flex; justify-content: space-between; gap: 20px; }
+.student-profile-modal__header h1 { margin: 0; color: #202631; font-size: 20px; letter-spacing: -0.03em; }
+.student-profile-modal__header p { margin: 5px 0 0; color: #53647c; font-size: 12px; }
+.student-profile-modal__close { border: 0; background: transparent; color: #52647a; padding: 7px; cursor: pointer; }
+.student-profile-modal__form { padding: 0 24px 24px; }
+.student-profile-modal__field-label, .student-profile-modal__select-label span { display: block; margin: 10px 0 7px; color: #32425c; font-size: 13px; }
+.student-profile-modal__upload { width: 240px; min-height: 138px; margin-bottom: 7px; border: 1px dashed #d5dde7; border-radius: 10px; background: #fbfcfe; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px; color: #51617a; font-size: 13px; text-align: center; cursor: pointer; }
+.student-profile-modal__upload b { color: #1a9be5; }
+.student-profile-modal__upload small { font-size: 11px; line-height: 1.5; }
+.student-profile-modal__upload input { display: none; }
+.student-profile-modal__input, .student-profile-modal__select { width: 100%; min-height: 40px; box-sizing: border-box; border: 1px solid #ccd5e1; border-radius: 999px; background: #fbfcfe; padding: 0 14px; color: #52647a; font: inherit; font-size: 13px; }
+.student-profile-modal__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 16px; }
+.student-profile-modal__select-label { display: block; }
+.student-profile-modal__select { display: flex; align-items: center; justify-content: space-between; cursor: pointer; text-align: left; }
+.student-profile-modal__type, .student-profile-modal__subjects, .student-profile-modal__interests { margin: 13px 0 0; padding: 0; border: 0; }
+.student-profile-modal__type legend, .student-profile-modal__subjects legend, .student-profile-modal__interests legend { margin-bottom: 8px; color: #1f4c72; font-size: 14px; }
+.student-profile-modal__type { display: flex; align-items: center; gap: 20px; }
+.student-profile-modal__type legend { width: 100%; margin-bottom: 0; }
+.student-profile-modal__type label { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; }
+.student-profile-modal__type input { accent-color: #258fd6; }
+.student-profile-modal__subjects > div { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
+.student-profile-modal__subjects button { min-height: 36px; border: 1px solid #e0e6ed; border-radius: 8px; background: #fff; color: #3d4c63; display: flex; align-items: center; gap: 6px; padding: 0 8px; text-align: left; font: inherit; font-size: 13px; cursor: pointer; }
+.student-profile-modal__subjects button.is-selected { border-color: #258fd6; background: #edf7fe; }
+.student-profile-modal__subjects button i { margin-left: auto; width: 16px; height: 16px; border: 1px solid #cbd5e1; border-radius: 50%; display: grid; place-items: center; font-style: normal; }
+.student-profile-modal__subjects button.is-selected i { border-color: #258fd6; background: #3498db; color: #fff; }
+.student-profile-modal__interests > small { display: block; margin-top: -4px; color: #32425c; font-size: 12px; }
+.student-profile-modal__interests > div { display: flex; flex-wrap: wrap; gap: 10px 14px; margin-top: 8px; }
+.student-profile-modal__interests button { min-height: 28px; padding: 0 9px; border: 1px solid #e0e6ed; border-radius: 8px; background: #fff; color: #3d4c63; font: inherit; font-size: 12px; cursor: pointer; }
+.student-profile-modal__interests button.is-selected { border-color: #3498db; background: #3498db; color: #fff; }
+.student-profile-modal__actions { min-height: 40px; margin-top: 20px; display: flex; align-items: center; justify-content: flex-end; gap: 15px; }
+.student-profile-modal__actions [role='status'] { color: #218653; font-size: 12px; }
+
+.shared-wallet-modal { width: min(700px, 100%); margin: 0 auto 20px; border-radius: 22px; background: #fff; color: #26364f; box-shadow: 0 18px 50px rgb(15 23 42 / 20%); }
+.shared-wallet-modal__header { padding: 24px 24px 10px; display: flex; justify-content: space-between; gap: 20px; }
+.shared-wallet-modal__header h1 { margin: 0; color: #202631; font-size: 20px; letter-spacing: -0.03em; }
+.shared-wallet-modal__header p { margin: 5px 0 0; color: #53647c; font-size: 12px; }
+.shared-wallet-modal__steps { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 0 24px; }
+.shared-wallet-modal__steps button { min-height: 64px; padding: 0 0 8px; border: 0; border-top: 3px solid #e3e8ef; background: transparent; color: #26364f; text-align: left; font: inherit; cursor: pointer; }
+.shared-wallet-modal__steps button.is-active, .shared-wallet-modal__steps button.is-complete { border-top-color: #3498db; color: #148ed3; }
+.shared-wallet-modal__steps button:disabled { cursor: default; }
+.shared-wallet-modal__steps span, .shared-wallet-modal__steps small { display: block; }
+.shared-wallet-modal__steps span { margin-top: 8px; font-size: 13px; }
+.shared-wallet-modal__steps small { margin-top: 5px; font-size: 11px; }
+.shared-wallet-modal__body { padding: 8px 24px 24px; }
+.shared-wallet-modal__body fieldset { margin: 0; padding: 0; border: 0; }
+.shared-wallet-modal__body legend, .shared-wallet-modal__field > span, .shared-wallet-modal__pin-row > span { display: block; margin: 12px 0 8px; color: #26364f; font-size: 13px; }
+.shared-wallet-modal__methods { display: flex; flex-wrap: wrap; gap: 12px; }
+.shared-wallet-modal__methods button { min-height: 40px; padding: 0 12px; border: 1px solid #e0e6ed; border-radius: 8px; background: #fff; color: #44536b; display: inline-flex; align-items: center; gap: 8px; font: inherit; font-size: 13px; cursor: pointer; }
+.shared-wallet-modal__methods button.is-selected { border: 2px solid #258fd6; padding-inline: 11px; color: #202631; }
+.shared-wallet-modal__methods button svg { color: #258fd6; }
+.shared-wallet-modal__method-mark { width: 40px; height: 24px; border-radius: 3px; display: grid; place-items: center; color: #fff; font-size: 8px; }
+.shared-wallet-modal__method-mark.mpesa { background: #078b3e; }
+.shared-wallet-modal__method-mark.airtel { background: #ed2632; font-size: 15px; }
+.shared-wallet-modal__phone { min-height: 40px; box-sizing: border-box; border: 1px solid #ccd5e1; border-radius: 999px; background: #fbfcfe; display: flex; align-items: center; padding: 0 12px; gap: 9px; }
+.shared-wallet-modal__phone b { font-size: 17px; }
+.shared-wallet-modal__phone i { color: #52647a; font-style: normal; }
+.shared-wallet-modal__phone em { padding-left: 10px; border-left: 1px solid #ccd5e1; color: #52647a; font-style: normal; }
+.shared-wallet-modal__phone input { min-width: 0; flex: 1; border: 0; outline: 0; background: transparent; color: #26364f; font: inherit; font-size: 13px; }
+.shared-wallet-modal__field small { display: block; margin-top: 8px; color: #f04444; font-size: 11px; }
+.shared-wallet-modal__submit { display: block; margin: 24px 0 0 auto; border: 0; cursor: pointer; font: inherit; }
+.shared-wallet-modal__pin-row { display: block; margin-top: 4px; }
+.shared-wallet-modal__pin-row > div { display: flex; flex-wrap: wrap; gap: 20px; }
+.shared-wallet-modal__pin-row input { width: 58px; height: 58px; box-sizing: border-box; border: 1px solid #e0e6ed; border-radius: 8px; background: #f4f6f9; color: #3498db; text-align: center; font: inherit; font-size: 22px; outline: 0; }
+.shared-wallet-modal__pin-row input:focus { border-color: #3498db; box-shadow: 0 0 0 2px rgb(52 152 219 / 14%); }
+.shared-wallet-modal__error { margin: 14px 0 -8px; color: #e04444; font-size: 12px; }
+.shared-wallet-modal.is-verification { width: min(700px, 100%); }
+.shared-wallet-modal.is-verification > .shared-wallet-modal__header, .shared-wallet-modal.is-verification > .shared-wallet-modal__steps { display: none; }
+.student-wallet-otp-modal { position: relative; padding: 24px; }
+.student-wallet-otp-modal__close, .student-wallet-activated__close { position: absolute; top: 24px; right: 24px; border: 0; background: transparent; color: #40546e; cursor: pointer; }
+.student-wallet-otp-modal__heading { padding-right: 40px; }.student-wallet-otp-modal__heading h1 { margin: 0; color: #202631; font-size: 20px; }.student-wallet-otp-modal__heading p { margin: 5px 0 26px; color: #53647c; font-size: 12px; }
+.student-wallet-otp-modal > label { display: block; }.student-wallet-otp-modal > label span { display: block; margin-bottom: 8px; color: #26364f; font-size: 13px; }.student-wallet-otp-modal > label input { width: 100%; min-height: 40px; padding: 0 12px; box-sizing: border-box; border: 1px solid #ccd5e1; border-radius: 999px; background: #fbfcfe; color: #26364f; outline: 0; font: inherit; font-size: 13px; }.student-wallet-otp-modal > label input:focus { border-color: #3498db; box-shadow: 0 0 0 2px rgb(52 152 219 / 14%); }
+.student-wallet-activated { min-height: 285px; padding: 22px 24px 30px; box-sizing: border-box; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }.student-wallet-activated img { width: 160px; height: 128px; object-fit: contain; }.student-wallet-activated h1 { margin: 0 0 12px; color: #202631; font-size: 20px; }.student-wallet-activated > .student-dashboard__go { min-width: 66px; min-height: 36px; border: 0; border-radius: 999px; font: inherit; font-size: 12px; cursor: pointer; }
+
+.student-wallet-page { min-height: calc(100svh - 70px); margin: -35px -40px -70px; padding: 14px 40px 70px; background: #f5f7f9; color: #29384f; }
+.student-wallet-page__back { display: inline-flex; align-items: center; gap: 5px; color: #40546e; text-decoration: none; font-size: 13px; }
+.student-wallet-page h1 { margin: 18px 0 14px; color: #111827; font-size: 25px; }
+.student-wallet-page__layout { display: grid; grid-template-columns: 269px minmax(0, 1fr); gap: 33px; align-items: start; }
+.student-wallet-page__balance-card { overflow: hidden; border-radius: 12px; background: #e1effb; }
+.student-wallet-page__balance-card.is-empty { background: #ececec; }
+.student-wallet-page__balance-card.is-empty .student-wallet-page__balance-top { background: #a6a6a6; }
+.student-wallet-page__balance-top small { grid-column: 1 / -1; font-size: 8px; }
+.student-wallet-page__activate { min-height: 91px; padding: 14px 16px 16px; box-sizing: border-box; }
+.student-wallet-page__activate p { margin: 0 0 10px; color: #202631; font-size: 12px; }
+.student-wallet-page__activate button { margin: 0; padding: 10px 13px; border: 0; cursor: pointer; font: inherit; font-size: 11px; }
+.student-wallet-page__balance-top { min-height: 130px; padding: 15px 14px 11px; box-sizing: border-box; position: relative; background: linear-gradient(120deg, #5d76df, #5ca8e4); color: #fff; display: grid; grid-template-columns: 1fr auto; gap: 4px; }
+.student-wallet-page__balance-top::after { content: ''; position: absolute; right: -18px; bottom: -34px; width: 86px; height: 86px; border-radius: 50%; background: rgb(255 255 255 / 25%); box-shadow: -53px 9px 0 5px rgb(255 255 255 / 18%); }
+.student-wallet-page__balance-top span { font-size: 11px; }
+.student-wallet-page__balance-top strong { grid-column: 1 / -1; font-size: 15px; }
+.student-wallet-page__balance-top b { grid-column: 1 / -1; font-size: 25px; }
+.student-wallet-page__overflow { position: relative; z-index: 2; width: 32px; height: 32px; margin: -7px -5px 0 0; padding: 0; border: 0; border-radius: 50%; background: transparent; color: inherit; display: grid; place-items: center; cursor: pointer; }
+.student-wallet-page__overflow:hover, .student-wallet-page__overflow:focus-visible { background: rgb(255 255 255 / 18%); outline: 0; }
+.student-wallet-page__eye { position: absolute; right: 16px; bottom: 18px; z-index: 1; }
+.student-wallet-page__saved { padding: 18px 16px 7px; color: #1e293b; font-size: 12px; }
+.student-wallet-page__saved span { display: block; margin-bottom: 6px; }
+.student-wallet-page__saved p { margin: 5px 0; display: flex; align-items: center; gap: 7px; }
+.student-wallet-page__mpesa { width: 27px; height: 18px; border-radius: 2px; background: #078b3e; color: #fff; display: inline-grid; place-items: center; font-size: 7px; font-style: normal; }
+.student-wallet-page__card-actions { padding: 7px 16px 16px; display: flex; gap: 8px; }
+.student-wallet-page__card-actions button { min-height: 37px; padding: 0 13px; border: 0; border-radius: 999px; display: inline-flex; align-items: center; gap: 7px; font: inherit; font-size: 12px; cursor: pointer; }
+.student-wallet-page__card-actions button:first-child { background: #3498db; color: #fff; }
+.student-wallet-page__card-actions button:last-child { background: #fff; color: #202631; }
+.student-wallet-page__history { min-width: 0; }
+.student-wallet-page__search { height: 40px; margin-bottom: 9px; padding: 0 14px; box-sizing: border-box; border: 1px solid #e0e6ed; border-radius: 999px; background: #fff; display: flex; align-items: center; gap: 10px; color: #3d506d; }
+.student-wallet-page__search input { min-width: 0; flex: 1; border: 0; outline: 0; font: inherit; font-size: 13px; }
+.student-wallet-page__search button { border: 0; background: transparent; color: #52647a; cursor: pointer; }
+.student-wallet-page__panel { overflow: hidden; border: 1px solid #e0e6ed; border-radius: 12px; background: #fff; }
+.student-wallet-page__empty-state { min-height: 211px; padding: 20px; box-sizing: border-box; color: #8dbaf2; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.student-wallet-page__empty-state p { margin: 12px 0 2px; color: #53647c; font-size: 11px; }
+.student-wallet-page__empty-state span { color: #53647c; font-size: 11px; }
+.student-wallet-page__tabs { height: 55px; padding: 0 23px; border-bottom: 1px solid #e0e6ed; display: flex; align-items: end; gap: 28px; }
+.student-wallet-page__tabs button { height: 39px; padding: 0 0 11px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: #29384f; display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 13px; cursor: pointer; }
+.student-wallet-page__tabs button.is-active { border-color: #258fd6; color: #148ed3; }
+.student-wallet-page__transactions { padding: 0 23px; }
+.student-wallet-page__group h2 { margin: 15px 0 0; color: #202631; font-size: 11px; font-weight: 500; }
+.student-wallet-page__transaction { min-height: 68px; border-bottom: 1px solid #e0e6ed; display: flex; align-items: center; gap: 9px; }
+.student-wallet-page__transaction.is-interactive { cursor: pointer; border-radius: 8px; transition: background-color 160ms ease; }
+.student-wallet-page__transaction.is-interactive:hover, .student-wallet-page__transaction.is-interactive:focus-visible { background: #f6faff; outline: 0; }
+.student-wallet-page__transaction-icon { width: 30px; height: 30px; border-radius: 9px; background: #3498db; color: #fff; display: grid; place-items: center; font-size: 19px; }
+.student-wallet-page__transaction > div { display: flex; align-items: baseline; flex-wrap: wrap; gap: 3px 8px; }
+.student-wallet-page__transaction strong { color: #40546e; font-size: 14px; font-weight: 500; }
+.student-wallet-page__transaction small { display: block; color: #53647c; font-size: 11px; }
+.student-wallet-page__transaction em { padding: 3px 7px; border-radius: 999px; color: #fff; font-size: 9px; font-style: normal; }
+.student-wallet-page__transaction em.is-complete { background: #22c55e; }
+.student-wallet-page__transaction em.is-pending { background: #f2c300; }
+.student-wallet-page__transaction em.is-failed { background: #fa4650; }
+.student-wallet-page__transaction p { margin: 0 0 0 auto; text-align: right; }
+.student-wallet-page__transaction p b, .student-wallet-page__transaction p small { display: block; }
+.student-wallet-page__transaction p b { color: #40546e; font-size: 13px; }
+.student-wallet-page__pagination { min-height: 67px; padding: 0 23px; display: flex; align-items: center; justify-content: space-between; font-size: 11px; }
+.student-wallet-page__pagination b { margin-left: 4px; padding: 6px 9px; border-radius: 5px; background: #f2f4f7; font-weight: 500; }
+.student-wallet-page__pagination div { display: flex; gap: 10px; }
+.student-wallet-page__pagination button { min-height: 37px; padding: 0 15px; border: 0; border-radius: 8px; background: #f2f4f7; color: #34465e; font: inherit; font-size: 11px; cursor: pointer; }
+.student-wallet-page__pagination button:disabled { opacity: .7; cursor: not-allowed; }
+.shared-wallet-topup-modal { width: min(596px, 100%); margin: 0 auto 20px; padding: 0 24px 30px; box-sizing: border-box; border-radius: 22px; background: #fff; color: #26364f; box-shadow: 0 18px 50px rgb(15 23 42 / 20%); }
+.shared-wallet-topup-modal__header { padding: 18px 0 10px; display: flex; align-items: center; justify-content: space-between; }
+.shared-wallet-topup-modal__header h1 { margin: 0; color: #202631; font-size: 20px; }
+.shared-wallet-topup-modal form fieldset { margin: 0; padding: 0; border: 0; }
+.shared-wallet-topup-modal__field { display: block; margin: 12px 0 17px; }
+.shared-wallet-topup-modal__field > span, .shared-wallet-topup-modal legend { display: block; margin-bottom: 8px; color: #26364f; font-size: 13px; }
+.shared-wallet-topup-modal__field small { display: block; margin-top: 7px; color: #53647c; font-size: 11px; }
+.shared-wallet-topup-modal__amount { min-height: 40px; box-sizing: border-box; padding: 0 12px; border: 1px solid #ccd5e1; border-radius: 999px; background: #fbfcfe; display: flex; align-items: center; gap: 7px; }
+.shared-wallet-topup-modal__amount em { color: #52647a; font-size: 13px; font-style: normal; }
+.shared-wallet-topup-modal__amount input { min-width: 0; flex: 1; border: 0; outline: 0; background: transparent; color: #26364f; font: inherit; font-size: 13px; }
+.shared-wallet-topup-modal__instructions { margin-top: 18px; color: #26364f; font-size: 13px; }
+.shared-wallet-topup-modal__instructions ol { margin: 10px 0 0; padding-left: 18px; line-height: 2.2; color: #40546e; }
+.shared-wallet-topup-modal__notice { margin: 12px 0 -8px; color: #218653; font-size: 12px; }
+.shared-wallet-topup-modal__submit { display: block; margin: 18px 0 0 auto; border: 0; cursor: pointer; font: inherit; }
+.student-wallet-edit-modal { width: min(700px, 100%); margin: 0 auto 20px; padding: 0 24px 24px; box-sizing: border-box; border-radius: 22px; background: #fff; color: #26364f; box-shadow: 0 18px 50px rgb(15 23 42 / 20%); }
+.student-wallet-edit-modal__header { padding: 24px 0 12px; display: flex; justify-content: space-between; gap: 20px; }
+.student-wallet-edit-modal__header h1 { margin: 0; color: #202631; font-size: 20px; letter-spacing: -0.03em; }
+.student-wallet-edit-modal__header p { margin: 5px 0 0; color: #53647c; font-size: 12px; }
+.student-wallet-edit-modal fieldset { margin: 0; padding: 0; border: 0; }
+.student-wallet-edit-modal legend, .student-wallet-edit-modal__field > span { display: block; margin: 10px 0 8px; color: #26364f; font-size: 13px; }
+.student-wallet-edit-modal__field { display: block; margin-top: 18px; }
+.student-wallet-edit-modal__field small { display: block; margin-top: 8px; color: #f04444; font-size: 11px; }
+.student-wallet-edit-modal__submit { display: block; margin: 24px 0 0 auto; border: 0; cursor: pointer; font: inherit; }
+.shared-wallet-topup-status-modal { width: 166px; height: 147px; border-radius: 22px; background: #fff; display: grid; place-items: center; box-shadow: 0 18px 50px rgb(15 23 42 / 20%); align-self: center; }
+.shared-wallet-topup-spinner { width: 76px; height: 76px; border: 7px solid #4c8ff3; border-right-color: transparent; border-radius: 50%; animation: student-wallet-spin .8s linear infinite; }
+.shared-wallet-topup-success-modal { width: min(596px, 100%); min-height: 268px; padding: 28px 30px; box-sizing: border-box; position: relative; border-radius: 22px; background: #fff; text-align: center; color: #26364f; box-shadow: 0 18px 50px rgb(15 23 42 / 20%); align-self: center; }
+.shared-wallet-topup-success-modal > .student-profile-modal__close { position: absolute; top: 18px; right: 22px; }
+.shared-wallet-topup-success-modal__icon { width: 62px; height: 62px; margin: 42px auto 20px; position: relative; color: #20bf75; display: grid; place-items: center; z-index: 0; }
+.shared-wallet-topup-success-modal__icon::before { content: ''; position: absolute; z-index: -1; top: 11px; left: -39px; width: 134px; height: 8px; border-radius: 999px; background: #effbf5; box-shadow: 12px 16px 0 -1px #e4f9ef, -8px -15px 0 -2px #f1fcf6, 91px 0 0 -2px #e2f8ed; }
+.shared-wallet-topup-success-modal__icon::after { content: ''; position: absolute; z-index: -1; top: -10px; left: 5px; width: 4px; height: 4px; border-radius: 50%; background: #8be8b9; box-shadow: 45px 3px 0 0 #8be8b9, 3px 69px 0 0 #8be8b9, 56px 53px 0 -1px #b2f1ce; }
+.shared-wallet-topup-success-modal h1 { margin: 0; color: #202631; font-size: 20px; }
+.shared-wallet-topup-success-modal p { margin: 9px 0 0; font-size: 13px; }
+@keyframes student-wallet-spin { to { transform: rotate(360deg); } }
+
+.shared-payment-backdrop { position: fixed; z-index: 80; inset: 0; overflow-y: auto; padding: 16px; box-sizing: border-box; background: rgb(15 23 42 / 30%); backdrop-filter: blur(4px); display: grid; place-items: center; }
+.shared-payment-modal, .shared-receipt-modal { width: min(100%, 700px); max-height: calc(100svh - 32px); overflow-y: auto; box-sizing: border-box; border-radius: 22px; background: #fff; color: #26364f; box-shadow: 0 18px 50px rgb(15 23 42 / 22%); }
+.shared-payment-modal { min-height: 500px; padding: 20px 32px 32px; }
+.shared-payment-modal > header, .shared-receipt-modal > header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.shared-payment-modal > header span { display: inline-flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 600; }
+.shared-payment-modal > header b { color: #718096; font-size: 20px; font-weight: 400; }
+.shared-payment-modal > header a { color: #178ed8; text-decoration: none; }
+.shared-payment-modal > header button, .shared-receipt-modal > header button { width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: #40546e; display: grid; place-items: center; cursor: pointer; }
+.shared-payment-modal > header button:hover, .shared-receipt-modal > header button:hover { background: #f1f5f9; }
+.shared-payment-modal__status { display: block; width: max-content; margin: 12px auto 17px; padding: 4px 9px; border-radius: 999px; color: #fff; font-size: 11px; font-style: normal; }
+.shared-payment-modal__status.is-complete { background: #20bf75; }
+.shared-payment-modal__status.is-pending { background: #f2c300; }
+.shared-payment-modal__status.is-failed { background: #fa4650; }
+.shared-payment-modal h1 { margin: 0; color: #111827; text-align: center; font-size: 36px; letter-spacing: -0.04em; }
+.shared-payment-modal__code { margin: 8px 0 29px; color: #53647c; text-align: center; font-size: 14px; }
+.shared-payment-modal dl { margin: 0; }
+.shared-payment-modal dl > div { padding: 14px 0; border-bottom: 1px solid #e0e6ed; }
+.shared-payment-modal dt { color: #53647c; font-size: 12px; }
+.shared-payment-modal dd { margin: 4px 0 0; color: #111827; font-size: 14px; }
+.shared-payment-modal__receipt { width: 100%; min-height: 37px; margin-top: 42px; border: 0; cursor: pointer; font: inherit; }
+.shared-receipt-modal { width: min(100%, 1000px); min-height: 680px; padding: 30px 40px 70px; position: relative; }
+.shared-receipt-modal > header > div { display: flex; flex-direction: column; gap: 20px; }
+.shared-receipt-modal > header img { width: 154px; height: auto; display: block; }
+.shared-receipt-modal > header h1 { margin: 0; color: #080d16; font-size: 35px; letter-spacing: -0.04em; }
+.shared-receipt-modal h2 { margin: 56px 0 16px; color: #1c293d; font-size: 16px; }
+.shared-receipt-modal__details { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; padding-bottom: 17px; border-bottom: 1px solid #e0e6ed; }
+.shared-receipt-modal__details span { color: #53647c; font-size: 11px; }
+.shared-receipt-modal__details strong { display: block; margin-top: 8px; color: #202631; font-size: 14px; }
+.shared-receipt-modal__table { display: grid; grid-template-columns: 60px minmax(160px, 1.5fr) minmax(90px, .8fr) minmax(125px, .8fr); border: 1px solid #e0e6ed; color: #202631; font-size: 11px; }
+.shared-receipt-modal__table > * { min-width: 0; padding: 13px 10px; border-right: 1px solid #e0e6ed; border-bottom: 1px solid #e0e6ed; }
+.shared-receipt-modal__table > :nth-child(4n), .shared-receipt-modal__table > :last-child { border-right: 0; }
+.shared-receipt-modal__table > b { font-size: 10px; }
+.shared-receipt-modal__table > :nth-last-child(-n+6):not(:nth-last-child(-n+2)) { grid-column: 1 / 4; font-size: 13px; font-weight: 600; }
+.shared-receipt-modal__table > :nth-last-child(-n+6):nth-child(4n) { grid-column: 4; text-align: right; }
+.shared-modal-backdrop { position: fixed; z-index: 45; inset: 0; overflow-y: auto; padding: 16px; box-sizing: border-box; background: rgb(15 23 42 / 42%); backdrop-filter: blur(4px); display: grid; place-items: center; }
+.shared-reset-pin-request-modal { width: min(500px, 100%); min-height: 290px; padding: 28px 24px 22px; box-sizing: border-box; position: relative; border-radius: 22px; background: #fff; color: #26364f; text-align: center; box-shadow: 0 18px 50px rgb(15 23 42 / 20%); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.shared-reset-pin-request-modal__close { position: absolute; top: 18px; right: 20px; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: #40546e; display: grid; place-items: center; cursor: pointer; }
+.shared-reset-pin-request-modal__close:hover { background: #f1f5f9; }
+.shared-reset-pin-request-modal img { width: 154px; height: auto; margin-bottom: 20px; }
+.shared-reset-pin-request-modal h1 { margin: 0; color: #202631; font-size: 22px; }
+.shared-reset-pin-request-modal p { margin: 12px 0 20px; color: #53647c; font-size: 13px; }
+.shared-reset-pin-request-modal__continue { min-width: 66px; padding: 10px 15px; border: 0; border-radius: 999px; background: #5143e5; color: #fff; font: inherit; cursor: pointer; }
+.student-reset-pin-page { min-height: calc(100svh - 70px); margin: -35px -40px -70px; padding: 100px 24px 90px; box-sizing: border-box; background: #fff; color: #26364f; display: flex; justify-content: center; }
+.student-reset-pin-card { width: min(450px, 100%); align-self: flex-start; }
+.student-reset-pin-card h1 { margin: 0; color: #202631; font-size: 20px; }
+.student-reset-pin-card > p { margin: 5px 0 30px; color: #53647c; font-size: 12px; }
+.student-reset-pin-card__row { display: block; margin: 0 0 22px; }
+.student-reset-pin-card__row > span { display: block; margin-bottom: 9px; font-size: 13px; }
+.student-reset-pin-card__row > div { display: flex; flex-wrap: wrap; gap: 20px; }
+.student-reset-pin-card__row input { width: 58px; height: 58px; box-sizing: border-box; border: 1px solid #e0e6ed; border-radius: 8px; background: #f4f6f9; color: #3498db; text-align: center; font: inherit; font-size: 22px; outline: 0; }
+.student-reset-pin-card__row input:focus { border-color: #3498db; box-shadow: 0 0 0 2px rgb(52 152 219 / 14%); }
+.student-reset-pin-card > .student-dashboard__go { display: block; margin: 20px 0 0 auto; border: 0; cursor: pointer; font: inherit; }
+.student-reset-pin-card__error { margin: -8px 0 0; color: #e04444; font-size: 12px; }
+.student-reset-success { width: min(596px, 100%); min-height: 285px; padding: 30px 24px; box-sizing: border-box; position: relative; border: 1px solid #e0e6ed; border-radius: 22px; background: #fff; text-align: center; box-shadow: 0 18px 50px rgb(15 23 42 / 12%); }
+.student-reset-success img { width: 118px; height: auto; margin: 18px auto 14px; display: block; }
+.student-reset-success h1 { margin: 0 0 13px; color: #202631; font-size: 20px; }
+.student-reset-success .student-dashboard__go { border: 0; cursor: pointer; font: inherit; }
+
+@media (max-width: 620px) {
+	.student-dashboard__modal-backdrop { padding: 8px; }
+	.student-profile-modal { border-radius: 16px; }
+	.student-profile-modal__header, .student-profile-modal__form { padding-inline: 16px; }
+	.student-profile-modal__grid, .student-profile-modal__subjects > div { grid-template-columns: 1fr; }
+	.student-profile-modal__upload { width: 100%; }
+	.student-profile-modal__type { flex-wrap: wrap; gap: 10px 18px; }
+	.student-profile-modal__type legend { flex-basis: 100%; }
+	.student-profile-modal__actions { justify-content: space-between; }
+	.shared-wallet-modal { border-radius: 16px; }
+	.shared-wallet-modal__header, .shared-wallet-modal__body { padding-inline: 16px; }
+	.shared-wallet-modal__steps { padding-inline: 16px; gap: 10px; }
+	.shared-wallet-modal__pin-row > div { gap: 8px; }
+	.shared-wallet-modal__pin-row input { width: calc((100vw - 64px) / 6); height: 48px; }
+	.student-wallet-page { margin: -43px -20px -48px; padding: 14px 16px 48px; }
+	.student-wallet-page__layout { grid-template-columns: 1fr; gap: 18px; }
+	.student-wallet-page__balance-card { width: min(100%, 360px); }
+	.student-wallet-page__tabs { padding-inline: 16px; }
+	.student-wallet-page__transactions { padding-inline: 16px; }
+	.student-wallet-page__pagination { padding-inline: 16px; }
+	.shared-wallet-topup-modal { padding-inline: 16px; border-radius: 16px; }
+	.shared-wallet-topup-modal__instructions ol { line-height: 1.8; }
+	.student-wallet-edit-modal { padding-inline: 16px; border-radius: 16px; }
+}
+
+/* Keep dashboard dialogs inside the viewport while allowing long forms to scroll. */
+.student-dashboard__modal-backdrop { align-items: flex-start; padding: clamp(8px, 3vh, 28px) clamp(8px, 3vw, 24px); }
+.student-profile-modal, .shared-wallet-modal, .shared-wallet-topup-modal, .student-wallet-edit-modal, .shared-wallet-topup-success-modal { width: min(700px, calc(100vw - 16px)); max-width: 100%; max-height: calc(100svh - 16px); overflow-y: auto; }
+.shared-wallet-topup-modal, .student-wallet-edit-modal { margin-bottom: 0; }
+.shared-wallet-topup-status-modal { max-width: calc(100vw - 32px); max-height: calc(100svh - 32px); }
+@media (max-width: 620px) { .student-profile-modal, .shared-wallet-modal, .shared-wallet-topup-modal, .student-wallet-edit-modal, .shared-wallet-topup-success-modal { width: 100%; max-height: calc(100svh - 16px); } }
+
+@media (max-width: 620px) {
+	.shared-payment-backdrop { padding: 8px; }
+	.shared-payment-modal, .shared-receipt-modal { width: 100%; max-height: calc(100svh - 16px); border-radius: 16px; }
+	.shared-payment-modal { min-height: 0; padding: 12px 20px 24px; }
+	.shared-payment-modal h1 { font-size: clamp(28px, 9vw, 36px); }
+	.shared-payment-modal__receipt { margin-top: 28px; }
+	.shared-receipt-modal { padding: 20px 16px 36px; }
+	.shared-receipt-modal > header img { width: 118px; }
+	.shared-receipt-modal > header h1 { font-size: 28px; }
+	.shared-receipt-modal h2 { margin-top: 34px; }
+	.shared-receipt-modal__details { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 12px; }
+	.shared-receipt-modal__table { grid-template-columns: 40px minmax(100px, 1fr) 65px minmax(90px, 1fr); overflow-x: auto; }
+	.shared-receipt-modal__table > * { padding-inline: 7px; }
+	.shared-reset-pin-request-modal { min-height: 270px; border-radius: 16px; }
+	.student-reset-pin-page { margin: -43px -20px -48px; min-height: calc(100svh - 62px); padding: 72px 20px 70px; }
+	.student-reset-pin-card__row > div { gap: 8px; }
+	.student-reset-pin-card__row input { width: calc((100vw - 80px) / 6); height: 48px; }
+	.student-reset-success { border-radius: 16px; }
+}
+
+@media (max-width: 380px) {
+	.student-reset-pin-card__row input { width: calc((100vw - 68px) / 6); }
+}
+
+.student-dashboard__backdrop { display: none; }
+
+@media (max-width: 900px) {
+	.student-dashboard__header-actions { gap: 14px; }
+	.student-dashboard__header-actions > button:nth-of-type(n+3), .student-dashboard__profile strong, .student-dashboard__profile > svg:last-child { display: none; }
+	.student-dashboard__search { width: min(240px, 35vw); }
+}
+
+/* Tablets use the same compact navigation model as phones. Keeping the
+   sidebar desktop-sized at this width leaves too little room for page content. */
+@media (max-width: 900px) {
+	.student-dashboard__sidebar { transform: translateX(-100%); transition: transform 180ms ease; box-shadow: 8px 0 22px rgb(15 23 42 / 10%); }
+	.student-dashboard__sidebar.is-open { transform: translateX(0); }
+	.student-dashboard__backdrop { position: fixed; z-index: 15; inset: 0; display: block; border: 0; background: rgb(15 23 42 / 28%); }
+	.student-dashboard__header { left: 0; height: 66px; padding-inline: clamp(16px, 3vw, 28px); }
+	.student-dashboard__menu-button { display: inline-flex; }
+	.student-dashboard__main { margin-left: 0; padding: 110px clamp(20px, 4vw, 40px) 56px; }
+}
+
+@media (max-width: 680px) {
+	.student-dashboard__sidebar { transform: translateX(-100%); transition: transform 180ms ease; box-shadow: 8px 0 22px rgb(15 23 42 / 10%); }
+	.student-dashboard__sidebar.is-open { transform: translateX(0); }
+	.student-dashboard__backdrop { position: fixed; z-index: 15; inset: 0; display: block; border: 0; background: rgb(15 23 42 / 28%); }
+	.student-dashboard__header { left: 0; height: 62px; padding: 0 16px; gap: 12px; }
+	.student-dashboard__menu-button { display: inline-flex; }
+	.student-dashboard__role { padding: 8px 11px; }
+	.student-dashboard__header-actions { gap: 12px; }
+	.student-dashboard__search { width: min(180px, 42vw); }
+	.student-dashboard__search input { font-size: 11px; }
+	.student-dashboard__header-actions > button:nth-of-type(n+2) { display: none; }
+	.student-dashboard__main { margin-left: 0; padding: 105px 20px 48px; }
+	.student-dashboard__welcome h1 { font-size: 23px; }
+	.student-dashboard__step-copy small { line-height: 1.4; }
+	.student-dashboard__step-actions { gap: 7px; }
+}
+
+@media (max-width: 520px) {
+	.student-dashboard__header { gap: 8px; padding-inline: 12px; }
+	.student-dashboard__role { padding-inline: 9px; font-size: 12px; }
+	.student-dashboard__header-actions { gap: 8px; }
+	.student-dashboard__profile { gap: 5px; }
+	.student-dashboard__avatar { width: 34px; height: 34px; }
+	.student-dashboard__main { padding-inline: 16px; }
+	.student-dashboard__welcome > p { margin-bottom: 18px; line-height: 1.45; }
+	.student-dashboard__checklist-item { min-height: 86px; gap: 9px; }
+	.student-dashboard__step-number { width: 34px; height: 34px; font-size: 16px; }
+	.student-dashboard__step-copy { min-width: 0; gap: 4px; }
+	.student-dashboard__step-copy strong, .student-dashboard__step-copy small { overflow-wrap: anywhere; }
+	.student-dashboard__step-actions { flex: 0 0 auto; }
+}
+
+@media (max-width: 430px) {
+	.student-dashboard__search { width: 38px; padding: 0; justify-content: center; border-color: transparent; }
+	.student-dashboard__search input { display: none; }
+	.student-dashboard__step-copy strong { font-size: 14px; }
+	.student-dashboard__step-copy small { font-size: 12px; }
+	.student-dashboard__go { padding-inline: 14px; }
+	.student-dashboard__skip { padding-inline: 13px; }
+}
+
+/* The top-up dialog owns scrolling while it is open. This prevents the
+   backdrop and the page from competing with the form for wheel/touch input. */
+.student-dashboard__modal-backdrop--topup {
+	overflow: hidden;
+	padding: 12px 16px;
+	place-items: center;
+	overscroll-behavior: contain;
+}
+
+.student-dashboard__modal-backdrop--topup .shared-wallet-topup-modal {
+	max-height: calc(100dvh - 24px);
+	margin: 0;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+}
+
+@media (max-width: 620px) {
+	.student-dashboard__modal-backdrop--topup {
+		padding: 8px;
+		place-items: start center;
+	}
+
+	.student-dashboard__modal-backdrop--topup .shared-wallet-topup-modal {
+		width: 100%;
+		max-height: calc(100dvh - 16px);
+		border-radius: 16px;
+	}
+}

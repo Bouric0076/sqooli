@@ -1,0 +1,12 @@
+import { ArrowLeft, ShoppingBag, Trash2 } from 'lucide-react'
+import { useState } from 'react'
+import TeacherDashboardLayout from './TeacherDashboardLayout'
+import MakePaymentModal from '../student/dashboard/MakePaymentModal'
+import '../../styles/pages/teacher-cart.css'
+import '../../styles/pages/student-cart.css'
+
+const initialItems = [{ id: 1, name: 'Credits', code: 'PRO-1234', quantity: 100, total: 'KES 1,302.00' }, { id: 2, name: 'Credits', code: 'PRO-1234', quantity: 100, total: 'KES 1,302.00' }]
+export default function TeacherCartPage() {
+	const [items, setItems] = useState(initialItems); const [voucher, setVoucher] = useState(''); const [notice, setNotice] = useState(''); const [paymentOpen, setPaymentOpen] = useState(false)
+	return <TeacherDashboardLayout><section className="teacher-cart-page"><a href="/teacher/dashboard"><ArrowLeft size={17} /> Back to Dashboard</a><header><h1>Shopping Cart</h1><p>View and manage cart and checkout</p></header><div className="teacher-cart-page__layout"><section className="teacher-cart-page__items"><div className="teacher-cart-page__head"><span>Product Code</span><span>Quantity</span><span>Total</span><span>Action</span></div>{items.length ? items.map(item => <article key={item.id}><div><span className="teacher-cart-page__icon"><ShoppingBag size={20} /></span><span><b>{item.name}</b><small>{item.code}</small></span></div><span>{item.quantity}</span><strong>{item.total}</strong><button type="button" aria-label={`Remove ${item.name}`} onClick={() => setItems(current => current.filter(entry => entry.id !== item.id))}><Trash2 size={17} /></button></article>) : <p className="teacher-cart-page__empty">Your cart is empty.</p>}</section><aside><h2>Order Summary</h2><form onSubmit={event => { event.preventDefault(); setNotice(voucher.trim() ? `Voucher ${voucher.trim()} applied.` : 'Enter a voucher code to apply.') }}><input value={voucher} onChange={event => setVoucher(event.target.value)} placeholder="Discount Voucher" /><button type="submit">Apply</button></form>{notice && <small role="status">{notice}</small>}<p><span>Sub Total</span><b>KES 1,452.00</b></p><p><span>Discount</span><b>KES 200.00</b></p><p className="is-total"><span>Total</span><b>KES 1,252.00</b></p><button className="teacher-cart-page__checkout" type="button" disabled={!items.length} onClick={() => setPaymentOpen(true)}>Checkout Now</button></aside></div></section>{paymentOpen && <MakePaymentModal onClose={() => setPaymentOpen(false)} />}</TeacherDashboardLayout>
+}

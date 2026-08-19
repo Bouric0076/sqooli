@@ -1,18 +1,12 @@
 import { Logo } from './Header'
+import '../../styles/components/footer.css'
 
 export default function Footer() {
   return (
     <footer id="footer">
       <div className="footer-wave-divider">
         <svg viewBox="0 0 1440 20" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="footer-wave-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#0879c8" />
-              <stop offset="50%" stopColor="#117f80" />
-              <stop offset="100%" stopColor="#2c9fe4" />
-            </linearGradient>
-          </defs>
-          <path d="M0 10 Q 180 20, 360 10 T 720 10 T 1080 10 T 1440 10" stroke="url(#footer-wave-grad)" strokeWidth="6" fill="none" strokeLinecap="round" />
+          <path d="M0 10 Q 180 20, 360 10 T 720 10 T 1080 10 T 1440 10" stroke="#168fd5" strokeWidth="6" fill="none" strokeLinecap="round" />
         </svg>
       </div>
 
@@ -22,9 +16,9 @@ export default function Footer() {
         </div>
         <div>
           <b>PLATFORM</b>
-          <a href="/#join">Students</a>
-          <a href="/#join">Parents</a>
-          <a href="/#join">Teachers</a>
+          <a href="/onboarding">Students</a>
+          <a href="/onboarding">Parents</a>
+          <a href="/onboarding">Teachers</a>
           <a href="/schools">Schools</a>
         </div>
         <div>
@@ -58,7 +52,7 @@ export default function Footer() {
       </div>
 
       <div className="container footer-bottom">
-        <span className="copyright">Copyright © 2025 Sqooli . All rights reserved.</span>
+        <span className="copyright">Copyright © 2026 Sqooli. All rights reserved.</span>
         <div className="footer-bottom-links">
           <a href="/contact" className="footer-link-blue">Terms & Condition</a>
           <a href="/contact" className="footer-link-blue">Privacy</a>

@@ -101,11 +101,14 @@ const AVAILABLE_SCHOOLS: ComparedSchool[] = [
   }
 ]
 
+// Only UDBC is currently confirmed in the Sqooli school catalogue.
+const CONFIRMED_SCHOOLS = AVAILABLE_SCHOOLS.filter(school => school.id === 'udbc')
+
 export default function SchoolComparisonPage() {
-  const defaultSchools = [AVAILABLE_SCHOOLS[2], AVAILABLE_SCHOOLS[3]]
+  const defaultSchools = CONFIRMED_SCHOOLS
   const [selectedSchools, setSelectedSchools] = useState<ComparedSchool[]>(() => {
     const names = new URLSearchParams(window.location.search).get('schools')?.split('|').filter(Boolean) ?? []
-    const fromListing = AVAILABLE_SCHOOLS.filter(school => names.includes(school.name))
+    const fromListing = CONFIRMED_SCHOOLS.filter(school => names.includes(school.name))
     return fromListing.length > 0 ? fromListing : defaultSchools
   })
   const [activeTab, setActiveTab] = useState<'Overview' | 'Classes' | 'Tutors' | 'Resources'>('Overview')
@@ -147,7 +150,7 @@ export default function SchoolComparisonPage() {
   }
 
   const handleConfirmSelection = () => {
-    const updated = AVAILABLE_SCHOOLS.filter(s => tempCheckedIds.includes(s.id))
+    const updated = CONFIRMED_SCHOOLS.filter(s => tempCheckedIds.includes(s.id))
     setSelectedSchools(updated)
     syncSelectionToUrl(updated)
     setShowPickerModal(false)
@@ -384,7 +387,7 @@ export default function SchoolComparisonPage() {
             </div>
 
             <div className="modal-list-body">
-              {AVAILABLE_SCHOOLS.filter(s => s.name.toLowerCase().includes(modalSearchQuery.toLowerCase())).map(school => {
+              {CONFIRMED_SCHOOLS.filter(s => s.name.toLowerCase().includes(modalSearchQuery.toLowerCase())).map(school => {
                 const isChecked = tempCheckedIds.includes(school.id)
                 return (
                   <button
@@ -405,7 +408,7 @@ export default function SchoolComparisonPage() {
                   </button>
                 )
               })}
-              {AVAILABLE_SCHOOLS.every(school => !school.name.toLowerCase().includes(modalSearchQuery.toLowerCase())) && (
+              {CONFIRMED_SCHOOLS.every(school => !school.name.toLowerCase().includes(modalSearchQuery.toLowerCase())) && (
                 <p className="modal-empty-state">No schools match “{modalSearchQuery}”.</p>
               )}
             </div>

@@ -1,0 +1,49 @@
+:root {
+  color: #0f172a;
+  background: #fff;
+  font-family: 'DM Sans', Arial, sans-serif;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  max-width: 100%;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.container {
+  width: min(1280px, calc(100% - 48px));
+  margin-right: auto;
+  margin-left: auto;
+}
+
+@media (max-width: 760px) {
+  .container {
+    width: min(100% - 36px, 1280px);
+  }
+}

@@ -1,0 +1,129 @@
+.tutor-profile-page { color: #0f172a; }
+.tutor-profile-hero { background: #fffbeb; border-bottom: 1px solid #fef3c7; padding: 40px 0 48px; }
+.tutor-profile-back { margin-bottom: 24px; }
+.tutor-profile-hero-row { display: flex; align-items: flex-start; gap: 24px; }
+.tutor-profile-avatar { width: 120px; height: 120px; flex: 0 0 120px; border: 4px solid #fff; border-radius: 50%; object-fit: cover; box-shadow: 0 8px 20px rgba(15, 23, 42, .1); }
+.tutor-profile-hero-content { min-width: 0; flex: 1; }
+.tutor-profile-heading-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+.tutor-profile-heading-copy { min-width: 0; }
+.tutor-profile-heading-copy h1 { margin: 0 0 4px; color: #0f172a; font-size: clamp(26px, 4vw, 32px); line-height: 1.15; font-weight: 800; }
+.tutor-profile-meta { margin-bottom: 12px; color: #64748b; font-size: 13px; line-height: 1.5; }
+.tutor-connect-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; flex: 0 0 auto; width: auto; min-width: 112px; min-height: 44px; padding: 0 20px; border: 0; border-radius: 8px; background: #0284c7; color: #fff; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.tutor-connect-button.is-connected { background: #16a34a; }
+.tutor-profile-bio { max-width: 800px; margin: 0; color: #475569; font-size: 14px; line-height: 1.6; }
+.tutor-profile-main { padding-top: 40px; padding-bottom: 80px; }
+.tutor-profile-main-content { display: grid; grid-template-columns: minmax(240px, 280px) minmax(0, 1fr); gap: 40px; align-items: start; }
+.tutor-profile-sidebar h2, .tutor-section-title { margin: 0 0 16px; color: #0f172a; font-size: 18px; line-height: 1.3; font-weight: 700; }
+.tutor-intro-card { padding: 12px; overflow: hidden; border: 1px solid #e2e8f0; border-radius: 16px; background: #f8fafc; }
+.tutor-intro-media { position: relative; display: flex; align-items: center; justify-content: center; height: 160px; overflow: hidden; border-radius: 10px; background: #0f172a; }
+.tutor-intro-media img { width: 100%; height: 100%; object-fit: cover; opacity: .8; }
+.tutor-play-button { position: absolute; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: 0; background: transparent; color: #fff; cursor: pointer; }
+.tutor-intro-copy { margin-top: 12px; }
+.tutor-intro-copy h3 { margin: 0 0 4px; font-size: 14px; font-weight: 700; }
+.tutor-intro-copy span, .tutor-card-detail { color: #64748b; font-size: 12px; }
+.tutor-profile-tabs { margin-bottom: 32px; }
+.tutor-programs-grid, .tutor-classes-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.tutor-program-card, .tutor-class-card { min-width: 0; padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; }
+.tutor-program-card h3, .tutor-class-card h3 { margin: 0 0 10px; color: #0f172a; font-size: 14px; line-height: 1.35; font-weight: 700; overflow-wrap: anywhere; }
+.tutor-card-footer, .tutor-progress-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.tutor-card-footer { margin-top: 12px; }
+.tutor-card-status { color: #16a34a; font-size: 12px; font-weight: 600; }
+.tutor-card-status.is-closed { color: #ef4444; }
+.tutor-card-action { flex: 0 0 auto; padding: 6px 12px; font-size: 11px; }
+.tutor-progress { height: 6px; margin: 14px 0 6px; overflow: hidden; border-radius: 99px; background: #e2e8f0; }
+.tutor-progress span { display: block; width: 85%; height: 100%; background: #3b82f6; }
+.tutor-progress-meta { color: #64748b; font-size: 11px; }
+.tutor-subject-tag { display: inline-block; margin-top: 10px; padding: 3px 7px; border-radius: 4px; background: #f59e0b; color: #fff; font-size: 10px; }
+.tutor-reviews-list { display: grid; gap: 12px; }
+.tutor-review-card { padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; }
+.tutor-review-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.tutor-review-header strong, .tutor-review-header span { display: block; }
+.tutor-review-header strong { font-size: 13px; }
+.tutor-review-header span { color: #f59e0b; font-size: 11px; }
+.tutor-review-avatar { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; flex: 0 0 32px; border-radius: 50%; background: #e2e8f0; font-size: 12px; font-weight: 700; }
+.tutor-review-card p { margin: 0; color: #475569; font-size: 13px; line-height: 1.5; }
+
+/* Tutor profile reference layout */
+.tutor-profile-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid #eef2f7;
+  background: #fff;
+}
+.tutor-profile-header .header-inner { min-height: 86px; justify-content: space-between; }
+.tutor-profile-header .logo img { height: 40px; }
+.tutor-profile-start-button { min-width: 156px; min-height: 50px; padding: 0 24px; border-radius: 999px; font-size: 15px; font-weight: 700; }
+.tutor-profile-hero { padding: 0 0 0; border-bottom: 0; background: #fff; }
+.tutor-profile-cover {
+  height: 48px;
+  background:
+    radial-gradient(circle at 12% 30%, rgba(255,255,255,.7) 0 1px, transparent 2px),
+    radial-gradient(circle at 74% 65%, rgba(255,193,102,.52) 0 1px, transparent 2px),
+    linear-gradient(90deg, #ffdca8, #fff1d2 48%, #ffc88c);
+  background-size: 9px 9px, 11px 11px, auto;
+  opacity: .82;
+}
+.tutor-profile-hero > .container {
+  max-width: none;
+  padding: 22px max(24px, calc((100vw - 1320px) / 2)) 30px;
+  background: #fffcf5;
+  border-radius: 0 0 14px 14px;
+}
+.tutor-profile-hero-row { max-width: 1320px; margin: 0 auto; align-items: center; gap: 18px; }
+.tutor-profile-avatar { width: 106px; height: 106px; flex-basis: 106px; border-width: 5px; }
+.tutor-profile-heading-copy h1 { font-size: 24px; font-weight: 700; }
+.tutor-profile-meta { margin-bottom: 10px; color: #334155; font-size: 12px; }
+.tutor-profile-meta strong { color: #1e293b; font-weight: 600; }
+.tutor-profile-bio { max-width: 830px; font-size: 13px; line-height: 1.8; }
+.tutor-connect-button { min-width: 108px; min-height: 38px; border-radius: 999px; background: #2d9bd8; }
+.tutor-profile-main { max-width: 1320px; padding-top: 46px; }
+.tutor-profile-main-content { grid-template-columns: 250px minmax(0, 1fr); gap: 48px; }
+.tutor-profile-sidebar h2 { font-size: 16px; color: #475569; }
+.tutor-intro-card { padding: 0; border-radius: 12px; background: #fff; }
+.tutor-intro-media { height: 118px; border-radius: 12px 12px 0 0; }
+.tutor-intro-copy { padding: 10px 16px 14px; margin: 0; }
+.tutor-intro-copy h3 { font-size: 14px; }
+.tutor-profile-tabs { margin-bottom: 30px; border-bottom: 1px solid #e2e8f0; border-radius: 0; padding-bottom: 0; gap: 26px; }
+.tutor-profile-tabs button { padding: 0 0 12px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; font-size: 13px; font-weight: 600; }
+.tutor-profile-tabs button.active { border-color: #1598dc; background: transparent; color: #1598dc; }
+.tutor-profile-content-section { scroll-margin-top: 100px; }
+.tutor-profile-content-section + .tutor-profile-content-section { margin-top: 42px; }
+.tutor-section-title { margin-bottom: 10px; font-size: 15px; font-weight: 500; }
+.tutor-programs-grid, .tutor-classes-grid { gap: 16px; }
+.tutor-program-card, .tutor-class-card { padding: 16px; border-radius: 12px; box-shadow: none; }
+.tutor-program-card h3, .tutor-class-card h3 { font-size: 13px; }
+.tutor-program-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #475569; font-size: 12px; }
+.tutor-program-status { padding: 5px 9px; border-radius: 999px; background: #dcfce7; color: #16a34a; font-size: 10px; }
+.tutor-program-status.is-closed { background: #fee2e2; color: #dc2626; }
+.tutor-card-footer { margin-top: 12px; }
+.tutor-class-tutor { display: flex; align-items: center; gap: 6px; color: #334155; font-size: 11px; }
+.tutor-class-tutor img { width: 20px; height: 20px; border-radius: 50%; object-fit: cover; }
+.tutor-class-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-top: 10px; color: #475569; font-size: 11px; }
+.tutor-class-meta .tutor-subject-tag { margin: 0; padding: 4px 8px; color: #1e293b; }
+.tutor-reviews-list { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.tutor-review-card { min-height: 130px; background: #f8fafc; }
+
+@media (max-width: 900px) {
+  .tutor-profile-main-content { grid-template-columns: 1fr; gap: 28px; }
+  .tutor-programs-grid, .tutor-classes-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 600px) {
+  .tutor-profile-header .header-inner { min-height: 64px; }
+  .tutor-profile-header .logo img { height: 32px; }
+  .tutor-profile-start-button { min-width: 118px; min-height: 42px; padding: 0 16px; font-size: 13px; }
+  .tutor-profile-cover { height: 32px; }
+  .tutor-profile-hero > .container { padding: 20px 16px 24px; }
+  .tutor-profile-hero { padding: 0; }
+  .tutor-profile-hero-row { flex-direction: column; gap: 18px; }
+  .tutor-profile-avatar { width: 88px; height: 88px; flex-basis: 88px; }
+  .tutor-profile-heading-row { flex-direction: column; gap: 14px; }
+  .tutor-connect-button { width: 100%; }
+  .tutor-profile-main { padding-top: 28px; padding-bottom: 56px; }
+  .tutor-profile-tabs { margin-bottom: 24px; }
+  .tutor-programs-grid, .tutor-classes-grid { grid-template-columns: 1fr; }
+  .tutor-reviews-list { grid-template-columns: 1fr; }
+  .tutor-card-footer { align-items: stretch; flex-wrap: wrap; }
+  .tutor-card-action { min-height: 40px; }
+}

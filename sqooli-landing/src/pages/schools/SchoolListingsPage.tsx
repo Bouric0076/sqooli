@@ -4,52 +4,17 @@ import SchoolHeader from './SchoolHeader'
 import Footer from '../../components/layout/Footer'
 import '../../styles/pages/schools.css'
 import '../../styles/pages/search.css'
+import udbcCommunityTeam from '../../assets/images/udbc/udbc-community-team.webp'
 
 const LISTINGS_DATA = [
   {
-    id: '1',
+    id: 'udbc',
     name: 'Ufufuo Digital Bible College (UDBC)',
     url: 'udbc.sqooli.africa',
-    students: '1,364 students',
-    location: 'Kakamega',
-    rating: 4.5,
-    image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=400&q=80'
-  },
-  {
-    id: '2',
-    name: 'Valley Anthony Institute',
-    url: 'https://sqooli_valley_anthony_institute.com',
-    students: '1,364 students',
-    location: 'Kakamega',
-    rating: 4.5,
-    image: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=400&q=80'
-  },
-  {
-    id: '3',
-    name: 'Alliance High School',
-    url: 'https://sqooli_alliance_high.com',
-    students: '2,100 students',
-    location: 'Kiambu, Kenya',
-    rating: 4.8,
-    image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=400&q=80'
-  },
-  {
-    id: '4',
-    name: 'Makini School',
-    url: 'https://sqooli.com/makini_school',
-    students: '1,800 students',
-    location: 'Nairobi',
-    rating: 4.6,
-    image: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=400&q=80'
-  },
-  {
-    id: '5',
-    name: 'Brookhouse International School',
-    url: 'https://sqooli.com/brookhouse',
-    students: '1,200 students',
-    location: 'Karen, Nairobi',
-    rating: 4.9,
-    image: 'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=400&q=80'
+    students: 'Digital learning',
+    location: 'East Africa',
+    rating: 0,
+    image: udbcCommunityTeam
   }
 ]
 
@@ -116,19 +81,19 @@ export default function SchoolListingsPage() {
                 <div className="school-meta-row">
                   <span className="school-meta-item"><Users size={14} /> {school.students}</span>
                   <span className="school-meta-item"><MapPin size={14} /> {school.location}</span>
-                  <div className="rating-stars">
+                  {school.rating > 0 && <div className="rating-stars" aria-label={`${school.rating} out of 5 rating`}>
                     <span>{school.rating}</span>
                     {[...Array(5)].map((_, i) => (
                       <Star key={i} size={14} fill="#f59e0b" color="#f59e0b" />
                     ))}
-                  </div>
+                  </div>}
                 </div>
               </div>
 
               <div className="school-card-actions">
                 <a href={school.url.startsWith('http') ? school.url : `https://${school.url}`} target="_blank" rel="noreferrer" className="btn-action-outline">Go to Website</a>
-                <a href={`/courses/detail?school=${encodeURIComponent(school.id)}`} className="btn-action-outline">View Lessons</a>
-                <a href={`/schools/tutors?school=${encodeURIComponent(school.id)}`} className="btn-action-outline">View Tutors</a>
+                <a href={`/schools/tutors?school=${encodeURIComponent(school.id)}&tab=classes`} className="btn-action-outline">View Lessons</a>
+                <a href={`/search?tab=Tutors&school=${encodeURIComponent(school.id)}`} className="btn-action-outline">View Tutors</a>
               </div>
             </div>
           ))}

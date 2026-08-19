@@ -1,0 +1,24 @@
+.student-ai-page { min-height: calc(100svh - 70px); margin: -35px -40px -70px; padding-bottom: 48px; box-sizing: border-box; color: #29384f; background: #fff; }
+.student-ai-page__top { min-height: 92px; padding: 0 40px; display: flex; align-items: end; justify-content: space-between; }
+.student-ai-page__top a { margin-bottom: 16px; color: #40546e; text-decoration: none; font-size: 14px; }
+.student-ai-page__trending { margin-bottom: 15px; padding: 10px 22px; border-radius: 999px; background: #3498db; color: #fff !important; text-decoration: none; font-size: 13px; font-weight: 700; }
+.student-ai-page__tabs { min-height: 41px; padding: 0 68px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: end; gap: 27px; }
+.student-ai-page__tabs a { height: 41px; box-sizing: border-box; padding-top: 10px; border-bottom: 2px solid transparent; color: #40546e; text-decoration: none; font-size: 13px; }
+.student-ai-page__tabs a.is-active { border-color: #258fd6; color: #148ed3; }
+.student-ai-page__hero { min-height: 460px; padding-top: 157px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; }
+.student-ai-page__hero img { width: 315px; height: auto; }
+.student-ai-page__hero h1 { margin: 29px 0 27px; color: #172236; font-size: 24px; letter-spacing: -0.03em; }
+.student-ai-page__prompt { width: min(770px, calc(100% - 40px)); min-height: 51px; box-sizing: border-box; padding: 0 22px; border: 1px solid #e2e8f0; border-radius: 999px; background: #f5f6f8; display: flex; align-items: center; gap: 10px; color: #52647a; }
+.student-ai-page__prompt input { min-width: 0; flex: 1; border: 0; outline: 0; background: transparent; color: #29384f; font: inherit; font-size: 13px; }
+.student-ai-page__prompt button { padding: 0; border: 0; background: transparent; color: inherit; cursor: pointer; display: inline-flex; }
+.student-ai-page__shortcuts { margin-top: 26px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+.student-ai-page__shortcuts a { min-height: 33px; padding: 0 14px; border-radius: 999px; background: #edf0f3; color: #40546e; display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 13px; text-decoration: none; }
+@media (max-width: 680px) {
+	.student-ai-page { margin: -43px -20px -48px; min-height: calc(100svh - 62px); padding-bottom: 32px; }
+	.student-ai-page__top { min-height: 76px; padding-inline: 20px; }
+	.student-ai-page__tabs { overflow-x: auto; padding-inline: 20px; gap: 20px; scrollbar-width: none; }
+	.student-ai-page__tabs::-webkit-scrollbar { display: none; }
+	.student-ai-page__hero { padding-top: 100px; }
+	.student-ai-page__hero img { width: min(260px, 72vw); }
+	.student-ai-page__hero h1 { font-size: 21px; text-align: center; }
+}

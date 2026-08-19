@@ -1,0 +1,273 @@
+/* Shared guardrails for every teacher dashboard modal.
+   Modal shells must fit the viewport; wide data views may scroll internally. */
+.teacher-dashboard [role='dialog'],
+.teacher-dashboard [role='alertdialog'] {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.teacher-dashboard [role='dialog'] input,
+.teacher-dashboard [role='dialog'] textarea,
+.teacher-dashboard [role='dialog'] select,
+.teacher-dashboard [role='alertdialog'] input,
+.teacher-dashboard [role='alertdialog'] textarea,
+.teacher-dashboard [role='alertdialog'] select {
+  max-width: 100%;
+}
+
+@media (max-width: 760px) {
+  .teacher-create-lesson-backdrop,
+  .teacher-lesson-workspace__backdrop,
+  .teacher-student-view__backdrop,
+  .teacher-lessons-page__modal-backdrop,
+  .teacher-assignment-flow__backdrop,
+  .teacher-wallet-modal-backdrop,
+  .teacher-optional-backdrop,
+  .teacher-two-factor-backdrop {
+    width: 100%;
+    max-width: 100vw;
+    padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+    box-sizing: border-box;
+    place-items: stretch;
+    overflow-x: hidden;
+  }
+
+  .teacher-create-lesson,
+  .teacher-lesson-workspace,
+  .teacher-student-view,
+  .teacher-assignment-flow__modal,
+  .teacher-wallet-modal,
+  .teacher-optional-modal,
+  .teacher-two-factor-modal {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .teacher-lesson-workspace__topbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .teacher-lesson-workspace__crumb {
+    min-width: 0;
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .teacher-lesson-workspace__actions {
+    width: 100%;
+    min-width: 0;
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+
+  .teacher-lesson-workspace__actions > button,
+  .teacher-lesson-workspace__actions > .teacher-lesson-workspace__menu-wrap {
+    flex: 0 1 auto;
+  }
+
+  .teacher-lesson-workspace__actions .teacher-lesson-workspace__close {
+    margin-left: auto;
+    width: 40px;
+    min-width: 40px;
+  }
+
+  .teacher-lesson-workspace__summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: visible;
+  }
+
+  .teacher-lesson-workspace__summary > div {
+    min-width: 0;
+    padding: 8px 8px 8px 0;
+    border-right: 0;
+    border-bottom: 1px solid #e5e8ee;
+  }
+
+  .teacher-lesson-workspace__summary > div:nth-last-child(-n + 2) {
+    border-bottom: 0;
+  }
+
+  .teacher-lesson-workspace__summary strong,
+  .teacher-lesson-workspace__summary small,
+  .teacher-lesson-workspace__status {
+    overflow-wrap: anywhere;
+  }
+
+  .teacher-lesson-workspace__body,
+  .teacher-create-lesson__content,
+  .teacher-student-view__body {
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  .teacher-lesson-workspace__overview-grid,
+  .teacher-lesson-workspace__calendar-layout,
+  .teacher-lesson-workspace__question-layout,
+  .teacher-lesson-workspace__table-layout {
+    min-width: 0;
+  }
+
+  .teacher-lesson-workspace__chart,
+  .teacher-lesson-workspace__month,
+  .teacher-lesson-workspace__table-wrap,
+  .teacher-lesson-workspace__attendance-table {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .teacher-lesson-workspace__month-grid,
+  .teacher-lesson-workspace__attendance-table,
+  .teacher-lesson-workspace__table-wrap table {
+    width: max-content;
+  }
+
+  .teacher-student-view__topbar > div {
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+
+  .teacher-student-view__hero-copy > p,
+  .teacher-student-view__copy {
+    overflow-wrap: anywhere;
+  }
+
+  .teacher-student-view__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .teacher-create-lesson__actions {
+    flex-wrap: wrap;
+  }
+
+  .teacher-create-lesson__actions button {
+    min-width: 0;
+  }
+
+  .teacher-create-lesson__revenue-backdrop {
+    position: fixed;
+    z-index: 5;
+    padding: 8px;
+    overflow-y: auto;
+  }
+
+  .teacher-create-lesson__revenue-modal {
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100dvh - 16px);
+    overflow-y: auto;
+    padding: 20px 16px;
+  }
+
+  .teacher-submissions-modal__layout {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 420px) {
+  .teacher-lesson-workspace__actions > .teacher-lesson-workspace__menu-wrap,
+  .teacher-lesson-workspace__actions > .is-primary {
+    flex: 1 1 auto;
+  }
+
+  .teacher-lesson-workspace__actions > .teacher-lesson-workspace__menu-wrap > button,
+  .teacher-lesson-workspace__actions > .is-primary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .teacher-lesson-workspace__actions .teacher-lesson-workspace__close {
+    flex: 0 0 40px;
+  }
+
+  .teacher-lesson-workspace__summary {
+    grid-template-columns: 1fr;
+  }
+
+  .teacher-lesson-workspace__summary > div:nth-last-child(-n + 2) {
+    border-bottom: 1px solid #e5e8ee;
+  }
+
+  .teacher-lesson-workspace__summary > div:last-child {
+    border-bottom: 0;
+  }
+
+  .teacher-create-lesson__actions button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Keep one scroll owner for every dashboard dialog. The fixed backdrop is a
+   viewport layer, while the dialog itself handles long content. */
+body:has(.teacher-dashboard [role='dialog']:not(.teacher-notifications)),
+body:has(.teacher-dashboard [role='alertdialog']) {
+  overflow: hidden;
+}
+
+.teacher-assignment-flow__backdrop,
+.teacher-attendance-modal__backdrop,
+.teacher-chat-modal__backdrop,
+.teacher-create-lesson-backdrop,
+.teacher-lesson-add__backdrop,
+.teacher-lesson-workspace__backdrop,
+.teacher-lessons-page__modal-backdrop,
+.teacher-optional-backdrop,
+.teacher-resource-editor__backdrop,
+.teacher-student-profile__backdrop,
+.teacher-student-view__backdrop,
+.teacher-timetable-event__backdrop,
+.teacher-tutors-modal__backdrop,
+.teacher-two-factor-backdrop,
+.teacher-wallet-modal-backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+.teacher-assignment-flow__modal,
+.teacher-attendance-modal,
+.teacher-chat-modal,
+.teacher-create-lesson,
+.teacher-lesson-add,
+.teacher-lesson-workspace,
+.teacher-lessons-page__deactivate,
+.teacher-optional-modal,
+.teacher-resource-editor,
+.teacher-student-profile,
+.teacher-student-view,
+.teacher-timetable-event,
+.teacher-tutors-modal,
+.teacher-two-factor-modal,
+.teacher-wallet-modal {
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+@media (max-width: 760px) {
+  .teacher-assignment-flow__modal,
+  .teacher-attendance-modal,
+  .teacher-chat-modal,
+  .teacher-create-lesson,
+  .teacher-lesson-add,
+  .teacher-lesson-workspace,
+  .teacher-lessons-page__deactivate,
+  .teacher-optional-modal,
+  .teacher-resource-editor,
+  .teacher-student-profile,
+  .teacher-student-view,
+  .teacher-timetable-event,
+  .teacher-tutors-modal,
+  .teacher-two-factor-modal,
+  .teacher-wallet-modal {
+    max-height: calc(100dvh - 16px);
+  }
+
+  .teacher-dashboard__main {
+    overflow-x: hidden;
+  }
+}

@@ -17,8 +17,11 @@ import {
 import Header from '../../components/layout/Header'
 import Footer from '../../components/layout/Footer'
 import '../../styles/pages/landing/popular.css'
-import mathCampBanner from '../../assets/images/whats-popular/math_camp_banner.jpg'
-import teacherImg from '../../assets/images/whats-popular/teacher.jpg'
+import mathCampBanner from '../../assets/images/whats-popular/math_camp_banner.webp'
+import teacherImg from '../../assets/images/whats-popular/teacher.webp'
+import udbcCommunityTeam from '../../assets/images/udbc/udbc-community-team.webp'
+import udbcDigitalLearningCommunity from '../../assets/images/udbc/udbc-digital-learning-community.webp'
+import udbcEnrolmentSupport from '../../assets/images/udbc/udbc-enrolment-support.webp'
 
 type TabCategory = 'Classes' | 'Tutors' | 'Questions' | 'Programs' | 'Enrolments'
 type ViewMode = 'grid' | 'list'
@@ -33,6 +36,9 @@ interface PopularItem {
   category: TabCategory
   tag: string
   image: string
+  href?: string
+  intakeMonth?: string
+  intakeYear?: string
   date?: string
   stats?: { downvotes: number; upvotes: number; comments: number; shares: number }
 }
@@ -157,54 +163,49 @@ const SAMPLE_ITEMS: PopularItem[] = [
     stats: { downvotes: 20, upvotes: 20, comments: 20, shares: 20 }
   },
 
-  // Programs
+  // Confirmed UDBC programmes
   {
     id: 11,
-    title: 'CBC Grade 8 Intensive Revision & Prep Program',
-    tutorOrAuthor: 'Sqooli Academic Team',
-    price: 'KES 1,200.00',
-    rating: 4.8,
+    title: 'Certificate · Level 1 — Lisha Kondoo Zangu',
+    tutorOrAuthor: 'Ufufuo Digital Bible College (UDBC)',
+    price: 'G1 35K · G2 40K · G3 45K TZS',
+    rating: 0,
     category: 'Programs',
-    tag: 'CBC Grade 8',
-    image: mathCampBanner
+    tag: 'Theological Studies',
+    image: udbcCommunityTeam,
+    href: 'https://udbc.sqooli.africa/#programmes'
   },
   {
     id: 12,
-    title: 'IGCSE Secondary STEM Master Program',
-    tutorOrAuthor: 'Global STEM Institute',
-    price: 'KES 2,500.00',
-    rating: 4.9,
+    title: 'Diploma · Level 2 — Lisha Kondoo Zangu',
+    tutorOrAuthor: 'Ufufuo Digital Bible College (UDBC)',
+    price: 'G1–G7 · TZS 35K–70K',
+    rating: 0,
     category: 'Programs',
-    tag: 'IGCSE STEM',
-    image: teacherImg
+    tag: 'Theological Studies',
+    image: udbcDigitalLearningCommunity,
+    href: 'https://udbc.sqooli.africa/#programmes'
   },
 
-  // Enrolments
+  // Current confirmed enrolment opportunity
   {
     id: 13,
-    title: 'Math Camp April 2026 Active Enrolment',
-    tutorOrAuthor: 'Jane Doe',
-    price: 'KES 200.00',
-    rating: 4.8,
+    title: 'July 2026 Intake — Lisha Kondoo Zangu',
+    tutorOrAuthor: 'Ufufuo Digital Bible College (UDBC)',
+    price: 'Admission fee: TZS 30,000',
+    rating: 0,
     category: 'Enrolments',
-    tag: 'Active',
-    image: mathCampBanner
-  },
-  {
-    id: 14,
-    title: 'Physics Practical Lab Workshop Enrolment',
-    tutorOrAuthor: 'Dr. Alex Smith',
-    price: 'KES 350.00',
-    rating: 4.9,
-    category: 'Enrolments',
-    tag: 'Confirmed',
-    image: teacherImg
+    tag: 'Intake Open',
+    image: udbcEnrolmentSupport,
+    href: 'https://udbc.sqooli.africa/enroll',
+    intakeMonth: 'Jul',
+    intakeYear: '2026'
   }
 ]
 
 export default function DiscoverPopularPage() {
   const [activeTab, setActiveTab] = useState<TabCategory>('Classes')
-  const [selectedMonth, setSelectedMonth] = useState('Mar')
+  const [selectedMonth, setSelectedMonth] = useState('Jul')
   const [selectedYear, setSelectedYear] = useState('2026')
   const [showYearDropdown, setShowYearDropdown] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -220,6 +221,7 @@ export default function DiscoverPopularPage() {
   }
 
   const getItemRoute = (item: PopularItem) => {
+    if (item.href) return item.href
     if (item.category === 'Questions') return '/questions'
     if (item.category === 'Tutors') return '/tutors/profile'
     return '/courses/detail'
@@ -240,9 +242,12 @@ export default function DiscoverPopularPage() {
       if (selectedSubjectFilter !== 'All' && item.tag !== selectedSubjectFilter) {
         return false
       }
+      if (item.category === 'Enrolments' && (item.intakeMonth !== selectedMonth || item.intakeYear !== selectedYear)) {
+        return false
+      }
       return true
     })
-  }, [activeTab, searchQuery, selectedSubjectFilter])
+  }, [activeTab, searchQuery, selectedMonth, selectedSubjectFilter, selectedYear])
 
   // Count matches per category for badges
   const categoryCounts = useMemo(() => {
@@ -254,6 +259,7 @@ export default function DiscoverPopularPage() {
       Enrolments: 0
     }
     SAMPLE_ITEMS.forEach((item) => {
+      if (item.category === 'Enrolments' && (item.intakeMonth !== selectedMonth || item.intakeYear !== selectedYear)) return
       if (!searchQuery.trim()) {
         counts[item.category]++
       } else {
@@ -268,7 +274,7 @@ export default function DiscoverPopularPage() {
       }
     })
     return counts
-  }, [searchQuery])
+  }, [searchQuery, selectedMonth, selectedYear])
 
   return (
     <div className="app">
@@ -423,7 +429,7 @@ export default function DiscoverPopularPage() {
               <div className="filter-group">
                 <label>Filter by Subject</label>
                 <div className="filter-pills">
-                  {['All', 'Mathematics', 'Physics', 'Chemistry', 'English'].map((subj) => (
+                  {['All', 'Mathematics', 'Physics', 'Chemistry', 'English', 'Theological Studies'].map((subj) => (
                     <button
                       type="button"
                       key={subj}
@@ -520,19 +526,16 @@ export default function DiscoverPopularPage() {
                     {item.role ? `${item.tutorOrAuthor} · ${item.role}` : item.tutorOrAuthor}
                   </div>
 
-                  <div className="card-rating-row">
-                    <span className="rating-num">{item.rating.toFixed(1)}</span>
-                    <div className="star-icons">
-                      {[1, 2, 3, 4, 5].map((s) => (
-                        <Star
-                          key={s}
-                          size={13}
-                          fill={s <= Math.floor(item.rating) ? '#f59e0b' : 'none'}
-                          color="#f59e0b"
-                        />
-                      ))}
+                  {item.category === 'Programs' || item.category === 'Enrolments' ? (
+                    <div className="popular-card-detail">{item.category === 'Programs' ? (item.id === 11 ? 'Grades 1–3 · Approx. 6 months' : 'Grades 1–7 · Approx. 14 months') : 'July 2026 intake · Enrolment open'}</div>
+                  ) : (
+                    <div className="card-rating-row">
+                      <span className="rating-num">{item.rating.toFixed(1)}</span>
+                      <div className="star-icons">
+                        {[1, 2, 3, 4, 5].map((s) => <Star key={s} size={13} fill={s <= Math.floor(item.rating) ? '#f59e0b' : 'none'} color="#f59e0b" />)}
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {item.category === 'Questions' && item.stats && (
                     <div className="qa-card-stats-row" style={{ marginTop: '8px' }}>
@@ -552,7 +555,7 @@ export default function DiscoverPopularPage() {
                         window.location.href = getItemRoute(item)
                       }}
                     >
-                      {item.category === 'Questions' ? 'View Question' : item.category === 'Tutors' ? 'View Tutor' : 'View Class'}
+                      {item.category === 'Questions' ? 'View Question' : item.category === 'Tutors' ? 'View Tutor' : item.category === 'Programs' ? 'View Programme' : 'Enrol Now'}
                     </button>
                   </div>
                 </div>

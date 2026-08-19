@@ -1,0 +1,34 @@
+/* Shared student-page scale and spacing baseline. */
+@media (min-width: 681px) {
+    .student-dashboard__main > section,
+    .student-dashboard__main > .student-lessons-page,
+    .student-dashboard__main > .student-assignments-page,
+    .student-dashboard__main > .student-forums-page,
+    .student-dashboard__main > .student-timetable-page { font-size: 14px; }
+    .student-lessons-page__header h1,
+    .student-assignments-page__header h1,
+    .student-forums-page__header h1,
+    .student-timetable-page__header h1 { font-size: 26px; }
+    .student-lessons-page__header p,
+    .student-assignments-page__header p,
+    .student-forums-page__header p,
+    .student-timetable-page__header p { font-size: 13px; }
+    .student-lesson-card { min-height: 158px; padding: 18px 19px 16px; }
+    .student-lesson-card__title { font-size: 15px; }
+    .student-lesson-card__tutor strong { font-size: 12px; }
+    .student-lesson-card small { font-size: 11px; }
+    .student-assignments-page__body strong { font-size: 14px; }
+    .student-assignments-page__body small, .student-assignments-page__body p { font-size: 12px; }
+    .student-timetable-page__workspace { gap: 28px; }
+    .student-timetable-page__sidebar { padding: 20px; }
+    .student-timetable-page__calendar > header h2 { font-size: 19px; }
+    .student-timetable-page__event { font-size: 10px; }
+    .student-forum-post h2 { font-size: 18px; }
+    .student-forum-post__author strong { font-size: 14px; }
+}
+
+@media (max-width: 680px) {
+    .student-dashboard__main { padding-inline: 16px; }
+    .student-lesson-card { min-height: 150px; }
+    .student-lesson-card__title { font-size: 14px; }
+}

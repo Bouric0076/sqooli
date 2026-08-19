@@ -44,8 +44,9 @@
 }
 
 @keyframes page-enter {
-	from { opacity: 0; transform: translateY(6px); }
-	to { opacity: 1; transform: translateY(0); }
+	/* A transform here would create a containing block for every fixed modal. */
+	from { opacity: 0; }
+	to { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -7,8 +7,8 @@ import Header from '../../components/layout/Header'
 import Footer from '../../components/layout/Footer'
 
 // Import All Partner Asset Images from Directory
-import heroKidsImg from '../../assets/images/partners/2573792_1580 1.png'
-import pointingGirlImg from '../../assets/images/partners/small-school-girl-pointing-up 2.png'
+import heroKidsImg from '../../assets/images/partners/2573792_1580 1.webp'
+import pointingGirlImg from '../../assets/images/partners/small-school-girl-pointing-up 2.webp'
 import heroBlobsImg from '../../assets/images/partners/Group.png'
 import heroCrownImg from '../../assets/images/partners/Group (1).png'
 import contactBlobsImg from '../../assets/images/partners/Group (2).png'
@@ -16,6 +16,7 @@ import contactPillsImg from '../../assets/images/partners/2.png'
 import lightningImg from '../../assets/images/partners/flash-light.png'
 import burstLinesImg from '../../assets/images/partners/Highlight_05.png'
 import timelineLineImg from '../../assets/images/partners/Frame 2085665757.png'
+import PartnerLogos from '../../components/PartnerLogos'
 
 export default function PartnersPage() {
   const [partnerType, setPartnerType] = useState<string>('Media')
@@ -205,52 +206,7 @@ export default function PartnersPage() {
       </section>
 
       {/* PARTNERS LOGO STRIP */}
-      <section className="partners-logo-strip">
-        <div className="container">
-          <p className="strip-title">Join the list of our amazing partners</p>
-          <div className="logo-strip-flex">
-            <div className="partner-logo-item">
-              <svg viewBox="0 0 40 40" fill="none" width="28" height="28">
-                <path d="M20 0L37.32 10V30L20 40L2.68 30V10L20 0Z" fill="#2563EB" />
-                <path d="M21 10L12 22H19V30L28 18H21V10Z" fill="white" />
-              </svg>
-              <span>Boltshift</span>
-            </div>
-            <div className="partner-logo-item">
-              <svg viewBox="0 0 40 40" fill="none" width="28" height="28">
-                <rect x="4" y="4" width="32" height="32" rx="6" stroke="#0F172A" strokeWidth="6" />
-                <path d="M4 16H36" stroke="#0F172A" strokeWidth="4" />
-              </svg>
-              <span>Lightbox</span>
-            </div>
-            <div className="partner-logo-item">
-              <svg viewBox="0 0 40 40" fill="none" width="28" height="28">
-                <path d="M8 32C12 28 20 22 28 12C32 8 34 6 34 6S32 8 28 12C20 20 14 26 8 32Z" stroke="#16A34A" strokeWidth="5" />
-              </svg>
-              <span>FeatherDev</span>
-            </div>
-            <div className="partner-logo-item">
-              <svg viewBox="0 0 40 40" fill="none" width="28" height="28">
-                <circle cx="20" cy="20" r="16" stroke="#7C3AED" strokeWidth="5" />
-                <circle cx="20" cy="20" r="8" fill="#7C3AED" />
-              </svg>
-              <span>Spherule</span>
-            </div>
-            <div className="partner-logo-item">
-              <svg viewBox="0 0 40 40" fill="none" width="28" height="28">
-                <path d="M6 32V18L20 8L34 18V32H6Z" stroke="#2563EB" strokeWidth="5" />
-              </svg>
-              <span>GlobalBank</span>
-            </div>
-            <div className="partner-logo-item">
-              <svg viewBox="0 0 40 40" fill="none" width="28" height="28">
-                <circle cx="20" cy="20" r="14" fill="#ea580c" />
-              </svg>
-              <span>Nietzsche</span>
-            </div>
-          </div>
-        </div>
-      </section>
+      <section className="partners-logo-strip"><PartnerLogos /></section>
 
       {/* HOW IT WORKS SECTION */}
       <section className="how-it-works-section">

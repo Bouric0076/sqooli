@@ -17,7 +17,7 @@ import '../../styles/pages/landing/questions.css'
 import Header from '../../components/layout/Header'
 import Footer from '../../components/layout/Footer'
 
-import lucyAvatar from '../../assets/images/whats-popular/teacher.jpg'
+import lucyAvatar from '../../assets/images/whats-popular/teacher.webp'
 
 export interface CommentItem {
   id: string

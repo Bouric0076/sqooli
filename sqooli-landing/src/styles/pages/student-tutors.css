@@ -1,0 +1,64 @@
+.student-tutors-page { min-height: calc(100svh - 210px); padding-bottom: 88px; color: #29384f; }
+.student-tutors-page__header h1 { margin: 0; color: #111827; font-size: 26px; line-height: 1.2; }
+.student-tutors-page__header p { margin: 5px 0 25px; color: #53647c; font-size: 14px; }
+.student-tutors-page__tabs { display: flex; gap: 28px; border-bottom: 1px solid #e0e6ed; }
+.student-tutors-page__tabs button { min-height: 43px; padding: 0 5px 11px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: #40546e; font: inherit; font-size: 14px; cursor: pointer; }
+.student-tutors-page__tabs button.is-active { border-color: #258fd6; color: #148ed3; }
+.student-tutors-page__search { min-height: 42px; margin: 16px 0 10px; padding: 0 15px; box-sizing: border-box; border: 1px solid #e0e6ed; border-radius: 999px; background: #f8fafc; display: flex; align-items: center; gap: 10px; color: #53647c; }
+.student-tutors-page__search input { min-width: 0; flex: 1; border: 0; outline: 0; background: transparent; color: #29384f; font: inherit; font-size: 13px; }
+.student-tutors-page__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 17px; }
+.student-tutor-card { min-width: 0; padding: 17px; border-radius: 13px; background: #f8fafc; cursor: pointer; }
+.student-tutor-card:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
+.student-tutor-card header, .student-tutor-card footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.student-tutor-card header h2 { margin: 0; color: #111827; font-size: 18px; }
+.student-tutor-card header button { padding: 0; border: 0; background: transparent; color: #40546e; cursor: pointer; }
+.student-tutor-card__subjects { display: flex; gap: 6px; margin: 10px 0 14px; }
+.student-tutor-card__subjects span { padding: 4px 8px; border-radius: 999px; background: #e9eef4; color: #40546e; font-size: 11px; }
+.student-tutor-card > img { width: 100%; height: 174px; display: block; object-fit: cover; object-position: center; border-radius: 8px; }
+.student-tutor-card__rating { display: flex; align-items: center; gap: 3px; margin: 12px 0 8px; color: #f5b82e; font-size: 15px; }
+.student-tutor-card__rating span { margin-right: 2px; font-weight: 700; }
+.student-tutor-card footer strong { color: #202631; font-size: 15px; font-weight: 500; }
+.student-tutor-card footer button { min-height: 32px; padding: 0 14px; border: 1px solid #e0e6ed; border-radius: 999px; background: #fff; color: #40546e; font: inherit; font-size: 12px; cursor: pointer; }
+.student-tutor-modal-backdrop { position: fixed; z-index: 50; inset: 0; overflow-y: auto; padding: 18px 20px; box-sizing: border-box; background: rgb(15 23 42 / 32%); display: flex; justify-content: center; align-items: flex-start; }
+.student-tutor-modal { width: min(1440px, 100%); min-height: calc(100vh - 36px); margin: 0 auto; overflow: hidden; border-radius: 18px; background: #fff; color: #40546e; box-shadow: 0 22px 60px rgb(15 23 42 / 24%); }
+.student-tutor-modal__topbar { min-height: 64px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; }
+.student-tutor-modal__topbar button { border: 0; background: transparent; color: #40546e; display: inline-flex; align-items: center; gap: 5px; font: inherit; font-size: 14px; cursor: pointer; }
+.student-tutor-modal__topbar .is-back { transform: rotate(180deg); }
+.student-tutor-modal__cover { height: 48px; background: radial-gradient(circle at 18% 32%, rgb(255 255 255 / 64%) 0 1px, transparent 2px), radial-gradient(circle at 70% 65%, rgb(255 187 101 / 55%) 0 1px, transparent 2px), linear-gradient(100deg, #ffd7a1, #fff2d3 48%, #ffc486); background-size: 9px 9px, 11px 11px, auto; }
+.student-tutor-modal__hero { padding: 12px 28px 18px; display: flex; align-items: flex-start; gap: 17px; background: #fffcf5; }
+.student-tutor-modal__hero > img { width: 54px; height: 54px; flex: 0 0 54px; border: 3px solid #fff; border-radius: 50%; object-fit: cover; }
+.student-tutor-modal__hero-copy { min-width: 0; flex: 1; }
+.student-tutor-modal__hero-copy h1 { margin: 0 0 3px; color: #111827; font-size: 20px; }
+.student-tutor-modal__hero-copy small { color: #40546e; font-size: 12px; }
+.student-tutor-modal__hero-copy p { max-width: 830px; margin: 10px 0 0; color: #53647c; font-size: 13px; line-height: 1.8; }
+.student-tutor-modal__hero-copy a { color: #148ed3; }
+.student-tutor-modal__hero-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; padding-top: 9px; }
+.student-tutor-modal__hero-actions > button:first-child { width: 38px; height: 38px; border: 0; border-radius: 50%; background: #eef5fa; color: #40546e; display: grid; place-items: center; cursor: pointer; }
+.student-tutor-modal__hero-actions .student-dashboard__go { min-height: 38px; padding: 0 23px; border: 0; border-radius: 999px; display: inline-flex; align-items: center; gap: 5px; }
+.student-tutor-modal__body { padding: 18px 28px 55px; display: grid; grid-template-columns: 250px minmax(0, 1fr) 250px; gap: 30px; }
+.student-tutor-modal__body h2 { margin: 0 0 12px; color: #202631; font-size: 15px; }
+.student-tutor-modal__intro { min-width: 0; }
+.student-tutor-modal__video { position: relative; height: 124px; overflow: hidden; border-radius: 11px; background: #dbeafe; }
+.student-tutor-modal__video img { width: 100%; height: 100%; object-fit: cover; }
+.student-tutor-modal__video button { position: absolute; inset: 0; margin: auto; width: 44px; height: 44px; border: 0; border-radius: 50%; background: rgb(255 255 255 / 85%); color: #148ed3; display: grid; place-items: center; cursor: pointer; }
+.student-tutor-modal__intro > strong, .student-tutor-modal__intro > small { display: block; margin-top: 9px; }
+.student-tutor-modal__intro > strong { color: #202631; font-size: 14px; }
+.student-tutor-modal__intro > small { color: #53647c; font-size: 11px; }
+.student-tutor-modal__tabs { display: flex; gap: 25px; margin-bottom: 27px; border-bottom: 1px solid #e0e6ed; }
+.student-tutor-modal__tabs button { min-height: 38px; padding: 0 4px 10px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: #40546e; font: inherit; font-size: 13px; cursor: pointer; }
+.student-tutor-modal__tabs button.is-active { border-color: #148ed3; color: #148ed3; }
+.student-tutor-modal__section { scroll-margin-top: 18px; }
+.student-tutor-modal__section + .student-tutor-modal__section { margin-top: 30px; }
+.student-tutor-modal__lesson-progress { height: 7px; margin: 13px 0 5px; overflow: hidden; border-radius: 999px; background: #e5eaf0; }
+.student-tutor-modal__lesson-progress span { display: block; width: 82%; height: 100%; border-radius: inherit; background: #3498db; }
+.student-tutor-modal__programs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.student-tutor-modal__programs article { min-width: 0; padding: 15px; border: 1px solid #e0e6ed; border-radius: 12px; background: #fff; }
+.student-tutor-modal__programs h3 { margin: 0 0 8px; color: #202631; font-size: 13px; }
+.student-tutor-modal__programs p, .student-tutor-modal__programs b { color: #40546e; font-size: 12px; font-weight: 500; }
+.student-tutor-modal__programs article > span { float: right; padding: 4px 7px; border-radius: 999px; background: #dcfce7; color: #16a34a; font-size: 10px; }.student-tutor-modal__programs article > span.is-closed { background: #fee2e2; color: #dc2626; }
+.student-tutor-modal__programs footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 17px; }.student-tutor-modal__programs footer button { padding: 6px 12px; border: 1px solid #e0e6ed; border-radius: 999px; background: #fff; color: #40546e; font: inherit; font-size: 11px; }
+.student-tutor-modal__reviews { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }.student-tutor-modal__reviews article { padding: 15px; border-radius: 12px; background: #f8fafc; }.student-tutor-modal__reviews strong, .student-tutor-modal__reviews span { display: block; }.student-tutor-modal__reviews strong { color: #202631; font-size: 13px; }.student-tutor-modal__reviews span { margin-top: 5px; color: #f5b82e; font-size: 11px; }.student-tutor-modal__reviews p { margin: 10px 0 0; font-size: 12px; line-height: 1.6; }
+.student-tutor-modal__schedule h2 { display: flex; justify-content: space-between; gap: 8px; color: #40546e; font-size: 12px; font-weight: 500; }.student-tutor-modal__schedule h2 + div { margin-bottom: 15px; }.student-tutor-modal__schedule h2 a { color: #148ed3; font-size: 11px; text-decoration: none; white-space: nowrap; }.student-tutor-modal__schedule > div:not(.student-tutor-modal__mini-calendar) { min-height: 54px; margin-bottom: 7px; padding: 9px 10px; box-sizing: border-box; border-radius: 8px; background: #f0efff; display: flex; align-items: center; gap: 10px; }.student-tutor-modal__schedule > div:nth-of-type(2) { background: #fff6cf; }.student-tutor-modal__schedule > div:nth-of-type(3) { background: #e7f6fb; }.student-tutor-modal__schedule time { font-size: 11px; }.student-tutor-modal__schedule span { font-size: 10px; }.student-tutor-modal__schedule b { color: #202631; font-size: 12px; }.student-tutor-modal__mini-calendar { padding-top: 10px; color: #40546e; display: flex; align-items: center; gap: 6px; font-size: 12px; }
+@media (max-width: 1100px) { .student-tutor-modal__body { grid-template-columns: 220px minmax(0, 1fr); }.student-tutor-modal__schedule { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }.student-tutor-modal__schedule h2 { grid-column: 1 / -1; margin-top: 12px; } }
+@media (max-width: 720px) { .student-tutors-page__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.student-tutor-card > img { height: 150px; }.student-tutor-modal-backdrop { padding: 0; }.student-tutor-modal { min-height: 100vh; border-radius: 0; }.student-tutor-modal__hero { flex-wrap: wrap; padding-inline: 18px; }.student-tutor-modal__hero-copy { flex-basis: calc(100% - 75px); }.student-tutor-modal__hero-actions { width: 100%; margin-left: 0; padding-top: 0; }.student-tutor-modal__hero-actions .student-dashboard__go { flex: 1; }.student-tutor-modal__body { grid-template-columns: 1fr; padding-inline: 18px; }.student-tutor-modal__schedule { grid-column: auto; display: block; }.student-tutor-modal__programs, .student-tutor-modal__reviews { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .student-tutors-page__grid { grid-template-columns: 1fr; }.student-tutor-card > img { height: 190px; }.student-tutor-modal__topbar { padding-inline: 15px; }.student-tutor-modal__cover { height: 36px; } }

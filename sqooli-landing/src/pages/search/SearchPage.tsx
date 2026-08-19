@@ -1,9 +1,14 @@
 import { useMemo, useState } from 'react'
-import { Search, Sparkles, User, Package, BookOpen, Building2, SlidersHorizontal, Mic, Plus, Star, X, Menu } from 'lucide-react'
+import { Search, Sparkles, User, Package, BookOpen, Building2, SlidersHorizontal, Mic, Plus, Star, X, Menu, ChevronLeft, ChevronRight, Bell, ChevronDown, ShoppingCart, Layers3, UserRound, WalletCards } from 'lucide-react'
 import Footer from '../../components/layout/Footer'
-import teacherAvatar from '../../assets/images/whats-popular/teacher.jpg'
+import teacherAvatar from '../../assets/images/whats-popular/teacher.webp'
+import mathCampBanner from '../../assets/images/whats-popular/math_camp_banner.webp'
+import sqooliLogo from '../../assets/images/hero/logo.svg'
+import studentHeaderLogo from '../../assets/images/student-flow/sqooli-logo-v3.svg'
 import BookSlotModal from '../../components/BookSlotModal'
+import '../../styles/pages/schools.css'
 import '../../styles/pages/search.css'
+import '../../styles/pages/student-dashboard.css'
 
 interface ResourceItem {
   id: string
@@ -14,20 +19,25 @@ interface ResourceItem {
   priceValue: number
   type: 'Class' | 'Tutor' | 'Topic' | 'Question'
   curriculum: string
+  schoolId: string
 }
 
 const SAMPLE_RESULTS: ResourceItem[] = [
-  { id: '1', title: 'The Ultimate Math Camp Kenya April 2026', tutor: 'Lucy Atieno', rating: 4.5, price: 'KES 200.00', priceValue: 200, type: 'Class', curriculum: 'Competency-based Curriculum' },
-  { id: '2', title: 'The Ultimate Math Camp Kenya April 2026', tutor: 'Lucy Atieno', rating: 4.5, price: 'KES 200.00', priceValue: 200, type: 'Class', curriculum: 'Cambridge' },
-  { id: '3', title: 'The Ultimate Math Camp Kenya April 2026', tutor: 'Lucy Atieno', rating: 4.5, price: 'KES 200.00', priceValue: 200, type: 'Tutor', curriculum: '8-4-4' },
-  { id: '4', title: 'The Ultimate Math Camp Kenya April 2026', tutor: 'Lucy Atieno', rating: 4.5, price: 'KES 200.00', priceValue: 200, type: 'Question', curriculum: 'Competency-based Curriculum' }
+  { id: '1', title: 'The Ultimate Math Camp Kenya April 2026', tutor: 'Lucy Atieno', rating: 4.5, price: 'KES 200.00', priceValue: 200, type: 'Class', curriculum: 'Competency-based Curriculum', schoolId: 'udbc' },
+  { id: '2', title: 'The Ultimate Math Camp Kenya April 2026', tutor: 'Lucy Atieno', rating: 4.5, price: 'KES 200.00', priceValue: 200, type: 'Class', curriculum: 'Cambridge', schoolId: 'udbc' },
+  { id: '3', title: 'Lucy Atieno · Mathematics Tutor', tutor: 'Lucy Atieno', rating: 4.5, price: 'KES 200.00', priceValue: 200, type: 'Tutor', curriculum: '8-4-4', schoolId: 'udbc' },
+  { id: '4', title: 'The Ultimate Math Camp Kenya April 2026', tutor: 'Lucy Atieno', rating: 4.5, price: 'KES 200.00', priceValue: 200, type: 'Question', curriculum: 'Competency-based Curriculum', schoolId: 'udbc' }
 ]
 
 export default function SearchPage() {
   const params = new URLSearchParams(window.location.search)
   const initialTab = (params.get('tab') as 'AI Mode' | 'Classes' | 'Topics' | 'Tutors' | 'School' | 'Questions' | null) || 'AI Mode'
   const initialQuery = params.get('q') || ''
+  const initialStudentDiscovery = params.get('student') === '1'
+  const claimMode = initialStudentDiscovery && params.get('claim') === '1'
+  const schoolFilter = params.get('school') || ''
   const [activeTab, setActiveTab] = useState<'AI Mode' | 'Classes' | 'Topics' | 'Tutors' | 'School' | 'Questions'>(initialTab)
+  const isStudentDiscovery = initialStudentDiscovery || activeTab === 'AI Mode'
   const [searchQuery, setSearchQuery] = useState(initialQuery)
   const [isSubmitted, setIsSubmitted] = useState(Boolean(initialQuery || initialTab !== 'AI Mode'))
   const [showAdvanceSearch, setShowAdvanceSearch] = useState(false)
@@ -38,11 +48,13 @@ export default function SearchPage() {
   const [selectedCurriculum, setSelectedCurriculum] = useState<string[]>([])
   const [askInput, setAskInput] = useState('')
   const [resultNotice, setResultNotice] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [selectedLessonIds, setSelectedLessonIds] = useState<string[]>(claimMode ? ['1'] : [])
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const query = searchQuery.trim()
-    setIsSubmitted(Boolean(query))
+    setIsSubmitted(Boolean(query || activeTab !== 'AI Mode'))
     const next = new URLSearchParams(window.location.search)
     if (query) next.set('q', query)
     else next.delete('q')
@@ -70,6 +82,10 @@ export default function SearchPage() {
       window.location.assign('/schools')
       return
     }
+    if (tab === 'Questions') {
+      window.location.assign('/questions')
+      return
+    }
     setIsSubmitted(tab !== 'AI Mode' || Boolean(searchQuery.trim()))
     const next = new URLSearchParams(window.location.search)
     next.set('tab', tab)
@@ -82,17 +98,23 @@ export default function SearchPage() {
     const max = Number.parseFloat(maxPrice) || Number.POSITIVE_INFINITY
     return SAMPLE_RESULTS.filter(item => {
       const matchesQuery = !query || `${item.title} ${item.tutor} ${item.type}`.toLowerCase().includes(query)
-      const matchesTab = activeTab === 'AI Mode' || activeTab === 'Topics' || item.type === (activeTab === 'Tutors' ? 'Tutor' : activeTab === 'Questions' ? 'Question' : 'Class')
+      const matchesTab = activeTab === 'AI Mode' || item.type === (activeTab === 'Tutors' ? 'Tutor' : activeTab === 'Questions' ? 'Question' : 'Class')
       const matchesRating = selectedRatings.length === 0 || selectedRatings.some(rating => item.rating >= rating)
       const matchesPrice = item.priceValue >= min && item.priceValue <= max
       const matchesCurriculum = selectedCurriculum.length === 0 || selectedCurriculum.includes(item.curriculum)
-      return matchesQuery && matchesTab && matchesRating && matchesPrice && matchesCurriculum
+      const matchesSchool = !schoolFilter || item.schoolId === schoolFilter
+      return matchesQuery && matchesTab && matchesRating && matchesPrice && matchesCurriculum && matchesSchool
     })
-  }, [activeTab, maxPrice, minPrice, searchQuery, selectedCurriculum, selectedRatings])
+  }, [activeTab, maxPrice, minPrice, schoolFilter, searchQuery, selectedCurriculum, selectedRatings])
+
+  const resultsPerPage = 3
+  const totalPages = Math.max(1, Math.ceil(filteredResults.length / resultsPerPage))
+  const safePage = Math.min(currentPage, totalPages)
+  const visibleResults = filteredResults.slice((safePage - 1) * resultsPerPage, safePage * resultsPerPage)
 
   const clearSearch = () => {
     setSearchQuery('')
-    setIsSubmitted(false)
+    setIsSubmitted(activeTab !== 'AI Mode')
     const next = new URLSearchParams(window.location.search)
     next.delete('q')
     window.history.replaceState({}, '', `/search?${next.toString()}`)
@@ -115,21 +137,36 @@ export default function SearchPage() {
 
   const [bookingModalOpen, setBookingModalOpen] = useState(false)
   const [selectedCourse, setSelectedCourse] = useState('The Ultimate Math Camp Kenya April 2026')
+  const activeStudentTab = activeTab === 'Classes' ? 'Lessons' : activeTab
+  const toggleLesson = (id: string) => setSelectedLessonIds(current => current.includes(id) ? current.filter(item => item !== id) : [...current, id])
 
   return (
-    <div className="search-page-container">
+    <div className={`search-page-container${isStudentDiscovery ? ' search-page-container--student' : ''}`}>
       <BookSlotModal
         isOpen={bookingModalOpen}
         onClose={() => setBookingModalOpen(false)}
         courseTitle={selectedCourse}
       />
       {/* Top Navigation Navbar matching Desktop-82 / Desktop-83 */}
-      <header className="search-header-navbar">
-        <div className="search-header-inner">
-          <a href="/" className="search-brand-logo">δ</a>
+      <header className={isStudentDiscovery ? 'student-dashboard__header search-student-header' : 'search-header-navbar'}>
+        {isStudentDiscovery ? <>
+          <a href="/student" className="student-dashboard__header-brand" aria-label="Back to student dashboard"><img src={studentHeaderLogo} alt="Sqooli" /></a>
+          <button className="student-dashboard__role" type="button">Student <ChevronDown size={15} /></button>
+          <div className="student-dashboard__header-actions">
+            <label className="student-dashboard__search"><Search size={18} /><input type="search" aria-label="Search Tutors, Lessons, Programs" placeholder="Search Tutors, Lessons, Programs..." /></label>
+            <button type="button" aria-label="Wallet" onClick={() => { window.location.href = '/student/wallet' }}><WalletCards size={22} /></button>
+            <button type="button" aria-label="Notifications"><Bell size={22} /></button>
+            <button type="button" aria-label="Cart" onClick={() => { window.location.href = '/student/cart' }}><ShoppingCart size={22} /></button>
+            <button type="button" aria-label="Resources"><Layers3 size={22} /></button>
+            <button type="button" className="student-dashboard__profile" aria-label="Open profile menu"><span className="student-dashboard__avatar"><UserRound size={20} /></span><strong>John Juma</strong><ChevronDown size={16} /></button>
+          </div>
+        </> : <div className="search-header-inner">
+          <a href="/" className="search-brand-logo" aria-label="Sqooli home">
+            <img src={sqooliLogo} alt="Sqooli" />
+          </a>
 
-          <button type="button" className="search-menu-toggle" aria-label="Toggle search navigation" onClick={() => setMenuOpen(!menuOpen)}><Menu size={22} /></button>
-          <nav className={`search-nav-tabs ${menuOpen ? 'open' : ''}`}>
+          <button type="button" className="search-menu-toggle" aria-label="Toggle search navigation" aria-controls="search-navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}><Menu size={22} /></button>
+          <nav id="search-navigation" className={`search-nav-tabs ${menuOpen ? 'open' : ''}`} aria-label="Search navigation">
             {(['AI Mode', 'Classes', 'Topics', 'Tutors', 'School', 'Questions'] as const).map(tab => (
               <button
                 key={tab}
@@ -146,11 +183,24 @@ export default function SearchPage() {
             <a href="/popular" className="btn-trending-pill">Trending</a>
             <a href="/#login" className="btn-login-pill">Login</a>
           </div>
-        </div>
+        </div>}
       </header>
 
       {/* Main Container */}
       <main className="container">
+        {isStudentDiscovery && <>
+          <div className="student-search-context">
+            <a href="/student">← <span>Back to Dashboard</span></a>
+            <a className="student-search-context__trending" href="/popular">Trending</a>
+          </div>
+          <nav className="student-search-tabs" aria-label="Student discovery navigation">
+            {(['AI Mode', 'Lessons', 'Programs', 'Topics', 'Tutors', 'School', 'Questions'] as const).map(tab => (
+              <button key={tab} className={tab === activeStudentTab ? 'is-active' : ''} type="button" onClick={() => tab === 'Lessons' ? setSearchTab('Classes') : tab === 'Programs' ? window.location.assign('/popular') : tab === 'School' ? setSearchTab('School') : tab === 'Questions' ? setSearchTab('Questions') : setSearchTab(tab === 'Topics' ? 'Topics' : tab === 'Tutors' ? 'Tutors' : 'AI Mode')}>
+                {tab}
+              </button>
+            ))}
+          </nav>
+        </>}
         {!isSubmitted ? (
           /* Landing Home State (Desktop - 82 / Desktop - 89) */
           <div className="search-hero-wrapper">
@@ -199,7 +249,7 @@ export default function SearchPage() {
           /* Search Results & AI Split View (Desktop - 83 / Desktop - 88 / Desktop - 97) */
           <div style={{ paddingTop: 24 }}>
             {/* Search Bar Toolbar */}
-            <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
+            {activeTab !== 'AI Mode' && <div className={`student-search-toolbar${claimMode ? ' is-claim-mode' : ''}`} style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
               <div className="search-input-wrapper" style={{ flex: 1 }}>
                 <Search className="search-icon" size={18} />
                 <input
@@ -217,7 +267,8 @@ export default function SearchPage() {
               >
                 <SlidersHorizontal size={16} /> Advance Search
               </button>
-            </div>
+              {claimMode && <button type="button" className="student-search-claim-button" disabled={selectedLessonIds.length === 0} onClick={() => setResultNotice(`${selectedLessonIds.length} lesson${selectedLessonIds.length === 1 ? '' : 's'} selected for claiming.`)}>Claim Selected Lessons</button>}
+            </div>}
 
             <div className={`tutors-main-layout ${showAdvanceSearch ? 'with-sidebar' : ''}`}>
               {/* Advance Search Sidebar Drawer (Desktop - 97) */}
@@ -280,23 +331,69 @@ export default function SearchPage() {
               )}
 
               {/* Main AI Results Split View (Desktop - 83) */}
-              <div className="ai-results-split-layout">
-                <div className="ai-chat-pane">
+              <div className={`ai-results-split-layout ${activeTab === 'Classes' ? 'class-results-layout' : ''}`}>
+                {activeTab === 'Classes' ? (
+                  <section className="class-results-list" aria-label="Class search results">
+                    <h2>Showing results for “{searchQuery.trim() || 'Classes'}”</h2>
+                    {filteredResults.length === 0 ? (
+                      <p className="search-empty-state" role="status">No matching classes yet. Try a broader search or clear the filters.</p>
+                    ) : (
+                      <div className="class-result-items">
+                        {visibleResults.map(item => (
+                          <article className={`class-result-row${claimMode ? ' is-selectable' : ''}${selectedLessonIds.includes(item.id) ? ' is-selected' : ''}`} key={item.id}>
+                            {claimMode && <label className="student-lesson-select"><input type="checkbox" checked={selectedLessonIds.includes(item.id)} onChange={() => toggleLesson(item.id)} aria-label={`Select ${item.title}`} /><span /></label>}
+                            <div className="class-result-author">
+                              <img src={teacherAvatar} alt="" />
+                              <div>
+                                <strong>{item.tutor}</strong>
+                                <a href={`/tutors/profile?q=${encodeURIComponent(searchQuery)}`}>View tutor profile</a>
+                              </div>
+                            </div>
+                            <div className="class-result-content">
+                              <img className="class-result-image" src={mathCampBanner} alt="" />
+                              <div className="class-result-details">
+                                <a href={getResultHref(item)} className="class-result-title">{item.title}</a>
+                                <span>{item.tutor}</span>
+                                <div className="class-result-rating"><strong>{item.rating.toFixed(1)}</strong> ★★★★★ <b>{item.price}</b></div>
+                                <div className="class-result-actions">
+                                  <button type="button" className="btn-action-outline" onClick={() => setResultNotice(`${item.title} added to your list.`)}>Add to Cart</button>
+                                  <button type="button" className="btn-action-outline" onClick={() => { setSelectedCourse(item.title); setBookingModalOpen(true) }}>Book a Slot</button>
+                                  <a href={getResultHref(item)} className="btn-action-outline">View Class</a>
+                                  <a href={`/tutors/profile?q=${encodeURIComponent(searchQuery)}`} className="btn-action-outline">View Tutor</a>
+                                </div>
+                              </div>
+                            </div>
+                          </article>
+                        ))}
+                      </div>
+                    )}
+                    {filteredResults.length > 0 && (
+                      <div className="pagination-bar search-results-pagination">
+                        <span className="search-pagination-status">Page {safePage} of {totalPages}</span>
+                        <div className="search-pagination-actions">
+                          <button type="button" className="btn-page" disabled={safePage === 1} onClick={() => setCurrentPage(page => Math.max(1, page - 1))}><ChevronLeft size={15} aria-hidden="true" /> Previous</button>
+                          <button type="button" className="btn-page" disabled={safePage === totalPages} onClick={() => setCurrentPage(page => Math.min(totalPages, page + 1))}>Next <ChevronRight size={15} aria-hidden="true" /></button>
+                        </div>
+                      </div>
+                    )}
+                    {resultNotice && <p className="search-result-notice" role="status">{resultNotice}</p>}
+                  </section>
+                ) : <div className="ai-chat-pane">
                   <div>
                     <div style={{
                       background: '#f8fafc', borderRadius: 12, padding: '12px 18px',
                       maxWidth: 240, marginLeft: 'auto', marginBottom: 24, fontSize: 14,
                       fontWeight: 600, color: '#334155'
                     }}>
-                      Top 10 Learning resources for math
+                      Top 10 Learning resources for {searchQuery.trim() || activeTab}
                     </div>
 
                     <p style={{ color: '#475569', fontSize: 15, marginBottom: 20 }}>
-                      Sure, Here are the top 10 learning resources on Sqooli:
+                      Sure, Here are the top 10 learning resources on Sqooli
                     </p>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                      {filteredResults.length === 0 ? <p className="search-empty-state" role="status">No matching resources yet. Try a broader search or clear the filters.</p> : filteredResults.map((item, idx) => (
+                      {filteredResults.length === 0 ? <p className="search-empty-state" role="status">No matching resources yet. Try a broader search or clear the filters.</p> : visibleResults.map((item, idx) => (
                         <div key={item.id} style={{ display: 'flex', gap: 12 }}>
                           <span style={{ fontWeight: 700, fontSize: 15 }}>{idx + 1}.</span>
                           <div>
@@ -312,6 +409,20 @@ export default function SearchPage() {
                         </div>
                       ))}
                     </div>
+
+                    {filteredResults.length > 0 && (
+                      <div className="pagination-bar search-results-pagination">
+                        <span className="search-pagination-status">Page {safePage} of {totalPages}</span>
+                        <div className="search-pagination-actions">
+                          <button type="button" className="btn-page" disabled={safePage === 1} onClick={() => setCurrentPage(page => Math.max(1, page - 1))}>
+                            <ChevronLeft size={15} aria-hidden="true" /> Previous
+                          </button>
+                          <button type="button" className="btn-page" disabled={safePage === totalPages} onClick={() => setCurrentPage(page => Math.min(totalPages, page + 1))}>
+                            Next <ChevronRight size={15} aria-hidden="true" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Ask Anything Input Bar */}
@@ -325,11 +436,11 @@ export default function SearchPage() {
                     />
                     <button type="button" className="ai-mic-button" aria-label="Voice search"><Mic size={18} color="#94a3b8" /></button>
                   </form>
-                </div>
+                </div>}
 
                 {/* Right Side Resource Cards */}
                 <div className="ai-right-pane-cards">
-                  {filteredResults.slice(0, 2).map((res, i) => (
+                  {visibleResults.slice(0, 2).map((res, i) => (
                     <div key={i} className="recommended-card-item">
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                         <img src={teacherAvatar} alt="Tutor" style={{ width: 28, height: 28, borderRadius: '50%' }} />

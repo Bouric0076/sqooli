@@ -96,9 +96,10 @@ export default function ContactPage() {
                 <input
                   id="contact-name"
                   type="text"
+                  autoComplete="name"
+                  placeholder="Your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder=""
                   required
                 />
               </div>
@@ -109,9 +110,10 @@ export default function ContactPage() {
                 <input
                   id="contact-email"
                   type="email"
+                  autoComplete="email"
+                  placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder=""
                   required
                 />
               </div>
@@ -146,9 +148,9 @@ export default function ContactPage() {
                 <label htmlFor="contact-message">Message</label>
                 <textarea
                   id="contact-message"
+                  placeholder="Tell us how we can help"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder=""
                   rows={5}
                   required
                 />

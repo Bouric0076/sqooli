@@ -1,0 +1,38 @@
+.teacher-onboarding {
+	min-height: calc(100svh - 145px);
+	box-sizing: border-box;
+	padding: clamp(64px, 12vh, 96px) 24px 72px;
+	background: #fff;
+	color: #172236;
+	font-family: 'DM Sans', Arial, sans-serif;
+}
+
+.teacher-onboarding__shell { width: min(100%, 716px); margin: 0 auto; }
+.teacher-onboarding__intro { margin: 0 0 18px; }
+.teacher-onboarding__intro h1 { margin: 0; font-size: 25px; line-height: 1.2; letter-spacing: -.03em; }
+.teacher-onboarding__intro p { margin: 7px 0 0; color: #53627a; font-size: 14px; }
+.teacher-onboarding__steps { border-top: 1px solid #e1e6ed; }
+.teacher-onboarding__step { min-height: 77px; padding: 13px 10px; box-sizing: border-box; border-bottom: 1px solid #e1e6ed; display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; gap: 9px; }
+.teacher-onboarding__number { width: 40px; height: 40px; border-radius: 50%; background: #edf0f4; color: #53627a; display: grid; place-items: center; font-size: 17px; font-weight: 600; }
+.teacher-onboarding__step.is-current .teacher-onboarding__number { border: 1px solid #394bd0; background: #f0f1ff; color: #394bd0; }
+.teacher-onboarding__step.is-complete .teacher-onboarding__number { background: #25c875; color: #fff; }
+.teacher-onboarding__copy { min-width: 0; display: grid; gap: 3px; }
+.teacher-onboarding__copy strong { color: #4b5a72; font-size: 16px; line-height: 1.25; font-weight: 700; }
+.teacher-onboarding__step.is-current .teacher-onboarding__copy strong { color: #202b3e; }
+.teacher-onboarding__copy small { color: #53627a; font-size: 13px; line-height: 1.4; }
+.teacher-onboarding__go { min-width: 52px; min-height: 38px; padding: 0 16px; border: 0; border-radius: 999px; background: #3f48c7; color: #fff; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.teacher-onboarding__go:hover { background: #3039b6; }
+.teacher-onboarding__next { color: #c5ccd5; }
+.teacher-onboarding__optional-actions { display: inline-flex; align-items: center; gap: 8px; }
+.teacher-onboarding__skip { min-height: 38px; padding: 0 15px; border: 1px solid #dce2ea; border-radius: 999px; background: #fff; color: #53627a; font: inherit; font-size: 13px; cursor: pointer; }
+
+@media (max-width: 620px) {
+	.teacher-onboarding { min-height: calc(100svh - 122px); padding: 52px 16px 56px; }
+	.teacher-onboarding__intro h1 { font-size: 23px; }
+	.teacher-onboarding__step { grid-template-columns: 34px minmax(0, 1fr) auto; gap: 8px; padding-inline: 0; }
+	.teacher-onboarding__number { width: 34px; height: 34px; font-size: 15px; }
+	.teacher-onboarding__copy strong { font-size: 14px; }
+	.teacher-onboarding__copy small { font-size: 12px; }
+	.teacher-onboarding__optional-actions { gap: 5px; }
+	.teacher-onboarding__skip, .teacher-onboarding__go { min-height: 34px; padding-inline: 11px; font-size: 12px; }
+}

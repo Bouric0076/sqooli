@@ -2,24 +2,25 @@ import { useState } from 'react'
 import { Plus, Minus, Download, Phone, Mail, MapPin, ChevronLeft, ChevronRight } from 'lucide-react'
 import SchoolHeader from './SchoolHeader'
 import Footer from '../../components/layout/Footer'
-import teacherAvatar from '../../assets/images/whats-popular/teacher.jpg'
+import teacherAvatar from '../../assets/images/whats-popular/teacher.webp'
+import udbcCommunityTeam from '../../assets/images/udbc/udbc-community-team.webp'
 import contactHandGraphic from '../../assets/images/schools/lettering contact us hand holding text.png'
 import BookSlotModal from '../../components/BookSlotModal'
 import '../../styles/pages/schools.css'
 import '../../styles/pages/search.css'
 
 const LEADERSHIP = [
-  { name: 'Person Name', role: 'Role', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80' },
-  { name: 'Person Name', role: 'Role', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80' },
-  { name: 'Person Name', role: 'Role', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80' },
-  { name: 'Person Name', role: 'Role', avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=200&q=80' }
+  { name: 'Bishop Dr. Josephat Gwajima', role: 'Founder & Chancellor', initials: 'JG' },
+  { name: 'Academic Tutors', role: 'Theological teaching team', initials: 'AT' },
+  { name: 'Student Support Team', role: 'Platform and learner support', initials: 'SS' },
+  { name: 'Admin & QA Team', role: 'Exams, records and graduation', initials: 'QA' }
 ]
 
 const SERVICES = [
-  { title: 'Service Name', desc: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incidid' },
-  { title: 'Service Name', desc: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incidid' },
-  { title: 'Service Name', desc: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incidid' },
-  { title: 'Service Name', desc: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incidid' }
+  { title: 'Digital theological education', desc: 'Mobile-first Certificate and Diploma training delivered through the Sqooli platform.' },
+  { title: 'Grade-by-grade learning', desc: 'Structured lessons, quizzes, exams and practical ministry activities from Grade 1 to Grade 7.' },
+  { title: 'WhatsApp learner support', desc: 'Guidance, study groups and platform support for students throughout the intake.' },
+  { title: 'Ministry preparation', desc: 'Grounded training for shepherds, church workers, pastors-in-training and cell group leaders.' }
 ]
 
 const FAQS = [
@@ -32,9 +33,9 @@ const FAQS = [
 ]
 
 const TESTIMONIALS = [
-  { name: 'Phoenix Baker', text: '"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incidid"' },
-  { name: 'Phoenix Baker', text: '"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incidid"' },
-  { name: 'Phoenix Baker', text: '"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incidid"' }
+  { name: 'Mama Grace Mwangi', text: '“UDBC gave me a biblical foundation to guide my cell group with confidence.”' },
+  { name: 'Deacon Patrick Makori', text: '“I can study at night from my phone without leaving my family or business.”' },
+  { name: 'Bro. Emmanuel Kimaro', text: '“The lessons are in Kiswahili and I can learn from anywhere.”' }
 ]
 
 const CALENDAR_GRID_DAYS: Record<string, number[]> = {
@@ -67,7 +68,7 @@ export default function SchoolProfilePage() {
 
   return (
     <div className="schools-page-wrapper">
-      <SchoolHeader variant="school-profile" schoolName="[School Name]" />
+      <SchoolHeader variant="school-profile" schoolName="UDBC" />
       <BookSlotModal
         isOpen={bookingModalOpen}
         onClose={() => setBookingModalOpen(false)}
@@ -78,11 +79,11 @@ export default function SchoolProfilePage() {
       <section className="school-profile-banner" id="home">
         <div className="container banner-layout">
           <div className="profile-banner-placeholder">
-            IMAGE <br /> 1135.62 X 496
+            <img src={udbcCommunityTeam} alt="UDBC students and community team" />
           </div>
           <div>
-            <h1 style={{ fontSize: 44, fontWeight: 800, color: '#1e1b4b', margin: 0 }}>
-              Welcome to [School Name]
+              <h1 style={{ fontSize: 44, fontWeight: 800, color: '#1e1b4b', margin: 0 }}>
+              Welcome to Ufufuo Digital Bible College
             </h1>
           </div>
         </div>
@@ -93,13 +94,20 @@ export default function SchoolProfilePage() {
         <div className="container">
           <div className="about-grid">
             <div>
-              <h2 style={{ fontSize: 32, fontWeight: 800, marginBottom: 16 }}>About [School Name]</h2>
+              <h2 style={{ fontSize: 32, fontWeight: 800, marginBottom: 16 }}>About Ufufuo Digital Bible College</h2>
               <p style={{ color: '#64748b', lineHeight: 1.7, fontSize: 16 }}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                Ufufuo Digital Bible College is the official theological training institution of Ufufuo na Uzima Ministries. Through the Lisha Kondoo Zangu programme, UDBC equips believers across East and Central Africa with accessible, Kiswahili-first theological education delivered digitally through Sqooli.
               </p>
             </div>
-            <div className="about-image-placeholder">
-              IMAGE <br /> 513 X 463
+            <div className="about-feature-panel">
+              <span className="about-feature-kicker">UDBC on Sqooli</span>
+              <strong>“Lisha Kondoo Zangu”</strong>
+              <p>Feed My Lambs · John 21:17</p>
+              <div className="about-feature-meta">
+                <span>100% digital</span>
+                <span>Kiswahili-first</span>
+                <span>Grades 1–7</span>
+              </div>
             </div>
           </div>
         </div>
@@ -110,13 +118,13 @@ export default function SchoolProfilePage() {
         <div className="container">
           <div className="section-header-centered">
             <h2>Leadership</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incidid</p>
+            <p>Digital, accessible and ministry-focused learning for believers across East and Central Africa.</p>
           </div>
 
           <div className="leadership-grid">
             {LEADERSHIP.map((leader, i) => (
               <div key={i} style={{ textAlign: 'center' }}>
-                <img src={leader.avatar} alt={leader.name} className="leader-circle-avatar" />
+                <div className="leader-initial-avatar" aria-hidden="true">{leader.initials}</div>
                 <h4 style={{ margin: '8px 0 4px', fontSize: 16, fontWeight: 700 }}>{leader.name}</h4>
                 <p style={{ color: '#64748b', fontSize: 13, margin: 0 }}>{leader.role}</p>
               </div>
@@ -135,8 +143,8 @@ export default function SchoolProfilePage() {
           <div className="services-grid">
             {SERVICES.map((service, i) => (
               <div key={i} className="service-card">
-                <div className="service-card-image" style={{ background: '#cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b', fontWeight: 700 }}>
-                  IMAGE
+                <div className={`service-card-image service-card-image--${i + 1}`}>
+                  <span>{['Digital learning', 'Grades 1–7', 'WhatsApp support', 'Ministry focus'][i]}</span>
                 </div>
                 <h4 style={{ margin: '0 0 8px', fontSize: 16, fontWeight: 700 }}>{service.title}</h4>
                 <p style={{ color: '#64748b', fontSize: 13, lineHeight: 1.5, margin: 0 }}>{service.desc}</p>
@@ -169,11 +177,11 @@ export default function SchoolProfilePage() {
         </div>
       </section>
 
-      {/* [School Name] on Sqooli */}
+      {/* UDBC on Sqooli */}
       <section className="profile-section">
         <div className="container">
           <div style={{ marginBottom: 32 }}>
-            <h2 style={{ fontSize: 28, fontWeight: 800, margin: '0 0 8px' }}>[School Name] on Sqooli</h2>
+            <h2 style={{ fontSize: 28, fontWeight: 800, margin: '0 0 8px' }}>UDBC on Sqooli</h2>
             <p style={{ color: '#64748b' }}>Access classes, tutors and more seamlessly via our Sqooli profile</p>
           </div>
 
@@ -224,7 +232,7 @@ export default function SchoolProfilePage() {
           )}
           {['Questions', 'Programs', 'Enrolments'].includes(activeSqooliTab) && (
             <div className="profile-tab-empty" role="status">
-              <h3>{activeSqooliTab} from [School Name]</h3>
+              <h3>{activeSqooliTab} from UDBC</h3>
               <p>{activeSqooliTab === 'Questions' ? 'Browse common questions and answers about this school.' : `No ${activeSqooliTab.toLowerCase()} are available yet.`}</p>
               {activeSqooliTab === 'Questions' && <a href="#profile-faq" className="btn-action-outline">View FAQs</a>}
             </div>

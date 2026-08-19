@@ -4,6 +4,7 @@ import SchoolHeader from './SchoolHeader'
 import Footer from '../../components/layout/Footer'
 import '../../styles/pages/schools.css'
 import '../../styles/pages/search.css'
+import udbcCommunityTeam from '../../assets/images/udbc/udbc-community-team.webp'
 
 interface SchoolItem {
   id: string
@@ -19,48 +20,15 @@ interface SchoolItem {
 
 const INITIAL_SCHOOLS: SchoolItem[] = [
   {
-    id: 'valley-anthony',
-    name: 'Valley Anthony Institute',
-    url: 'https://sqooli_valley_anthony_institute.com',
-    students: '1,364 students',
-    location: 'Kakamega',
-    rating: 4.5,
-    image: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=400&q=80',
-    mode: 'Online',
-    category: 'Religion'
-  },
-  {
     id: 'udbc',
     name: 'Ufufuo Digital Bible College (UDBC)',
     url: 'udbc.sqooli.africa',
-    students: '1,364 students',
-    location: 'Kakamega',
-    rating: 4.5,
-    image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=400&q=80',
+    students: 'Digital learning',
+    location: 'East Africa',
+    rating: 0,
+    image: udbcCommunityTeam,
     mode: 'Online',
     category: 'Religion'
-  },
-  {
-    id: 'alliance',
-    name: 'Alliance High School',
-    url: 'https://sqooli_alliance_high.com',
-    students: '2,100 students',
-    location: 'Kiambu, Kenya',
-    rating: 4.8,
-    image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=400&q=80',
-    mode: 'Physical',
-    category: 'National'
-  },
-  {
-    id: 'kenya-high',
-    name: 'Kenya High School',
-    url: 'https://sqooli_kenya_high.com',
-    students: '1,850 students',
-    location: 'Nairobi, Kenya',
-    rating: 4.7,
-    image: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=400&q=80',
-    mode: 'Physical',
-    category: 'National'
   }
 ]
 
@@ -69,7 +37,6 @@ export default function SchoolsLandingPage() {
   const [schoolType, setSchoolType] = useState('All')
   const [category, setCategory] = useState('All')
   const [searchQuery, setSearchQuery] = useState('')
-  const [listQuery, setListQuery] = useState('')
 
   // Comparison Tool State
   const [comparedSchools, setComparedSchools] = useState<SchoolItem[]>([])
@@ -99,20 +66,20 @@ export default function SchoolsLandingPage() {
     (filterMode === 'All' || s.mode === filterMode) &&
     (schoolType === 'All' || schoolType === 'Hybrid' || s.mode === schoolType) &&
     (category === 'All' || s.category === category) &&
-    (s.name.toLowerCase().includes(listQuery.toLowerCase()) || s.location.toLowerCase().includes(listQuery.toLowerCase()))
+    (s.name.toLowerCase().includes(searchQuery.toLowerCase()) || s.location.toLowerCase().includes(searchQuery.toLowerCase()))
   )
 
   return (
     <div className="schools-page-wrapper">
       <SchoolHeader variant="main" activeTab="Schools" />
 
-      {/* Main Hero Section right-aligned with right-side gradient overlay */}
+      {/* Main Hero Section: search-first discovery */}
       <section className="schools-hero-right-aligned">
         <div className="container">
           <div className="hero-content-right">
-            <h1>100+ Schools To Choose From</h1>
+            <h1>Discover Schools on Sqooli</h1>
             <p>
-              Explore our extensive list of schools available via Sqooli. Access tutors and lessons seamlessly.
+              Find verified schools, programmes, tutors and lessons in one place.
             </p>
           </div>
         </div>
@@ -192,8 +159,8 @@ export default function SchoolsLandingPage() {
                 <Building2 size={24} />
               </div>
               <div className="feature-info">
-                <h3>100+ Online & Physical Schools</h3>
-                <p>Sqooli has a variety of online and physical schools for you to choose from and book classes.</p>
+              <h3>Schools joining Sqooli</h3>
+              <p>Discover our first verified school today, with more schools joining the network soon.</p>
               </div>
             </div>
 
@@ -211,19 +178,12 @@ export default function SchoolsLandingPage() {
           {/* Explore Our School Listings Heading */}
           <div className="section-header-centered">
             <h2>Explore Our School Listings</h2>
-            <p>Explore our extensive list of schools available via Sqooli. Access tutors and lessons seamlessly.</p>
+            <p>{filteredSchools.length} verified school{filteredSchools.length === 1 ? '' : 's'} currently available on Sqooli.</p>
           </div>
 
-          <div className="royal-blue-search-bar">
-            <input
-              type="text"
-              placeholder="Type school name...."
-              value={listQuery}
-              onChange={e => setListQuery(e.target.value)}
-            />
-            <button onClick={() => window.location.href = `/schools/listings?q=${encodeURIComponent(listQuery)}`}>
-              Search
-            </button>
+          <div className="school-results-summary" role="status">
+            <span>{filteredSchools.length === 1 ? '1 school available' : `${filteredSchools.length} schools available`}</span>
+            <a href="/schools/listings">View all listings</a>
           </div>
 
           {/* Clean Horizontal School Item Rows (NO card box container, formal icons) */}
@@ -237,23 +197,23 @@ export default function SchoolsLandingPage() {
                   <div className="school-meta-row">
                     <span className="school-meta-item"><Users size={14} /> {school.students}</span>
                     <span className="school-meta-item"><MapPin size={14} /> {school.location}</span>
-                    <div className="rating-stars">
+                    {school.rating > 0 && <div className="rating-stars" aria-label={`${school.rating} out of 5 rating`}>
                       <span>{school.rating}</span>
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={14} fill="#f59e0b" color="#f59e0b" />
-                      ))}
-                    </div>
+                      {[...Array(5)].map((_, i) => <Star key={i} size={14} fill="#f59e0b" color="#f59e0b" />)}
+                    </div>}
                   </div>
                 </div>
 
                 <div className="school-card-actions">
                   <a href="/schools/detail" className="btn-royal-outline">Go to Website</a>
-                  <a href="/schools/tutors" className="btn-royal-outline">View Lessons</a>
-                  <a href="/schools/tutors" className="btn-royal-outline">View Tutors</a>
+                  <a href={`/schools/tutors?school=${encodeURIComponent(school.id)}&tab=classes`} className="btn-royal-outline">View Lessons</a>
+                  <a href={`/search?tab=Tutors&school=${encodeURIComponent(school.id)}`} className="btn-royal-outline">View Tutors</a>
                 </div>
               </div>
             ))}
           </div>
+
+          <p className="schools-coming-soon">More schools are joining Sqooli soon.</p>
 
           <div style={{ textAlign: 'center', marginTop: 40 }}>
             <a href="/schools/listings" className="btn-white-pill">
@@ -272,7 +232,12 @@ export default function SchoolsLandingPage() {
               <p>Test out our School Comparison Tool. Select up to 4 schools to compare</p>
             </div>
 
-            <div className="comparison-slots-grid">
+            {INITIAL_SCHOOLS.length < 2 ? (
+              <div className="comparison-coming-soon">
+                <strong>School comparison is coming soon</strong>
+                <span>We’ll activate comparisons when the next verified school joins Sqooli.</span>
+              </div>
+            ) : <div className="comparison-slots-grid">
               {comparedSchools.map(school => (
                 <div key={school.id} className="comparison-slot-card occupied">
                   <button type="button" className="remove-slot-btn" onClick={() => handleRemoveComparison(school.id)} aria-label={`Remove ${school.name} from comparison`}>
@@ -293,7 +258,7 @@ export default function SchoolsLandingPage() {
                   <span>Add School</span>
                 </button>
               ))}
-            </div>
+            </div>}
           </div>
 
           {comparedSchools.length > 0 && (
