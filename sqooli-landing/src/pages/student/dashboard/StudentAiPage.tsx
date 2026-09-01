@@ -14,7 +14,7 @@ export default function StudentAiPage() {
 		if (query) window.location.href = `/search?tab=AI%20Mode&q=${encodeURIComponent(query)}&student=1`
 	}
 	const tabHref = (tab: string) => tab === 'AI Mode' ? '/student/ai' : tab === 'Lessons' ? '/search?tab=Classes&student=1' : tab === 'Programs' ? '/popular' : tab === 'School' ? '/schools' : tab === 'Questions' ? '/questions' : `/search?tab=${tab}&student=1`
-	return <StudentDashboardLayout showSidebar={false}>
+	return <StudentDashboardLayout showSidebar={false} activePath="/student/ai">
 		<section className="student-ai-page" aria-labelledby="student-ai-title">
 			<div className="student-ai-page__top"><a href="/student">← <span>Back to Dashboard</span></a><a className="student-ai-page__trending" href="/popular">Trending</a></div>
 			<nav className="student-ai-page__tabs" aria-label="Student discovery navigation">{tabs.map((tab, index) => <a className={index === 0 ? 'is-active' : ''} href={tabHref(tab)} key={tab}>{tab}</a>)}</nav>

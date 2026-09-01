@@ -22,7 +22,7 @@ export default function CartPage() {
 		setNotice(voucher.trim() ? `Voucher ${voucher.trim()} applied.` : 'Enter a voucher code to apply.')
 	}
 
-	return <StudentDashboardLayout showSidebar={false}>
+	return <StudentDashboardLayout showSidebar={false} activePath="/student/cart">
 		<section className="student-cart-page" aria-labelledby="student-cart-title">
 			<a className="student-cart-page__back" href="/student"><ArrowLeft size={17} /> Back to Dashboard</a>
 			<div className="student-cart-page__heading"><h1 id="student-cart-title">Shopping Cart</h1><span>{items.length} {items.length === 1 ? 'item' : 'items'}</span></div>

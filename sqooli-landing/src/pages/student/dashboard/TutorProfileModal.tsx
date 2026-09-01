@@ -2,13 +2,16 @@ import { Check, ChevronRight, Clock3, MessageCircle, Play, X } from 'lucide-reac
 import { useState } from 'react'
 import teacherAvatar from '../../../assets/images/whats-popular/teacher.webp'
 
-type TutorProfileModalProps = { onClose: () => void }
+type TutorRecord = { id?: number | string; fullName?: string; firstName?: string; lastName?: string; email?: string; bio?: string; rating?: number | string; lessonsTaught?: number | string }
+type TutorProfileModalProps = { onClose: () => void; tutor?: TutorRecord }
 
 const tabs = ['Programs', 'Lessons', 'Reviews'] as const
 
-export default function TutorProfileModal({ onClose }: TutorProfileModalProps) {
+export default function TutorProfileModal({ onClose, tutor }: TutorProfileModalProps) {
     const [activeTab, setActiveTab] = useState<(typeof tabs)[number]>('Programs')
     const [connected, setConnected] = useState(false)
+    const tutorName = tutor?.fullName || [tutor?.firstName, tutor?.lastName].filter(Boolean).join(' ') || 'Tutor'
+    const tutorBio = tutor?.bio || 'Tutor profile details will appear here as this tutor publishes their learning profile.'
     const showSection = (tab: (typeof tabs)[number]) => {
         setActiveTab(tab)
         document.getElementById(`student-tutor-${tab.toLowerCase()}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -22,11 +25,11 @@ export default function TutorProfileModal({ onClose }: TutorProfileModalProps) {
             </header>
             <div className="student-tutor-modal__cover" aria-hidden="true" />
             <section className="student-tutor-modal__hero">
-                <img src={teacherAvatar} alt="Jane Doe" />
+                <img src={teacherAvatar} alt={tutorName} />
                 <div className="student-tutor-modal__hero-copy">
-                    <h1 id="student-tutor-modal-title">Jane Doe</h1>
-                    <small>ID: 123456789</small>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Exceptteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum...<a href="#tutor-about">show more</a></p>
+                    <h1 id="student-tutor-modal-title">{tutorName}</h1>
+                    <small>{tutor?.email || 'Tutor profile'}</small>
+                    <p>{tutorBio}</p>
                 </div>
                 <div className="student-tutor-modal__hero-actions">
                     <button type="button" aria-label="Message Jane Doe"><MessageCircle size={21} /></button>

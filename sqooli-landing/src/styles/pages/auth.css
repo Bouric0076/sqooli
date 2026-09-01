@@ -302,6 +302,7 @@
 }
 
 .student-account__google:hover { background: #f8fafc; }
+.student-account__google:disabled { cursor: wait; opacity: .72; }
 .student-account__google-mark { width: 20px; height: 20px; display: block; flex: 0 0 auto; }
 
 .student-account__divider {
@@ -318,6 +319,30 @@
 .student-account__divider b { font-weight: 500; }
 
 .student-account__form { display: grid; gap: 8px; }
+
+.student-account__field-error {
+	margin: -3px 0 1px;
+	color: #b42318;
+	font-size: 12px;
+	line-height: 1.35;
+}
+
+.student-account__field-hint {
+	margin: -3px 0 1px;
+	color: #64748b;
+	font-size: 12px;
+	line-height: 1.35;
+}
+
+.student-account__form input[aria-invalid='true'] {
+	border-color: #d64545;
+	background: #fffafa;
+}
+
+.student-account__form input[aria-invalid='true']:focus {
+	border-color: #d64545;
+	box-shadow: 0 0 0 3px rgb(214 69 69 / 16%);
+}
 
 .student-account__form label {
 	margin-top: 5px;
@@ -336,6 +361,49 @@
 	color: #172b4d;
 	font-size: 14px;
 }
+
+.student-account__form select {
+	width: 100%;
+	min-height: 40px;
+	box-sizing: border-box;
+	border: 1px solid #ccd5e1;
+	border-radius: 999px;
+	background: #fbfcfe;
+	padding: 0 14px;
+	color: #172b4d;
+	font: inherit;
+	font-size: 14px;
+}
+
+.student-account--completion .student-account__form-panel { width: min(100% - 48px, 480px); }
+.student-account--completion .student-account__intro p { max-width: 420px; margin-inline: auto; line-height: 1.55; }
+
+.student-account--completion {
+	grid-template-columns: minmax(0, 1fr);
+	place-items: center;
+	background: #f7f9fc;
+}
+
+.student-account--completion .student-account__form-panel {
+	box-sizing: border-box;
+	width: min(calc(100% - 48px), 520px);
+	margin: 32px auto;
+	padding: 42px 48px 44px;
+	border: 1px solid #e2e8f0;
+	border-radius: 16px;
+	background: #fff;
+}
+
+.student-account--completion .student-account__form-panel .student-onboarding__logo { width: 164px; }
+.student-account--completion .student-account__intro { margin-top: 26px; }
+.student-account--completion .student-account__intro h1 { margin: 0; color: #172b4d; font-size: 28px; line-height: 1.2; letter-spacing: -0.03em; }
+.student-account__completion-summary { display: grid; gap: 4px; margin: 0 0 22px; padding: 14px 16px; border: 1px solid #e1e7f0; border-radius: 12px; background: #f8fafc; color: #62718a; text-align: left; }
+.student-account__completion-summary strong { color: #172b4d; font-size: 14px; }
+.student-account__completion-summary span { overflow-wrap: anywhere; font-size: 13px; }
+.student-account__completion-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.student-account__completion-grid > div { display: grid; gap: 8px; }
+
+.student-account__form label span { color: #718096; font-weight: 400; }
 
 .student-account__form input:focus {
 	border-color: #b988ff;
@@ -358,6 +426,11 @@
 .student-account__password-field:focus-within {
 	border-color: #b988ff;
 	box-shadow: 0 0 0 3px rgb(185 136 255 / 22%);
+}
+
+.student-account__phone-field:has(input[aria-invalid='true']) {
+	border-color: #d64545;
+	background: #fffafa;
 }
 
 .student-account__phone-field > span:first-child { padding-left: 14px; }
@@ -394,6 +467,39 @@
 .student-account__notice.is-visible { color: #218653; }
 .student-account__login { margin: 14px 0 0; color: #303d54; font-size: 14px; text-align: center; }
 .student-account__login a { color: #168dcc; text-decoration: underline; }
+
+.student-password-page { min-height: 100svh; display: grid; place-items: center; padding: 32px 20px; box-sizing: border-box; background: #f7f9fc; color: #172b4d; font-family: 'DM Sans', Arial, sans-serif; }
+.student-password-card { width: min(100%, 440px); box-sizing: border-box; padding: 34px 38px 30px; border: 1px solid #e1e7f0; border-radius: 20px; background: #fff; box-shadow: 0 18px 48px rgb(23 43 77 / 10%); text-align: center; }
+.student-password-card > .student-onboarding__logo-link { display: inline-flex; }
+.student-password-card .student-onboarding__logo { width: 164px; }
+.student-password-card__icon, .student-password-card__success-icon { width: 64px; height: 64px; margin: 28px auto 18px; border-radius: 50%; display: grid; place-items: center; color: #fff; background: #253be6; box-shadow: 0 8px 22px rgb(37 59 230 / 22%); }
+.student-password-card__success-icon { color: #fff; background: #2fa566; box-shadow: 0 8px 22px rgb(47 165 102 / 20%); }
+.student-password-card__intro { margin: 0 0 24px; }
+.student-password-card__eyebrow { display: inline-flex; align-items: center; gap: 5px; color: #218653; font-size: 12px; font-weight: 700; }
+.student-password-card__intro h1 { margin: 10px 0 0; color: #245d97; font-size: 26px; line-height: 1.2; letter-spacing: -0.03em; }
+.student-password-card__intro p { margin: 10px 0 0; color: #62718a; font-size: 14px; line-height: 1.55; }
+.student-password-card__intro strong { color: #172b4d; overflow-wrap: anywhere; }
+.student-password-card__form { display: grid; gap: 8px; text-align: left; }
+.student-password-card__form > label { margin-top: 6px; color: #3b4b64; font-size: 13px; font-weight: 600; }
+.student-password-card__input { min-height: 46px; display: flex; align-items: center; gap: 9px; padding: 0 13px; box-sizing: border-box; border: 1px solid #ccd5e1; border-radius: 12px; background: #fbfcfe; color: #718096; }
+.student-password-card__input:focus-within { border-color: #3498db; box-shadow: 0 0 0 3px rgb(52 152 219 / 18%); }
+.student-password-card__input input { min-width: 0; flex: 1; min-height: 42px; border: 0; outline: 0; background: transparent; color: #172b4d; font: inherit; font-size: 14px; }
+.student-password-card__input button { min-width: 32px; min-height: 32px; padding: 5px; border: 0; background: transparent; color: #718096; cursor: pointer; }
+.student-password-card__rules { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 12px; margin: 3px 0 7px; padding: 0; list-style: none; color: #718096; font-size: 11px; }
+.student-password-card__rules li::before { content: '○'; margin-right: 5px; color: #9aa7b8; }
+.student-password-card__rules li.is-valid { color: #218653; }
+.student-password-card__rules li.is-valid::before { content: '✓'; color: #218653; }
+.student-password-card__match { margin: 0; color: #b42318; font-size: 12px; }
+.student-password-card__match.is-valid { color: #218653; }
+.student-password-card__submit { min-height: 46px; margin-top: 10px; border: 0; border-radius: 12px; background: #253be6; color: #fff; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+.student-password-card__submit:hover { background: #1e31c5; }
+.student-password-card__submit:disabled { cursor: not-allowed; opacity: .55; }
+.student-password-card__note { margin: 18px 0 0; color: #718096; font-size: 12px; line-height: 1.5; }
+.student-password-card.is-success { padding-block: 58px; }
+.student-password-card.is-success h1 { margin: 0; color: #245d97; font-size: 27px; }
+.student-password-card.is-success p { margin: 9px 0 0; color: #62718a; font-size: 14px; }
+
+@media (max-width: 480px) { .student-password-page { padding: 16px; align-items: start; padding-top: 28px; }.student-password-card { padding: 28px 20px 24px; border-radius: 16px; }.student-password-card__rules { grid-template-columns: 1fr; } }
 
 .student-login__intro { margin-bottom: 30px; }
 .student-login__intro h1 { margin: 0; font-size: 24px; line-height: 1.2; letter-spacing: -0.03em; }
@@ -439,4 +545,42 @@
 
 @media (max-width: 480px) {
 	.student-account__form-panel { width: min(100% - 32px, 440px); padding-top: 34px; }
+	.student-account--completion .student-account__form-panel { width: min(100% - 32px, 440px); }
+	.student-account--completion .student-account__form-panel { margin: 16px auto; padding: 32px 20px 28px; }
+	.student-account--completion .student-account__intro h1 { font-size: 24px; }
+	.student-account__completion-grid { grid-template-columns: 1fr; gap: 8px; }
 }
+
+.student-account--verification {
+	min-height: 100svh;
+	grid-template-columns: minmax(0, 1fr);
+	place-items: center;
+	background: #f7f9fc;
+}
+
+.student-account__verification-card {
+	width: min(calc(100% - 32px), 500px);
+	padding: 42px clamp(24px, 5vw, 52px) 38px;
+	border: 1px solid #e2e8f0;
+	border-radius: 16px;
+	background: #fff;
+	text-align: center;
+}
+
+.student-account__verification-card .student-onboarding__logo { width: 164px; }
+.student-account__verification-icon { width: 66px; height: 66px; margin: 28px auto 0; border-radius: 50%; display: grid; place-items: center; color: #168dcc; background: #eef7fc; }
+.student-account__verification-icon.is-failed { color: #b42318; background: #fff0ee; }
+.student-account__verification-icon .is-spinning { animation: verification-spin 1.1s linear infinite; }
+.student-account__verification-card .student-account__intro { margin: 18px 0 24px; }
+.student-account__verification-card .student-account__intro h1 { margin: 0; color: #172b4d; font-size: 28px; line-height: 1.2; letter-spacing: -0.03em; }
+.student-account__verification-card .student-account__intro p { max-width: 380px; margin: 10px auto 0; color: #62718a; font-size: 14px; line-height: 1.55; }
+.student-account__verification-card .student-account__intro strong { color: #172b4d; font-weight: 700; overflow-wrap: anywhere; }
+.student-account__verification-help { display: grid; gap: 7px; margin: 0 0 20px; padding: 16px; border: 1px solid #e1e7f0; border-radius: 12px; background: #f8fafc; color: #62718a; font-size: 13px; line-height: 1.5; text-align: left; }
+.student-account__verification-help strong { color: #172b4d; font-size: 14px; }
+.student-account__verification-help b { color: #168dcc; }
+.student-account__verification-card .student-account__submit { width: 100%; margin-top: 0; }
+.student-account__verification-card .student-account__submit .is-spinning { vertical-align: -3px; margin-right: 6px; animation: verification-spin 1.1s linear infinite; }
+.student-account__verification-back { display: inline-block; margin-top: 18px; color: #168dcc; font-size: 13px; font-weight: 600; text-decoration: underline; }
+@keyframes verification-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .student-account__verification-icon .is-spinning { animation: none; } }
+@media (max-width: 480px) { .student-account__verification-card { padding: 32px 20px 28px; }.student-account__verification-card .student-account__intro h1 { font-size: 24px; } }

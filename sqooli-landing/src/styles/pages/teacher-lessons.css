@@ -34,6 +34,12 @@
 .teacher-lessons-page__meta b { color: #111827; font-weight: 600; }
 .teacher-lessons-page__meta button { position: absolute; right: 0; bottom: -1px; min-height: 31px; padding: 0 13px; border: 1px solid #e0e5ed; border-radius: 999px; background: #fff; color: #40516c; display: inline-flex; align-items: center; gap: 5px; font: inherit; font-size: 11px; cursor: pointer; }
 .teacher-lessons-page__empty { padding: 42px 0; color: #657189; text-align: center; }
+.teacher-lessons-page__state { margin: 24px 0; padding: 28px; border: 1px solid #dfe7ef; border-radius: 16px; background: #fff; color: #657189; text-align: center; }
+.teacher-lessons-page__state strong, .teacher-lessons-page__state span { display: block; }
+.teacher-lessons-page__state strong { color: #202631; font-size: 16px; }
+.teacher-lessons-page__state span { margin-top: 7px; font-size: 13px; }
+.teacher-lessons-page__state button { margin-top: 16px; min-height: 38px; padding: 0 17px; border: 0; border-radius: 999px; background: #3498db; color: #fff; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.teacher-lessons-page__state.is-error { border-color: #f1c7c3; background: #fffafa; }
 .teacher-lessons-page__add-wrap { position: relative; }
 .teacher-lessons-page__menu { position: absolute; z-index: 8; min-width: 150px; padding: 7px; border: 1px solid #e3e7ee; border-radius: 9px; background: #fff; box-shadow: 0 14px 28px rgb(15 23 42 / 15%); }
 .teacher-lessons-page__menu button { width: 100%; min-height: 34px; padding: 0 9px; border: 0; border-radius: 6px; background: transparent; color: #263650; display: flex; align-items: center; gap: 8px; text-align: left; font: inherit; font-size: 12px; cursor: pointer; }

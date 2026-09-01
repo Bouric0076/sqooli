@@ -1,0 +1,21 @@
+.sqooli-toast {
+	width: min(380px, calc(100vw - 32px));
+	min-height: 68px;
+	padding: 14px 42px 14px 16px;
+	border: 1px solid #dfe6ee;
+	border-radius: 12px;
+	background: #fff;
+	color: #172b4d;
+	box-shadow: 0 12px 32px rgb(23 43 77 / 16%);
+	font-family: 'DM Sans', Arial, sans-serif;
+}
+
+.sqooli-toast[data-type='error'] { border-color: #e7a4a4; }
+.sqooli-toast[data-type='success'] { border-color: #94cbb0; }
+.sqooli-toast__title { font-size: 14px; font-weight: 700; line-height: 1.35; }
+.sqooli-toast__description { margin-top: 3px; color: #62718a; font-size: 13px; line-height: 1.45; }
+.sqooli-toast__close { top: 12px; right: 12px; color: #62718a; }
+
+@media (max-width: 560px) {
+	.sqooli-toast { margin-inline: 8px; }
+}

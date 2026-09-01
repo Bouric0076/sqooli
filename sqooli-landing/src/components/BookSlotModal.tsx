@@ -2,6 +2,8 @@ import { ArrowLeft, Calendar, Check, ChevronRight, CreditCard, X } from 'lucide-
 import { useState } from 'react'
 import doneArt from '../assets/images/student-flow/Done.svg'
 import '../styles/pages/search.css'
+import { useMutation } from '@tanstack/react-query'
+import { bookLesson } from '../api/lessons'
 
 interface BookSlotModalProps {
 	isOpen: boolean
@@ -9,11 +11,12 @@ interface BookSlotModalProps {
 	courseTitle?: string
 	tutorName?: string
 	price?: string
+	lessonId?: number | string
 }
 
 type BookingType = 'package' | 'customized' | 'single'
 
-export default function BookSlotModal({ isOpen, onClose, courseTitle = 'The Ultimate Math Camp Kenya April 2026', tutorName = 'Lucy Atieno', price = 'KES 12,000.00' }: BookSlotModalProps) {
+export default function BookSlotModal({ isOpen, onClose, courseTitle = 'The Ultimate Math Camp Kenya April 2026', tutorName = 'Lucy Atieno', price = 'KES 12,000.00', lessonId }: BookSlotModalProps) {
 	const [step, setStep] = useState<1 | 2 | 3>(1)
 	const [program, setProgram] = useState(courseTitle)
 	const [bookingType, setBookingType] = useState<BookingType>('package')
@@ -22,6 +25,7 @@ export default function BookSlotModal({ isOpen, onClose, courseTitle = 'The Ulti
 	const [paymentMethod, setPaymentMethod] = useState<'mpesa' | 'airtel'>('mpesa')
 	const [paymentState, setPaymentState] = useState<'form' | 'loading' | 'success'>('form')
 	const [error, setError] = useState('')
+	const booking = useMutation({ mutationFn: bookLesson })
 
 	if (!isOpen) return null
 
@@ -44,9 +48,10 @@ export default function BookSlotModal({ isOpen, onClose, courseTitle = 'The Ulti
 			setError(`Enter a valid ${paymentMethod === 'mpesa' ? 'M-PESA' : 'Airtel Money'} number.`)
 			return
 		}
+		if (lessonId === undefined) { setError('This lesson cannot be booked until its lesson ID is available.'); return }
 		setError('')
 		setPaymentState('loading')
-		window.setTimeout(() => setPaymentState('success'), 900)
+		booking.mutate({ lessonId, paymentMethod, email: undefined }, { onSuccess: () => setPaymentState('success'), onError: reason => { setPaymentState('form'); setError(reason instanceof Error ? reason.message : 'Booking could not be initiated.') } })
 	}
 
 	return <div className="booking-flow-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) close() }}>
@@ -58,7 +63,7 @@ export default function BookSlotModal({ isOpen, onClose, courseTitle = 'The Ulti
 					{step === 1 && <BookingInformation program={program} setProgram={setProgram} bookingType={bookingType} setBookingType={setBookingType} startDate={startDate} setStartDate={setStartDate} error={error} onContinue={continueToPreview} />}
 					{step === 2 && <BookingPreview program={program} bookingType={bookingType} startDate={startDate} onBack={() => setStep(1)} onContinue={() => setStep(3)} />}
 					{step === 3 && paymentState === 'form' && <BookingPayment price={price} tutorName={tutorName} paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod} phone={phone} setPhone={setPhone} error={error} onBack={() => setStep(2)} onPay={sendStk} />}
-					{step === 3 && paymentState === 'loading' && <div className="booking-flow-loading" role="status" aria-label="Processing payment"><span /></div>}
+					{step === 3 && paymentState === 'loading' && <div className="booking-flow-loading" role="status" aria-label="Processing payment"><div className="booking-flow-loading__card"><span className="booking-flow-loading__spinner" /><p>Processing your payment…</p></div></div>}
 					{step === 3 && paymentState === 'success' && <div className="booking-flow-success"><img src={doneArt} alt="" /><h2>Booking Payment Initiated</h2><p>Check your phone to complete payment for {tutorName}.</p><button type="button" className="btn-sidebar-apply" onClick={close}>Okay</button></div>}
 				</main>
 			</div>

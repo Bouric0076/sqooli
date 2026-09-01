@@ -1,12 +1,12 @@
-.student-dashboard--complete { overflow-x: auto; }
+.student-dashboard--complete { width: 100%; max-width: 100vw; overflow-x: hidden; }
 .student-dashboard--complete .student-dashboard__sidebar { width: 230px; }
 .student-dashboard--complete .student-dashboard__header { left: 230px; }
-.student-dashboard--complete .student-dashboard__main { min-width: 1176px; margin-left: 230px; padding: 88px 40px 88px 42px; box-sizing: border-box; }
-.student-complete-page { width: 1136px; margin: 0; padding-bottom: 24px; display: grid; grid-template-columns: 850px 268px; gap: 18px; color: #29384f; }
+.student-dashboard--complete .student-dashboard__main { width: auto; max-width: calc(100vw - 230px); min-width: 0; margin-left: 230px; padding: 88px clamp(24px, 3vw, 40px) 88px; box-sizing: border-box; overflow-x: clip; }
+.student-complete-page { width: 100%; max-width: 1136px; margin: 0 auto; padding-bottom: 24px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 268px); gap: 18px; color: #29384f; }
 .student-complete-page__content { min-width: 0; }
 .student-complete-page h1 { margin: 0 0 15px; color: #202631; font-size: 24px; letter-spacing: -0.03em; }
 .student-complete-page h2 { margin: 0 0 9px; color: #40546e; font-size: 16px; }
-.student-complete-page__balance { min-height: 130px; overflow: hidden; border-radius: 12px; background: #e2f1fd; display: grid; grid-template-columns: 299px 1fr; }
+.student-complete-page__balance { min-height: 130px; overflow: hidden; border-radius: 12px; background: #e2f1fd; display: grid; grid-template-columns: minmax(220px, 299px) minmax(0, 1fr); }
 .student-complete-page__balance-card { padding: 17px 14px; position: relative; background: #5b87e5; color: #fff; display: grid; grid-template-columns: 1fr auto; gap: 5px; }
 .student-complete-page__balance-card::after { content: ''; position: absolute; right: -12px; bottom: -38px; width: 100px; height: 100px; border-radius: 50%; background: #9ec8ed; box-shadow: -51px 12px 0 5px #82b5e7; }
 .student-complete-page__balance-card span, .student-complete-page__balance-card b, .student-complete-page__balance-card strong { position: relative; z-index: 1; }
@@ -45,7 +45,7 @@
 .student-complete-page__activity small { display: inline; margin-left: 8px; color: #53647c; font-weight: 400; }
 .student-complete-page__activity p { margin: 8px 0 0; color: #40546e; font-size: 12px; }
 .student-complete-page__rail { padding-left: 15px; border-left: 1px solid #e0e6ed; }
-.student-complete-page__rail > h2 { color: #40546e; font-size: 13px; }
+.student-complete-page__rail > h2 { margin: 0 0 9px; color: #40546e; font-size: 13px; line-height: 1.2; }
 .student-complete-page__corner { overflow: hidden; position: relative; border: 1px solid #e0e6ed; border-radius: 11px; background: #fff; }
 .student-complete-page__corner-art { height: 44px; background: #f8a31a; }
 .student-complete-page__corner > div:not(.student-complete-page__corner-art) { min-height: 80px; padding: 12px 10px 8px 45px; position: relative; }
@@ -54,8 +54,11 @@
 .student-complete-page__corner strong { color: #202631; font-size: 12px; }
 .student-complete-page__corner small { margin-top: 4px; color: #40546e; font-size: 10px; }
 .student-complete-page__corner b { width: fit-content; margin-top: 6px; padding: 3px 6px; border-radius: 999px; background: #e04444; color: #fff; font-size: 8px; font-weight: 600; }
-.student-complete-page__corner > button { position: absolute; top: 57px; right: 9px; padding: 3px 6px; border: 0; border-radius: 5px; background: #f2f4f7; color: #40546e; font: inherit; font-size: 8px; cursor: pointer; }
-.student-complete-page__rail-section { margin-top: 15px; padding-bottom: 14px; border-bottom: 1px solid #e0e6ed; }
+.student-complete-page__corner > a { display: block; margin: 0 10px 11px; padding: 7px 10px; border: 1px solid #d7e1eb; border-radius: 999px; background: #fff; color: #168dcc; text-align: center; font: inherit; font-size: 10px; font-weight: 600; text-decoration: none; }
+.student-complete-page__corner > a:hover, .student-complete-page__corner > a:focus-visible { border-color: #3498db; background: #edf7fe; outline: 0; }
+.student-complete-page__assignment-link { min-width: 0; padding: 14px; border: 1px solid #d9e5ef; border-radius: 9px; background: #fff; color: #202631; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 12px; text-decoration: none; }
+.student-complete-page__assignment-link span { flex: 0 0 auto; color: #168dcc; font-size: 11px; }
+.student-complete-page__rail-section { margin-top: 24px; padding-bottom: 20px; border-bottom: 1px solid #e0e6ed; }
 .student-complete-page__rail-section header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 9px; color: #40546e; font-size: 11px; }
 .student-complete-page__rail-section header span { display: inline-flex; align-items: center; gap: 3px; }
 .student-complete-page__rail-section header a { color: #168dcc; font-size: 10px; text-decoration: none; }
@@ -67,6 +70,8 @@
 .student-complete-page__timetable.is-0 { background: #f0edff; }.student-complete-page__timetable.is-1 { background: #fff5cf; }.student-complete-page__timetable.is-2 { background: #eaf8fc; }
 .student-complete-page__timetable b { font-size: 10px; font-weight: 500; }.student-complete-page__timetable span, .student-complete-page__timetable small { display: block; }.student-complete-page__timetable small { margin-bottom: 3px; font-size: 8px; }
 .student-complete-page__report { min-height: 59px; padding: 12px 9px; box-sizing: border-box; position: relative; border-radius: 8px; background: #fafbfd; }.student-complete-page__report b, .student-complete-page__report small { display: block; }.student-complete-page__report b { color: #202631; font-size: 11px; }.student-complete-page__report small { margin-top: 8px; color: #53647c; font-size: 8px; }.student-complete-page__report svg { position: absolute; right: 10px; top: 13px; color: #53647c; }
+.student-complete-page__empty-rail { padding: 12px 10px; border-radius: 8px; background: #fafbfd; color: #53647c; font-size: 10px; line-height: 1.45; }
+.student-complete-page__data-empty { min-height: 96px; padding: 22px; box-sizing: border-box; border: 1px dashed #d8e2eb; border-radius: 10px; background: #fbfdff; color: #53647c; display: grid; place-items: center; text-align: center; font-size: 12px; line-height: 1.5; }
 @media (max-width: 1050px) { .student-dashboard--complete .student-dashboard__main { min-width: 0; width: auto; }.student-complete-page { width: 100%; grid-template-columns: minmax(0, 1fr); }.student-complete-page__rail { padding: 0; border-left: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 15px; }.student-complete-page__rail > h2 { grid-column: 1 / -1; margin-bottom: -4px; } }
 @media (max-width: 900px) { .student-dashboard--complete .student-dashboard__header { left: 0; }.student-dashboard--complete .student-dashboard__main { margin-left: 0; padding: 110px clamp(20px, 4vw, 40px) 56px; } }
 @media (max-width: 680px) {
@@ -80,7 +85,7 @@
         margin-left: 0;
         padding: 105px 20px 64px;
         box-sizing: border-box;
-        overflow-x: hidden;
+        overflow-x: clip;
     }
     .student-complete-page,
     .student-complete-page__content,
@@ -103,9 +108,10 @@
     .student-complete-page__withdrawal { padding: 16px; overflow-wrap: anywhere; }
     .student-complete-page__withdrawal span { white-space: normal; }
     .student-complete-page__assignment-list { grid-template-columns: minmax(0, 1fr); }
+    .student-complete-page__assignment-link { overflow-wrap: anywhere; }
     .student-complete-page__assignment { min-width: 0; }
-    .student-complete-page__rail { display: block; margin-top: 24px; }
-    .student-complete-page__rail-section { margin-top: 18px; }
+    .student-complete-page__rail { display: block; margin-top: 24px; padding: 0; border-left: 0; }
+    .student-complete-page__rail-section { margin-top: 24px; padding-bottom: 20px; }
 }
 
 @media (max-width: 430px) {

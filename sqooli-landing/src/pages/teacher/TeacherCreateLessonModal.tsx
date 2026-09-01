@@ -1,19 +1,25 @@
 import { ArrowLeft, ArrowRight, BookOpen, Check, ChevronRight, Edit3, Plus, Trash2, X } from 'lucide-react'
+import { useMutation } from '@tanstack/react-query'
 import { useState, type ReactNode } from 'react'
 import '../../styles/pages/teacher-create-lesson.css'
+import { createLesson } from '../../api/lessons'
+import { useTeacherLessonCatalogs } from '../../features/teacher/teacher.queries'
 
 type Props = { onClose: () => void; onSubmitted?: () => void }
 type Step = 1 | 2 | 3 | 4 | 5 | 6
 type Lecture = { title: string; description: string; items: string[] }
 type Section = { title: string; lectures: Lecture[] }
+type Option = { value: string; label: string }
 
 const stepLabels = ['Basic Information', 'Learning Objectives', 'Lesson Requirements', 'Lesson Content', 'Pricing', 'Preview']
-const topics = ['Programming', 'Development', 'Business', 'Science', 'History', 'Social Studies', 'Christian Religious Education', 'Physics', 'Geography']
 
 export default function TeacherCreateLessonModal({ onClose, onSubmitted }: Props) {
 	const [step, setStep] = useState<Step>(1)
 	const [title, setTitle] = useState('')
 	const [type, setType] = useState('')
+	const [program, setProgram] = useState('')
+	const [educationLevel, setEducationLevel] = useState('')
+	const [gradeLevel, setGradeLevel] = useState('')
 	const [description, setDescription] = useState('')
 	const [subProgram, setSubProgram] = useState('')
 	const [subject, setSubject] = useState('')
@@ -21,17 +27,35 @@ export default function TeacherCreateLessonModal({ onClose, onSubmitted }: Props
 	const [time, setTime] = useState('')
 	const [duration, setDuration] = useState('0')
 	const [repeat, setRepeat] = useState('')
-	const [selectedTopics, setSelectedTopics] = useState(['Social Studies'])
+	const [selectedTopics, setSelectedTopics] = useState<string[]>([])
 	const [objectives, setObjectives] = useState(['', ''])
 	const [requirements, setRequirements] = useState('')
 	const [sections, setSections] = useState<Section[]>([{ title: 'Section 1', lectures: [] }])
 	const [price, setPrice] = useState('0')
 	const [revenueRows, setRevenueRows] = useState<string[]>([])
 	const [revenueOpen, setRevenueOpen] = useState(false)
+	const [submitError, setSubmitError] = useState('')
+	const catalogs = useTeacherLessonCatalogs()
+	const submitLesson = useMutation({ mutationFn: () => {
+		const selectedProgram = catalogs.programs.find(item => String(item.id) === program)
+		const selectedSubject = catalogs.subjects.find(item => String(item.id) === subject)
+		const selectedTopic = catalogs.topics.find(item => String(item.id) === selectedTopics[0])
+		const selectedSubProgram = catalogs.programs.find(item => String(item.id) === program)?.subPrograms?.find(item => String(item.id) === subProgram)
+		const selectedGrade = catalogs.gradeLevels.find(item => String(item.id) === gradeLevel)
+		const selectedEducation = catalogs.educationLevels.find(item => String(item.id) === educationLevel)
+		const start = parseLessonDate(date, time)
+		const end = new Date(start.getTime() + Math.max(Number(duration), 1) * 60000)
+		return createLesson({ lessonTypeId: type, curriculumId: selectedProgram?.curriculumId ?? selectedSubject?.curriculumId ?? selectedTopic?.curriculumId ?? '', subjectId: subject, gradeLevelId: gradeLevel || selectedSubject?.gradeLevelId || selectedTopic?.gradeLevelId || selectedGrade?.id || '', educationLevelId: educationLevel || selectedSubject?.educationLevelId || selectedTopic?.educationLevelId || selectedEducation?.id || '', topicId: selectedTopics[0] || '', programId: program, subProgramId: selectedSubProgram?.id ?? subProgram, name: title.trim(), description: description.trim(), date, start: formatLessonTime(start), end: formatLessonTime(end) })
+	} })
 
 	const toggleTopic = (topic: string) => setSelectedTopics((items) => items.includes(topic) ? items.filter((item) => item !== topic) : items.length < 5 ? [...items, topic] : items)
-	const next = () => {
-		if (step === 6) { window.sessionStorage.setItem('sqooli-teacher-lesson-created', 'true'); onSubmitted?.(); onClose(); return }
+	const next = async () => {
+		if (step === 6) {
+			setSubmitError('')
+			if (!title.trim() || !type || !program || !subProgram || !subject || !selectedTopics[0] || (!gradeLevel && !catalogs.subjects.find(item => String(item.id) === subject)?.gradeLevelId) || (!educationLevel && !catalogs.subjects.find(item => String(item.id) === subject)?.educationLevelId) || !date || !time || Number(duration) < 1) { setSubmitError('Complete the required lesson details before submitting.'); return }
+			try { await submitLesson.mutateAsync(); window.sessionStorage.setItem('sqooli-teacher-lesson-created', 'true'); onSubmitted?.(); onClose() } catch (error) { setSubmitError(error instanceof Error ? error.message : 'We could not create this lesson. Please try again.') }
+			return
+		}
 		setStep((value) => (value + 1) as Step)
 	}
 	const updateSection = (sectionIndex: number, update: Partial<Section>) => setSections((items) => items.map((item, index) => index === sectionIndex ? { ...item, ...update } : item))
@@ -47,13 +71,14 @@ export default function TeacherCreateLessonModal({ onClose, onSubmitted }: Props
 			<div className="teacher-create-lesson__body">
 				<nav className="teacher-create-lesson__steps" aria-label="Create lesson steps">{stepLabels.map((label, index) => { const number = (index + 1) as Step; return <button type="button" key={label} className={`${step === number ? 'is-active' : ''}${number < step ? ' is-complete' : ''}`} onClick={() => number <= step && setStep(number)}><span>Step {number}/6 {number < step && <Check size={14} />}</span><strong>{label}</strong></button> })}</nav>
 				<main className="teacher-create-lesson__content">
-					{step === 1 && <BasicInformation {...{ title, setTitle, type, setType, description, setDescription, subProgram, setSubProgram, subject, setSubject, date, setDate, time, setTime, duration, setDuration, repeat, setRepeat, selectedTopics, toggleTopic }} />}
+					{step === 1 && <BasicInformation {...{ title, setTitle, type, setType, program, setProgram, educationLevel, setEducationLevel, gradeLevel, setGradeLevel, description, setDescription, subProgram, setSubProgram, subject, setSubject, date, setDate, time, setTime, duration, setDuration, repeat, setRepeat, selectedTopics, toggleTopic }} catalogs={catalogs} />}
 					{step === 2 && <Objectives objectives={objectives} setObjectives={setObjectives} />}
 					{step === 3 && <RichText title="Lesson Requirements" subtitle="Add summary of what students require before taking your lesson" value={requirements} setValue={setRequirements} />}
 					{step === 4 && <LessonContent sections={sections} updateSection={updateSection} addSection={addSection} addLecture={addLecture} updateLecture={updateLecture} removeLecture={removeLecture} addContent={addContent} />}
 					{step === 5 && <Pricing price={price} setPrice={setPrice} revenueRows={revenueRows} onRevenue={() => setRevenueOpen(true)} onRemoveRevenue={(index) => setRevenueRows((items) => items.filter((_, itemIndex) => itemIndex !== index))} />}
 					{step === 6 && <Preview title={title || 'Untitled Lesson'} description={description} price={price} sections={sections} objectives={objectives} />}
-					<div className="teacher-create-lesson__actions"><button type="button" className="teacher-create-lesson__back" onClick={() => step === 1 ? onClose() : setStep((value) => (value - 1) as Step)}><ArrowLeft size={17} /> Back</button><button type="button" className="teacher-create-lesson__continue" onClick={next}>{step === 5 ? 'Save & Continue' : step === 6 ? 'Submit Lesson' : 'Save & Continue'} <ArrowRight size={17} /></button></div>
+					{submitError && <p className="teacher-create-lesson__error" role="alert">{submitError}</p>}
+					<div className="teacher-create-lesson__actions"><button type="button" className="teacher-create-lesson__back" onClick={() => step === 1 ? onClose() : setStep((value) => (value - 1) as Step)}><ArrowLeft size={17} /> Back</button><button type="button" className="teacher-create-lesson__continue" onClick={next} disabled={submitLesson.isPending}>{submitLesson.isPending ? 'Submitting…' : step === 5 ? 'Save & Continue' : step === 6 ? 'Submit Lesson' : 'Save & Continue'} <ArrowRight size={17} /></button></div>
 				</main>
 			</div>
 			{revenueOpen && <RevenueShareModal onClose={() => setRevenueOpen(false)} onSave={() => { setRevenueRows((items) => [...items, '24 Jan 2025 11.00 AM']); setRevenueOpen(false) }} />}
@@ -61,8 +86,13 @@ export default function TeacherCreateLessonModal({ onClose, onSubmitted }: Props
 	</div>
 }
 
-type BasicInformationProps = { title: string; setTitle: (value: string) => void; type: string; setType: (value: string) => void; description: string; setDescription: (value: string) => void; subProgram: string; setSubProgram: (value: string) => void; subject: string; setSubject: (value: string) => void; date: string; setDate: (value: string) => void; time: string; setTime: (value: string) => void; duration: string; setDuration: (value: string) => void; repeat: string; setRepeat: (value: string) => void; selectedTopics: string[]; toggleTopic: (topic: string) => void }
-function BasicInformation({ title, setTitle, type, setType, description, setDescription, subProgram, setSubProgram, subject, setSubject, date, setDate, time, setTime, duration, setDuration, repeat, setRepeat, selectedTopics, toggleTopic }: BasicInformationProps) { return <StepPanel title="Basic Information" subtitle="Add basic information about your lesson"><div className="teacher-create-lesson__form-grid"><Field label="Lesson Title" value={title} onChange={setTitle} /><SelectField label="Lesson Type" value={type} onChange={setType} options={['Lecture', 'Workshop', 'Tutoring']} /></div><RichEditor label="Lesson Description" value={description} onChange={setDescription} /><SelectField label="Program" value="CBC First Term 2026 Grade 6" options={[]} /><div className="teacher-create-lesson__program"><strong>CBC First Term 2026 Grade 6<small>Date Created: 11 Jan 2025</small></strong><span>Curriculum<br /><b>CBC</b></span><span>Grade<br /><b>Grade 6</b></span><span>Sub-programs<br /><b>4</b></span></div><div className="teacher-create-lesson__form-grid"><SelectField label="Sub-Program" value={subProgram} onChange={setSubProgram} options={['Select...', 'Term 1', 'Term 2']} /><SelectField label="Subject" value={subject} onChange={setSubject} options={['Select...', 'Mathematics', 'Science', 'Social Studies']} /></div><div className="teacher-create-lesson__topics"><strong>Related Topics</strong><small>Choose 5 related topics to your lesson title</small><div>{topics.map((topic) => <button type="button" className={selectedTopics.includes(topic) ? 'is-selected' : ''} onClick={() => toggleTopic(topic)} key={topic}><Plus size={13} /> {topic}{selectedTopics.includes(topic) && topic === 'Social Studies' && <X size={12} />}</button>)}</div></div><div className="teacher-create-lesson__timing"><strong>Lesson Timing</strong><small>Select start date and time for your lesson</small><div className="teacher-create-lesson__form-grid teacher-create-lesson__form-grid--three"><Field label="Start Date" type="date" value={date} onChange={setDate} /><SelectField label="Lesson Time" value={time} onChange={setTime} options={['Select...', '08:00 AM', '11:00 AM', '02:00 PM']} /><Field label="Duration" value={duration} onChange={(value: string) => setDuration(value.replace(/\D/g, ''))} suffix="Minutes" /></div><SelectField label="Repeat" value={repeat} onChange={setRepeat} options={['Select...', 'Does not repeat', 'Weekly', 'Monthly']} /></div></StepPanel> }
+type BasicInformationProps = { title: string; setTitle: (value: string) => void; type: string; setType: (value: string) => void; program: string; setProgram: (value: string) => void; educationLevel: string; setEducationLevel: (value: string) => void; gradeLevel: string; setGradeLevel: (value: string) => void; description: string; setDescription: (value: string) => void; subProgram: string; setSubProgram: (value: string) => void; subject: string; setSubject: (value: string) => void; date: string; setDate: (value: string) => void; time: string; setTime: (value: string) => void; duration: string; setDuration: (value: string) => void; repeat: string; setRepeat: (value: string) => void; selectedTopics: string[]; toggleTopic: (topic: string) => void }
+function BasicInformation({ title, setTitle, type, setType, program, setProgram, educationLevel, setEducationLevel, gradeLevel, setGradeLevel, description, setDescription, subProgram, setSubProgram, subject, setSubject, date, setDate, time, setTime, duration, setDuration, repeat, setRepeat, selectedTopics, toggleTopic, catalogs }: BasicInformationProps & { catalogs: ReturnType<typeof useTeacherLessonCatalogs> }) {
+	const options = (items: { id?: number | string; name: string; programName?: string }[]): Option[] => items.filter(item => item.id !== undefined).map(item => ({ value: String(item.id), label: item.programName || item.name }))
+	const topicOptions = catalogs.topics.filter(item => item.id !== undefined)
+	const selectedProgram = catalogs.programs.find(item => String(item.id) === program)
+	const subProgramOptions = selectedProgram?.subPrograms?.filter(item => item.id !== undefined).map(item => ({ value: String(item.id), label: item.name || 'Sub-programme' })) || []
+	return <StepPanel title="Basic Information" subtitle="Add basic information about your lesson"><div className="teacher-create-lesson__form-grid"><Field label="Lesson Title" value={title} onChange={setTitle} /><SelectField label="Lesson Type" value={type} onChange={setType} options={options(catalogs.lessonTypes)} /></div><RichEditor label="Lesson Description" value={description} onChange={setDescription} /><SelectField label="Program" value={program} onChange={(value) => { setProgram(value); setSubProgram('') }} options={options(catalogs.programs)} /><div className="teacher-create-lesson__program"><strong>{selectedProgram?.programName || selectedProgram?.name || 'Select a programme'}<small>{catalogs.isLoading ? 'Loading catalogue…' : 'Selected from the Sqooli catalogue'}</small></strong><span>Curriculum<br /><b>{selectedProgram?.curriculum?.name || '—'}</b></span><span>Grade<br /><b>{catalogs.gradeLevels.find(item => String(item.id) === gradeLevel)?.name || '—'}</b></span><span>Sub-programs<br /><b>{selectedProgram?.subPrograms?.length ?? 0}</b></span></div><div className="teacher-create-lesson__form-grid"><SelectField label="Education Level" value={educationLevel} onChange={setEducationLevel} options={options(catalogs.educationLevels)} /><SelectField label="Grade Level" value={gradeLevel} onChange={setGradeLevel} options={options(catalogs.gradeLevels)} /><SelectField label="Sub-Program" value={subProgram} onChange={setSubProgram} options={subProgramOptions} /><SelectField label="Subject" value={subject} onChange={setSubject} options={options(catalogs.subjects)} /></div><div className="teacher-create-lesson__topics"><strong>Related Topics</strong><small>Choose up to 5 topics from the Sqooli catalogue</small><div>{topicOptions.map((topic) => <button type="button" className={selectedTopics.includes(String(topic.id)) ? 'is-selected' : ''} onClick={() => toggleTopic(String(topic.id))} key={String(topic.id)}><Plus size={13} /> {topic.name}{selectedTopics.includes(String(topic.id)) && <X size={12} />}</button>)}</div></div><div className="teacher-create-lesson__timing"><strong>Lesson Timing</strong><small>Select start date and time for your lesson</small><div className="teacher-create-lesson__form-grid teacher-create-lesson__form-grid--three"><Field label="Start Date" type="date" value={date} onChange={setDate} /><SelectField label="Lesson Time" value={time} onChange={setTime} options={['Select...', '08:00 AM', '11:00 AM', '02:00 PM']} /><Field label="Duration" value={duration} onChange={(value: string) => setDuration(value.replace(/\D/g, ''))} suffix="Minutes" /></div><SelectField label="Repeat" value={repeat} onChange={setRepeat} options={['Select...', 'Does not repeat', 'Weekly', 'Monthly']} /></div></StepPanel> }
 
 function Objectives({ objectives, setObjectives }: { objectives: string[]; setObjectives: (items: string[]) => void }) { return <StepPanel title="Learning Objectives" subtitle="Add summary of what your students can expect to learn"><div className="teacher-create-lesson__objectives">{objectives.map((objective, index) => <label key={index}><input maxLength={60} value={objective} onChange={(event) => setObjectives(objectives.map((item, itemIndex) => itemIndex === index ? event.target.value : item))} placeholder="Enter Learning Objective" /><span>{60 - objective.length} characters <button type="button" aria-label="Delete objective" onClick={() => setObjectives(objectives.length > 1 ? objectives.filter((_, itemIndex) => itemIndex !== index) : [''])}><Trash2 size={15} /></button></span></label>)}</div><button type="button" className="teacher-create-lesson__outline-button" onClick={() => setObjectives([...objectives, ''])}><Plus size={15} /> Add Objective</button></StepPanel> }
 
@@ -77,5 +107,14 @@ function Pricing({ price, setPrice, revenueRows, onRevenue, onRemoveRevenue }: {
 function Preview({ title, description, price, sections, objectives }: { title: string; description: string; price: string; sections: Section[]; objectives: string[] }) { return <StepPanel title="Preview" subtitle="Review your lesson before submitting"><div className="teacher-create-lesson__preview"><h2>{title}</h2><p>{description || 'No lesson description added yet.'}</p><hr /><strong>What students will learn</strong><ul>{objectives.filter(Boolean).map((objective) => <li key={objective}>{objective}</li>)}</ul><strong>Lesson Details</strong><dl><dt>Content sections</dt><dd>{sections.length}</dd><dt>Price per Lesson</dt><dd>KES {price || '0'}</dd><dt>Status</dt><dd>Ready to submit</dd></dl></div></StepPanel> }
 function StepPanel({ title, subtitle, children }: { title: string; subtitle: string; children: ReactNode }) { return <section className="teacher-create-lesson__panel"><h1>{title}</h1><p>{subtitle}</p>{children}</section> }
 function Field({ label, value, onChange, placeholder, suffix, type = 'text' }: { label: string; value: string; onChange: (value: string) => void; placeholder?: string; suffix?: string; type?: string }) { return <label className="teacher-create-lesson__label">{label}<span className="teacher-create-lesson__input"><input type={type} value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} />{suffix && <em>{suffix}</em>}</span></label> }
-function SelectField({ label, value, onChange, options }: { label: string; value: string; onChange?: (value: string) => void; options: string[] }) { return <label className="teacher-create-lesson__label">{label}<span className="teacher-create-lesson__select"><select value={value} onChange={(event) => onChange?.(event.target.value)} disabled={!onChange}>{options.length === 0 ? <option>{value}</option> : options.map((option) => <option key={option} value={option}>{option}</option>)}</select></span></label> }
+function SelectField({ label, value, onChange, options }: { label: string; value: string; onChange?: (value: string) => void; options: (string | Option)[] }) { return <label className="teacher-create-lesson__label">{label}<span className="teacher-create-lesson__select"><select value={value} onChange={(event) => onChange?.(event.target.value)} disabled={!onChange}>{options.length === 0 ? <option value="">No options available</option> : options.map((option) => typeof option === 'string' ? <option key={option} value={option}>{option}</option> : <option key={option.value} value={option.value}>{option.label}</option>)}</select></span></label> }
+function parseLessonDate(date: string, time: string) {
+	const [hours, minutes] = time.match(/\d+/g)?.map(Number) || [0, 0]
+	const adjustedHours = time.includes('PM') && hours < 12 ? hours + 12 : time.includes('AM') && hours === 12 ? 0 : hours
+	return new Date(`${date}T${String(adjustedHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`)
+}
+
+function formatLessonTime(value: Date) {
+	return `${String(value.getHours()).padStart(2, '0')}:${String(value.getMinutes()).padStart(2, '0')}`
+}
 function RevenueShareModal({ onClose, onSave }: { onClose: () => void; onSave: () => void }) { return <div className="teacher-create-lesson__revenue-backdrop"><section className="teacher-create-lesson__revenue-modal" role="dialog" aria-modal="true" aria-labelledby="revenue-title"><header><h2 id="revenue-title">Add Revenue Shares</h2><button type="button" onClick={onClose}><X size={20} /></button></header><SelectField label="Select User" value="Type to search" options={['Type to search', 'John Doe', 'Jane Doe']} onChange={() => undefined} /><fieldset><legend>Commission Type</legend>{['Fixed Value', 'Fixed Percentage', 'Tiered Value', 'Tiered Percentage'].map((type, index) => <label key={type}><input type="radio" name="commission" defaultChecked={index === 0} /> {type}</label>)}</fieldset><Field label="Enter Value" value="0" onChange={() => undefined} /><button type="button" className="teacher-create-lesson__continue" onClick={onSave}>Save</button></section></div> }

@@ -1,13 +1,28 @@
 import { Ban, ClipboardCheck, EllipsisVertical, Eye, FileQuestion, FileText, Filter, FolderOpen, Megaphone, Pencil, Plus, School, Search, X } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import TeacherDashboardLayout from './TeacherDashboardLayout'
 import TeacherCreateLessonModal from './TeacherCreateLessonModal'
 import TeacherLessonWorkspace from './TeacherLessonWorkspace'
 import TeacherStudentViewModal from './TeacherStudentViewModal'
 import banner from '../../assets/images/programs/teachers-change-world.webp'
 import '../../styles/pages/teacher-lessons.css'
+import { useTeacherLessons } from '../../features/teacher/teacher.queries'
 
-const lessons = Array.from({ length: 6 }, (_, index) => ({ id: index + 1, title: 'The Ultimate Math Camp Kenya April 2026', created: '12 Jan 2025', updated: '2 min ago' }))
+type TeacherLesson = { id?: number | string; name?: string; description?: string; created_at?: string; createdAt?: string; updatedAt?: string }
+
+function extractLessons(payload: unknown): TeacherLesson[] {
+	if (Array.isArray(payload)) return payload as TeacherLesson[]
+	if (!payload || typeof payload !== 'object') return []
+	const record = payload as Record<string, unknown>
+	for (const key of ['data', 'items', 'results', 'lessons']) {
+		if (Array.isArray(record[key])) return record[key] as TeacherLesson[]
+		if (record[key] && typeof record[key] === 'object') {
+			const nested = extractLessons(record[key])
+			if (nested.length) return nested
+		}
+	}
+	return []
+}
 
 export default function TeacherLessonsPage() {
     const [query, setQuery] = useState('')
@@ -18,7 +33,8 @@ export default function TeacherLessonsPage() {
     const [actionsFor, setActionsFor] = useState<number | null>(null)
     const [deactivateFor, setDeactivateFor] = useState<number | null>(null)
     const [editOpen, setEditOpen] = useState(false)
-    const visibleLessons = lessons.filter(lesson => lesson.title.toLowerCase().includes(query.toLowerCase()))
+    const { data, isLoading, isError, refetch } = useTeacherLessons({ page: 1, pageSize: 50, search: query.trim() || undefined })
+    const visibleLessons = useMemo(() => extractLessons(data).filter(lesson => (lesson.name || 'Untitled lesson').toLowerCase().includes(query.toLowerCase())), [data, query])
 
     return <TeacherDashboardLayout activePath="/teacher/lessons">
         <section className="teacher-lessons-page" aria-labelledby="teacher-lessons-title">
@@ -33,16 +49,18 @@ export default function TeacherLessonsPage() {
                         </div>
                     </header>
                     <label className="teacher-lessons-page__search"><Search size={19} /><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search" aria-label="Search lessons" /><Filter size={18} /></label>
-                    <div className="teacher-lessons-page__grid">{visibleLessons.map(lesson => <article className="teacher-lessons-page__card" key={lesson.id}>
-                        <header><h2>{lesson.title}</h2><button type="button" aria-label={`More actions for ${lesson.title}`} onClick={() => setActionsFor(actionsFor === lesson.id ? null : lesson.id)}><EllipsisVertical size={20} /></button>{actionsFor === lesson.id && <LessonActions onStudentView={() => { setStudentViewOpen(true); setActionsFor(null) }} onEdit={() => { setEditOpen(true); setActionsFor(null) }} onDeactivate={() => { setDeactivateFor(lesson.id); setActionsFor(null) }} />}</header>
-                        <button className="teacher-lessons-page__banner" type="button" aria-label={`Open ${lesson.title}`} onClick={() => setWorkspaceOpen(true)}><img src={banner} alt="Teacher presenting a lesson" /></button>
-                        <div className="teacher-lessons-page__meta"><span>Date Created: <b>{lesson.created}</b></span><span>Last Updated: <b>{lesson.updated}</b></span><button type="button" onClick={() => setWorkspaceOpen(true)}><Eye size={15} /> View</button></div>
-                    </article>)}</div>
-                    {visibleLessons.length === 0 && <p className="teacher-lessons-page__empty">No lessons match your search.</p>}
+                    {isLoading && <p className="teacher-lessons-page__state" role="status">Loading your lessons…</p>}
+                    {isError && <div className="teacher-lessons-page__state is-error" role="alert"><strong>We couldn’t load your lessons</strong><span>Something interrupted the connection. Please try again in a moment.</span><button type="button" onClick={() => refetch()}>Try again</button></div>}
+                    {!isLoading && !isError && visibleLessons.length === 0 && <p className="teacher-lessons-page__state" role="status">No lessons match your search.</p>}
+                    {!isLoading && !isError && <div className="teacher-lessons-page__grid">{visibleLessons.map((lesson, index) => { const id = lesson.id ?? `lesson-${index}`; const title = lesson.name || 'Untitled lesson'; return <article className="teacher-lessons-page__card" key={id}>
+                        <header><h2>{title}</h2><button type="button" aria-label={`More actions for ${title}`} onClick={() => setActionsFor(Number(id))}><EllipsisVertical size={20} /></button>{actionsFor === Number(id) && <LessonActions onStudentView={() => { setStudentViewOpen(true); setActionsFor(null) }} onEdit={() => { setEditOpen(true); setActionsFor(null) }} onDeactivate={() => { setDeactivateFor(Number(id)); setActionsFor(null) }} />}</header>
+                        <button className="teacher-lessons-page__banner" type="button" aria-label={`Open ${title}`} onClick={() => setWorkspaceOpen(true)}><img src={banner} alt="Teacher presenting a lesson" /></button>
+                        <div className="teacher-lessons-page__meta"><span>Date Created: <b>{lesson.createdAt || lesson.created_at ? new Date(lesson.createdAt || lesson.created_at || '').toLocaleDateString() : 'Unavailable'}</b></span><span>Last Updated: <b>{lesson.updatedAt || 'Unavailable'}</b></span><button type="button" onClick={() => setWorkspaceOpen(true)}><Eye size={15} /> View</button></div>
+                    </article>})}</div>}
                 </div>
             </div>
         </section>
-        {createOpen && <TeacherCreateLessonModal onClose={() => setCreateOpen(false)} />}
+        {createOpen && <TeacherCreateLessonModal onClose={() => setCreateOpen(false)} onSubmitted={() => { setCreateOpen(false); refetch() }} />}
         {editOpen && <TeacherCreateLessonModal onClose={() => setEditOpen(false)} />}
         {workspaceOpen && <TeacherLessonWorkspace onClose={() => setWorkspaceOpen(false)} onStudentView={() => setStudentViewOpen(true)} />}
         {studentViewOpen && <TeacherStudentViewModal onClose={() => setStudentViewOpen(false)} />}

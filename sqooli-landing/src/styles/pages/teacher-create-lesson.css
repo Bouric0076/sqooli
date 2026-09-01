@@ -82,6 +82,8 @@
 .teacher-create-lesson__actions button, .teacher-create-lesson__revenue-modal > .teacher-create-lesson__continue { min-height: 40px; padding: 0 16px; border-radius: 999px; font: inherit; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
 .teacher-create-lesson__back { border: 1px solid #e0e6ed; background: #fff; color: #202631; }
 .teacher-create-lesson__continue { border: 0; background: #5143e5; color: #fff; }
+.teacher-create-lesson__continue:disabled { opacity: .65; cursor: wait; }
+.teacher-create-lesson__error { margin: 18px 0 -18px; padding: 11px 14px; border: 1px solid #f0c5c1; border-radius: 10px; background: #fff8f7; color: #a33c35; font-size: 12px; line-height: 1.45; }
 .teacher-create-lesson__revenue-backdrop { position: absolute; z-index: 2; inset: 0; padding: 20px; background: rgb(15 23 42 / 28%); backdrop-filter: blur(5px); display: grid; place-items: center; }
 .teacher-create-lesson__revenue-modal { width: min(650px, 100%); padding: 26px 28px; box-sizing: border-box; border-radius: 20px; background: #fff; box-shadow: 0 20px 60px rgb(15 23 42 / 20%); }
 .teacher-create-lesson__revenue-modal header { display: flex; align-items: center; justify-content: space-between; }

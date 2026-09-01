@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import sqooliLogo from '../../assets/images/hero/logo.svg'
 import '../../styles/pages/schools.css'
+import '../../styles/pages/udbc-profile.css'
 
 interface SchoolHeaderProps {
   variant?: 'main' | 'listings' | 'learning' | 'school-profile' | 'tutor-profile'
@@ -64,12 +65,27 @@ export default function SchoolHeader({ variant = 'main', activeTab = 'Schools' }
   // School Profile Header for Dedicated School Page (/schools/detail) as per Desktop - 109.png
   if (variant === 'school-profile') {
     return (
-      <header className="school-profile-header">
-        <div className="container">
-          <div className="header-inner profile-home-only">
-            <a href="/" className="logo" aria-label="Return to Sqooli home">
-              <img src={sqooliLogo} alt="Sqooli" />
-            </a>
+      <header className="udbc-site-header">
+        <div className="udbc-header-back-row">
+          <div className="container udbc-header-back-inner">
+            <a href="/schools" aria-label="Back to Sqooli">←&nbsp; Back to Sqooli</a>
+          </div>
+        </div>
+        <div className="container udbc-header-inner">
+          <a href="/schools/detail" className="udbc-brand" aria-label="Sqooli home">
+            <img src={sqooliLogo} alt="Sqooli" />
+          </a>
+          <button className="udbc-menu-toggle" type="button" aria-label="Toggle UDBC navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? <X /> : <Menu />}
+          </button>
+          <nav className={`udbc-site-nav ${menuOpen ? 'open' : ''}`} aria-label="UDBC navigation">
+            <a href="#home" onClick={() => setMenuOpen(false)}>Home</a>
+            <a href="#about" onClick={() => setMenuOpen(false)}>About Us</a>
+            <a href="#programmes" onClick={() => setMenuOpen(false)}>Admissions</a>
+            <a href="#contact" onClick={() => setMenuOpen(false)}>Contact Us</a>
+          </nav>
+          <div className="udbc-header-actions">
+            <a className="udbc-header-cta" href="https://udbc.sqooli.africa/intake-landing">Get Started</a>
           </div>
         </div>
       </header>

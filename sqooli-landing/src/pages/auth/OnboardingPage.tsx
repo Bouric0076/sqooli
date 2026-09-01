@@ -1,7 +1,9 @@
 import { ArrowLeft, ArrowRight, Check, GraduationCap, School, UsersRound } from 'lucide-react'
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import logo from '../../assets/images/student-flow/sqooli-logo-v2.svg'
-import '../../styles/pages/student-flow.css'
+import '../../styles/pages/auth.css'
+import { useAppSelector } from '../../store'
 
 type Profile = 'school' | 'teacher' | 'student' | 'parent'
 
@@ -20,6 +22,8 @@ function ProfileIcon({ profile, selected }: { profile: Profile; selected: boolea
 }
 
 export default function OnboardingPage() {
+	const [searchParams] = useSearchParams()
+	const authenticatedUser = useAppSelector((state) => state.auth.user)
 	const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null)
 	const [continued, setContinued] = useState(false)
 
@@ -31,6 +35,12 @@ export default function OnboardingPage() {
 	const continueFlow = () => {
 		if (!selectedProfile) return
 		window.sessionStorage.setItem('sqooli-onboarding-profile', selectedProfile)
+		if (searchParams.get('source') === 'google-login' && authenticatedUser) {
+			const params = new URLSearchParams({ email: authenticatedUser.email ?? '', role: selectedProfile, source: 'google-login' })
+			if (authenticatedUser.userId) params.set('userId', authenticatedUser.userId)
+			window.location.href = `/onboarding/complete?${params.toString()}`
+			return
+		}
 		window.location.href = `/onboarding/account?role=${selectedProfile}`
 	}
 

@@ -1,0 +1,4 @@
+2026-08-27T12:16:17Z code=SEOS-GATE-001 state_changed=NO message=Do not write production implementation until BUILD requirements are resolved.
+2026-08-27T12:43:33Z code=SEOS-EVIDENCE-001 state_changed=NO message=Usage: seos evidence [add|list|check]
+2026-08-27T12:52:16Z code=SEOS-GATE-001 state_changed=NO message=Do not write production implementation until BUILD requirements are resolved.
+2026-08-27T12:52:59Z code=SEOS-GATE-002 state_changed=NO message=VERIFY prerequisites are incomplete.

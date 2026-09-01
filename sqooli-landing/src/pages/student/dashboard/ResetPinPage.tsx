@@ -1,11 +1,13 @@
 import { X } from 'lucide-react'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import StudentDashboardLayout from './StudentDashboardLayout'
 import doneArt from '../../../assets/images/student-flow/Done.svg'
 
 const emptyPin = () => Array(6).fill('')
 
 export default function ResetPinPage() {
+	const navigate = useNavigate()
 	const [pin, setPin] = useState(emptyPin)
 	const [confirmation, setConfirmation] = useState(emptyPin)
 	const [error, setError] = useState('')
@@ -23,9 +25,9 @@ export default function ResetPinPage() {
 		setSuccess(true)
 	}
 
-	return <StudentDashboardLayout showSidebar={false}>
+	return <StudentDashboardLayout showSidebar={false} activePath="/student/wallet/reset-pin">
 		<section className="student-reset-pin-page" aria-labelledby="reset-pin-title">
-			{success ? <section className="student-reset-success" role="alertdialog" aria-modal="true" aria-labelledby="reset-success-title"><button type="button" className="student-reset-success__close" aria-label="Close PIN reset confirmation" onClick={() => { window.location.href = '/student/wallet' }}><X size={22} /></button><img src={doneArt} alt="" /><h1 id="reset-success-title">PIN reset Successfully</h1><button type="button" className="student-dashboard__go" onClick={() => { window.location.href = '/student/wallet' }}>Okay</button></section> : <form className="student-reset-pin-card" onSubmit={submit}><h1 id="reset-pin-title">Reset PIN</h1><p>Setup your new PIN</p><PinRow label="Enter New PIN" value={pin} onChange={setPin} /><PinRow label="Confirm PIN" value={confirmation} onChange={setConfirmation} />{error && <p className="student-reset-pin-card__error" role="alert">{error}</p>}<button type="submit" className="student-dashboard__go">Submit</button></form>}
+			{success ? <section className="student-reset-success" role="alertdialog" aria-modal="true" aria-labelledby="reset-success-title"><button type="button" className="student-reset-success__close" aria-label="Close PIN reset confirmation" onClick={() => navigate('/student/wallet')}><X size={22} /></button><img src={doneArt} alt="" /><h1 id="reset-success-title">PIN reset Successfully</h1><button type="button" className="student-dashboard__go" onClick={() => navigate('/student/wallet')}>Okay</button></section> : <form className="student-reset-pin-card" onSubmit={submit}><h1 id="reset-pin-title">Reset PIN</h1><p>Setup your new PIN</p><PinRow label="Enter New PIN" value={pin} onChange={setPin} /><PinRow label="Confirm PIN" value={confirmation} onChange={setConfirmation} />{error && <p className="student-reset-pin-card__error" role="alert">{error}</p>}<button type="submit" className="student-dashboard__go">Submit</button></form>}
 		</section>
 	</StudentDashboardLayout>
 }

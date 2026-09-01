@@ -4,6 +4,7 @@ import { useState } from 'react'
 import logo from '../../assets/images/student-flow/sqooli-logo-teacher.svg'
 import '../../styles/pages/teacher-dashboard.css'
 import '../../styles/pages/teacher-modal-responsive.css'
+import { logout } from '../../auth/auth.service'
 
 type TeacherDashboardLayoutProps = { children: ReactNode; activePath?: string }
 type TeacherNotification = { id: number; message: string; time: string; unread: boolean }
@@ -47,7 +48,7 @@ export default function TeacherDashboardLayout({ children, activePath = '/teache
 					<button className="teacher-dashboard__notification-button" type="button" aria-label="Notifications" aria-expanded={notificationsOpen} onClick={() => setNotificationsOpen(current => !current)}><Bell size={22} />{unreadCount > 0 && <span className="teacher-dashboard__notification-badge">{unreadCount}</span>}</button>
 					<a className="teacher-dashboard__action-link" href="/teacher/cart" aria-label="Cart"><ShoppingCart size={22} /></a>
 					<a className="teacher-dashboard__action-link" href="/teacher/settings" aria-label="Settings"><Settings size={22} /></a>
-					<div className="teacher-dashboard__profile"><button className="teacher-dashboard__profile-trigger" type="button" aria-expanded={profileOpen} onClick={() => setProfileOpen(current => !current)}><span className="teacher-dashboard__avatar">J</span><span><strong>John Juma</strong><small>Lead Teacher</small></span><ChevronDown size={16} /></button>{profileOpen && <div className="teacher-dashboard__profile-menu"><a href="/teacher/tutors"><UserRound size={16} /> Teacher’s profile</a><a href="/teacher/settings"><Settings size={16} /> Settings</a><button type="button" onClick={() => { window.location.href = '/login' }}><LogOut size={16} /> Log out</button></div>}</div>
+					<div className="teacher-dashboard__profile"><button className="teacher-dashboard__profile-trigger" type="button" aria-expanded={profileOpen} onClick={() => setProfileOpen(current => !current)}><span className="teacher-dashboard__avatar">J</span><span><strong>John Juma</strong><small>Lead Teacher</small></span><ChevronDown size={16} /></button>{profileOpen && <div className="teacher-dashboard__profile-menu"><a href="/teacher/tutors"><UserRound size={16} /> Teacher’s profile</a><a href="/teacher/settings"><Settings size={16} /> Settings</a><button type="button" onClick={() => { logout(); window.location.href = '/login' }}><LogOut size={16} /> Log out</button></div>}</div>
 				</div>
 			</div>
 			{menuOpen && <button className="teacher-dashboard__backdrop" type="button" aria-label="Close navigation" onClick={() => setMenuOpen(false)} />}

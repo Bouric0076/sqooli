@@ -1,44 +1,47 @@
-import { Check, X } from 'lucide-react'
+import { Check, Eye, EyeOff, X } from 'lucide-react'
 import { useState } from 'react'
+import { setupWallet } from '../../../api/wallet'
 import doneArt from '../../../assets/images/student-flow/Done.svg'
 
 type WalletActivationModalProps = { onClose: () => void; onSaved?: () => void }
 
 export default function WalletActivationModal({ onClose, onSaved }: WalletActivationModalProps) {
-	const [step, setStep] = useState<1 | 2 | 3 | 4>(1)
+	const [step, setStep] = useState<1 | 2 | 3>(1)
 	const [method, setMethod] = useState<'mpesa' | 'airtel'>('mpesa')
 	const [phone, setPhone] = useState('')
 	const [pin, setPin] = useState<string[]>(Array(6).fill(''))
 	const [confirmation, setConfirmation] = useState<string[]>(Array(6).fill(''))
-	const [otp, setOtp] = useState('')
 	const [error, setError] = useState('')
+	const [showPin, setShowPin] = useState(false)
+	const [isSaving, setIsSaving] = useState(false)
 
 	const saveTopUpMethod = (event: React.FormEvent) => {
 		event.preventDefault()
+		if (phone.length < 9) {
+			setError('Enter a valid nine-digit mobile number to continue.')
+			return
+		}
+		setError('')
 		setStep(2)
 	}
 
-	const savePin = (event: React.FormEvent) => {
+	const savePin = async (event: React.FormEvent) => {
 		event.preventDefault()
 		const enteredPin = pin.join('')
 		const confirmedPin = confirmation.join('')
 		if (enteredPin.length !== 6 || confirmedPin.length !== 6 || enteredPin !== confirmedPin) {
-			setError('Enter matching six-digit PINs to continue.')
+			setError(enteredPin.length !== 6 || confirmedPin.length !== 6 ? 'Enter all six digits in both PIN fields.' : 'The PINs do not match. Check both entries and try again.')
 			return
 		}
 		setError('')
-		setStep(3)
-	}
-
-	const verifyOtp = (event: React.FormEvent) => {
-		event.preventDefault()
-		if (otp.replace(/\D/g, '').length < 6) {
-			setError('Enter the six-digit verification code to continue.')
-			return
-		}
-		window.sessionStorage.setItem('sqooli-student-wallet', JSON.stringify({ method, phone, pinSet: true, otpVerified: true }))
-		setError('')
-		setStep(4)
+		setIsSaving(true)
+		try {
+			await setupWallet({ pin: enteredPin, confirmPin: confirmedPin, topUpMethodType: method === 'mpesa' ? 'MPESA' : 'AIRTEL_MONEY', topUpPhoneNumber: phone, topUpProvider: method === 'mpesa' ? 'MPESA' : 'AIRTEL' })
+			window.sessionStorage.setItem('sqooli-student-wallet', JSON.stringify({ method, phone, pinSet: true }))
+			setStep(3)
+		} catch (requestError) {
+			setError(requestError instanceof Error ? requestError.message : 'We could not activate your wallet. Please try again.')
+		} finally { setIsSaving(false) }
 	}
 
 	return (
@@ -60,15 +63,12 @@ export default function WalletActivationModal({ onClose, onSaved }: WalletActiva
 					<label className="shared-wallet-modal__field"><span>{method === 'mpesa' ? 'MPESA' : 'Airtel Money'} Phone Number</span><span className="shared-wallet-modal__phone"><b>🇰🇪</b><i>⌄</i><em>+254</em><input value={phone} onChange={(event) => setPhone(event.target.value.replace(/\D/g, '').slice(0, 9))} inputMode="numeric" aria-label="Wallet phone number" /></span><small>This phone number will receive an STK push when you request to top-up wallet</small></label>
 					<button className="student-dashboard__go shared-wallet-modal__submit" type="submit">Save &amp; Continue</button>
 				</form> : step === 2 ? <form className="shared-wallet-modal__body" onSubmit={savePin}>
-					<PinRow label="Enter PIN" value={pin} onChange={setPin} />
-					<PinRow label="Confirm PIN" value={confirmation} onChange={setConfirmation} />
+					<div className="shared-wallet-modal__pin-heading"><p>Choose a six-digit PIN for your wallet.</p><button type="button" onClick={() => setShowPin((value) => !value)} aria-pressed={showPin}>{showPin ? <EyeOff size={15} /> : <Eye size={15} />} {showPin ? 'Hide PIN' : 'Show PIN'}</button></div>
+					<PinRow label="Enter PIN" value={pin} onChange={setPin} visible={showPin} />
+					<PinRow label="Confirm PIN" value={confirmation} onChange={setConfirmation} visible={showPin} />
+					{pin.join('').length === 6 && confirmation.join('').length === 6 && <p className={`shared-wallet-modal__match${pin.join('') === confirmation.join('') ? ' is-valid' : ' is-invalid'}`} role="status">{pin.join('') === confirmation.join('') ? 'PINs match.' : 'PINs do not match yet.'}</p>}
 					{error && <p className="shared-wallet-modal__error" role="alert">{error}</p>}
-					<button className="student-dashboard__go shared-wallet-modal__submit" type="submit">Submit</button>
-				</form> : step === 3 ? <form className="shared-wallet-modal__body student-wallet-otp-modal" onSubmit={verifyOtp}>
-					<button type="button" className="student-wallet-otp-modal__close" aria-label="Close OTP verification" onClick={onClose}><X size={22} /></button><div className="student-wallet-otp-modal__heading"><h1>OTP Verification</h1><p>We have sent verification code to your phone number and email address</p></div>
-					<label><span>Enter OTP</span><input type="password" inputMode="numeric" autoComplete="one-time-code" maxLength={6} placeholder="********" value={otp} onChange={event => setOtp(event.target.value.replace(/\D/g, '').slice(0, 6))} aria-label="Enter OTP" /></label>
-					{error && <p className="shared-wallet-modal__error" role="alert">{error}</p>}
-					<button className="student-dashboard__go shared-wallet-modal__submit" type="submit">Verify</button>
+					<button className="student-dashboard__go shared-wallet-modal__submit" type="submit" disabled={isSaving}>{isSaving ? 'Activating…' : 'Activate Wallet'}</button>
 				</form> : <section className="student-wallet-activated" aria-labelledby="wallet-activated-title">
 					<button type="button" className="student-wallet-activated__close" aria-label="Close wallet activation" onClick={onClose}><X size={22} /></button><img src={doneArt} alt="" /><h1 id="wallet-activated-title">Wallet activated successfully</h1><button className="student-dashboard__go" type="button" onClick={() => onSaved?.()}>Okay</button>
 				</section>}
@@ -77,6 +77,6 @@ export default function WalletActivationModal({ onClose, onSaved }: WalletActiva
 	)
 }
 
-function PinRow({ label, value, onChange }: { label: string; value: string[]; onChange: (value: string[]) => void }) {
-		return <label className="shared-wallet-modal__pin-row"><span>{label}</span><div>{value.map((digit, index) => <input key={index} value={digit} type="password" inputMode="numeric" maxLength={1} aria-label={`${label} digit ${index + 1}`} onChange={(event) => { const next = [...value]; next[index] = event.target.value.replace(/\D/g, '').slice(-1); onChange(next); if (event.target.value && event.currentTarget.nextElementSibling instanceof HTMLInputElement) event.currentTarget.nextElementSibling.focus() }} onKeyDown={(event) => { if (event.key === 'Backspace' && !value[index] && event.currentTarget.previousElementSibling instanceof HTMLInputElement) event.currentTarget.previousElementSibling.focus() }} />)}</div></label>
+function PinRow({ label, value, onChange, visible }: { label: string; value: string[]; onChange: (value: string[]) => void; visible: boolean }) {
+		return <label className="shared-wallet-modal__pin-row"><span>{label}</span><div>{value.map((digit, index) => <input key={index} value={digit} type={visible ? 'text' : 'password'} inputMode="numeric" maxLength={1} aria-label={`${label} digit ${index + 1}`} onChange={(event) => { const next = [...value]; next[index] = event.target.value.replace(/\D/g, '').slice(-1); onChange(next); if (event.target.value && event.currentTarget.nextElementSibling instanceof HTMLInputElement) event.currentTarget.nextElementSibling.focus() }} onKeyDown={(event) => { if (event.key === 'Backspace' && !value[index] && event.currentTarget.previousElementSibling instanceof HTMLInputElement) event.currentTarget.previousElementSibling.focus() }} />)}</div></label>
 }

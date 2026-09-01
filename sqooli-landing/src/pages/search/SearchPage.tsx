@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react'
-import { Search, Sparkles, User, Package, BookOpen, Building2, SlidersHorizontal, Mic, Plus, Star, X, Menu, ChevronLeft, ChevronRight, Bell, ChevronDown, ShoppingCart, Layers3, UserRound, WalletCards } from 'lucide-react'
+import { Search, Sparkles, User, Package, BookOpen, Building2, SlidersHorizontal, Mic, Plus, Star, X, Menu, ChevronLeft, ChevronRight } from 'lucide-react'
 import Footer from '../../components/layout/Footer'
+import StudentDashboardLayout from '../student/dashboard/StudentDashboardLayout'
 import teacherAvatar from '../../assets/images/whats-popular/teacher.webp'
 import mathCampBanner from '../../assets/images/whats-popular/math_camp_banner.webp'
 import sqooliLogo from '../../assets/images/hero/logo.svg'
-import studentHeaderLogo from '../../assets/images/student-flow/sqooli-logo-v3.svg'
 import BookSlotModal from '../../components/BookSlotModal'
 import '../../styles/pages/schools.css'
 import '../../styles/pages/search.css'
@@ -37,7 +37,7 @@ export default function SearchPage() {
   const claimMode = initialStudentDiscovery && params.get('claim') === '1'
   const schoolFilter = params.get('school') || ''
   const [activeTab, setActiveTab] = useState<'AI Mode' | 'Classes' | 'Topics' | 'Tutors' | 'School' | 'Questions'>(initialTab)
-  const isStudentDiscovery = initialStudentDiscovery || activeTab === 'AI Mode'
+  const isStudentDiscovery = initialStudentDiscovery
   const [searchQuery, setSearchQuery] = useState(initialQuery)
   const [isSubmitted, setIsSubmitted] = useState(Boolean(initialQuery || initialTab !== 'AI Mode'))
   const [showAdvanceSearch, setShowAdvanceSearch] = useState(false)
@@ -137,30 +137,18 @@ export default function SearchPage() {
 
   const [bookingModalOpen, setBookingModalOpen] = useState(false)
   const [selectedCourse, setSelectedCourse] = useState('The Ultimate Math Camp Kenya April 2026')
-  const activeStudentTab = activeTab === 'Classes' ? 'Lessons' : activeTab
+  const heroTitle = initialStudentDiscovery || activeTab !== 'AI Mode' ? 'Empowering Learning, Anytime, Anywhere' : 'What can I help you with?'
   const toggleLesson = (id: string) => setSelectedLessonIds(current => current.includes(id) ? current.filter(item => item !== id) : [...current, id])
 
-  return (
+  const searchPage = (
     <div className={`search-page-container${isStudentDiscovery ? ' search-page-container--student' : ''}`}>
       <BookSlotModal
         isOpen={bookingModalOpen}
         onClose={() => setBookingModalOpen(false)}
         courseTitle={selectedCourse}
       />
-      {/* Top Navigation Navbar matching Desktop-82 / Desktop-83 */}
-      <header className={isStudentDiscovery ? 'student-dashboard__header search-student-header' : 'search-header-navbar'}>
-        {isStudentDiscovery ? <>
-          <a href="/student" className="student-dashboard__header-brand" aria-label="Back to student dashboard"><img src={studentHeaderLogo} alt="Sqooli" /></a>
-          <button className="student-dashboard__role" type="button">Student <ChevronDown size={15} /></button>
-          <div className="student-dashboard__header-actions">
-            <label className="student-dashboard__search"><Search size={18} /><input type="search" aria-label="Search Tutors, Lessons, Programs" placeholder="Search Tutors, Lessons, Programs..." /></label>
-            <button type="button" aria-label="Wallet" onClick={() => { window.location.href = '/student/wallet' }}><WalletCards size={22} /></button>
-            <button type="button" aria-label="Notifications"><Bell size={22} /></button>
-            <button type="button" aria-label="Cart" onClick={() => { window.location.href = '/student/cart' }}><ShoppingCart size={22} /></button>
-            <button type="button" aria-label="Resources"><Layers3 size={22} /></button>
-            <button type="button" className="student-dashboard__profile" aria-label="Open profile menu"><span className="student-dashboard__avatar"><UserRound size={20} /></span><strong>John Juma</strong><ChevronDown size={16} /></button>
-          </div>
-        </> : <div className="search-header-inner">
+      {!isStudentDiscovery && <header className="search-header-navbar">
+        <div className="search-header-inner">
           <a href="/" className="search-brand-logo" aria-label="Sqooli home">
             <img src={sqooliLogo} alt="Sqooli" />
           </a>
@@ -183,8 +171,8 @@ export default function SearchPage() {
             <a href="/popular" className="btn-trending-pill">Trending</a>
             <a href="/#login" className="btn-login-pill">Login</a>
           </div>
-        </div>}
-      </header>
+        </div>
+      </header>}
 
       {/* Main Container */}
       <main className="container">
@@ -193,13 +181,6 @@ export default function SearchPage() {
             <a href="/student">← <span>Back to Dashboard</span></a>
             <a className="student-search-context__trending" href="/popular">Trending</a>
           </div>
-          <nav className="student-search-tabs" aria-label="Student discovery navigation">
-            {(['AI Mode', 'Lessons', 'Programs', 'Topics', 'Tutors', 'School', 'Questions'] as const).map(tab => (
-              <button key={tab} className={tab === activeStudentTab ? 'is-active' : ''} type="button" onClick={() => tab === 'Lessons' ? setSearchTab('Classes') : tab === 'Programs' ? window.location.assign('/popular') : tab === 'School' ? setSearchTab('School') : tab === 'Questions' ? setSearchTab('Questions') : setSearchTab(tab === 'Topics' ? 'Topics' : tab === 'Tutors' ? 'Tutors' : 'AI Mode')}>
-                {tab}
-              </button>
-            ))}
-          </nav>
         </>}
         {!isSubmitted ? (
           /* Landing Home State (Desktop - 82 / Desktop - 89) */
@@ -213,8 +194,8 @@ export default function SearchPage() {
               <div className="periodic-tile tile-li"><span className="atomic-num">3</span>li</div>
             </div>
 
-            <h1 style={{ fontSize: 32, fontWeight: 800, margin: '0 0 8px', color: '#1e293b' }}>
-              {activeTab === 'AI Mode' ? 'What can I help you with?' : 'Empowering Learning, Anytime, Anywhere'}
+            <h1 className="search-hero-title">
+              {heroTitle}
             </h1>
 
             <form onSubmit={handleSearchSubmit} className="search-pill-input-bar">
@@ -494,7 +475,11 @@ export default function SearchPage() {
         )}
       </main>
 
-      <Footer />
+      {!isStudentDiscovery && <Footer />}
     </div>
   )
+
+  return isStudentDiscovery
+    ? <StudentDashboardLayout showSidebar={false} mainClassName="student-dashboard__main--search">{searchPage}</StudentDashboardLayout>
+    : searchPage
 }

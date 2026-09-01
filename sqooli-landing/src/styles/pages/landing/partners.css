@@ -1,7 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap");
 
 :root {
-  font-family: "Poppins", "Inter", Arial, sans-serif;
+  font-family: 'DM Sans',Arial,sans-serif;
   color: #111827;
   background: #ffffff;
   font-synthesis: none;
@@ -162,7 +161,7 @@
   top: 70%;
   left: 50%;
   transform: translate(-50%, -50%) rotate(-1deg);
-  font-family: 'Caveat', 'Comic Sans MS', cursive;
+  font-family: 'DM Sans',sans-serif;
   font-size: 32px;
   font-weight: 700;
   color: #111827;
