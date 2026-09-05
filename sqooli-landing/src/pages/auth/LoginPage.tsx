@@ -8,7 +8,7 @@ import logo from '../../assets/images/student-flow/sqooli-logo-v2.svg'
 import studentsImage from '../../assets/images/student-flow/students.webp'
 import { EmailVerificationRequiredError, login, loginWithGoogle } from '../../auth/auth.service'
 import { setSession } from '../../auth/auth.slice'
-import { getDashboardPath, getSafeReturnTo, hasAssignedDashboard } from '../../auth/dashboard-routing'
+import { getPostAuthPath, getSafeReturnTo, hasAssignedDashboard } from '../../auth/dashboard-routing'
 import { useAppDispatch } from '../../store'
 import '../../styles/pages/auth.css'
 import { isApiError, showError } from '../../lib/notifications'
@@ -48,7 +48,7 @@ export default function LoginPage() {
 				navigate(`/onboarding/complete?${params.toString()}&source=login`, { replace: true })
 				return
 			}
-		navigate(getSafeReturnTo(searchParams.get('returnTo')) ?? getDashboardPath(session.user), { replace: true })
+		navigate(session.user.dashboard === 'teacher' && session.user.isProfileComplete === false ? getPostAuthPath(session.user) : getSafeReturnTo(searchParams.get('returnTo')) ?? getPostAuthPath(session.user), { replace: true })
 		} catch (error) {
 			if (error instanceof EmailVerificationRequiredError) {
 				navigate(`/onboarding/verification-sent?email=${encodeURIComponent(error.email)}&source=login`, { replace: true })
@@ -71,7 +71,7 @@ export default function LoginPage() {
 				navigate(`/onboarding/complete?${params.toString()}`, { replace: true })
 				return
 			}
-			navigate(getSafeReturnTo(searchParams.get('returnTo')) ?? getDashboardPath(session.user), { replace: true })
+			navigate(session.user.dashboard === 'teacher' && session.user.isProfileComplete === false ? getPostAuthPath(session.user) : getSafeReturnTo(searchParams.get('returnTo')) ?? getPostAuthPath(session.user), { replace: true })
 		} catch (error) {
 			showError(error, 'We could not sign you in with Google. Please try again.')
 		}

@@ -1,5 +1,6 @@
 import { Check, CreditCard, Landmark, Smartphone, X } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
+import { setupWallet } from '../../api/wallet'
 import '../../styles/pages/teacher-wallet.css'
 
 type Method = 'mpesa' | 'airtel'
@@ -21,26 +22,54 @@ export default function TeacherWalletActivationModal({ onClose, onSaved }: Teach
 	const [pin, setPin] = useState<string[]>(Array(6).fill(''))
 	const [confirmation, setConfirmation] = useState<string[]>(Array(6).fill(''))
 	const [error, setError] = useState('')
+	const [isSaving, setIsSaving] = useState(false)
 
 	const submitDetails = (event: React.FormEvent) => {
 		event.preventDefault()
 		if (withdrawal === 'bank' && (!bankPaybill || !bankAccount)) return setError('Enter your bank payment and account numbers.')
-		if (withdrawal === 'mobile' && option !== 'paybill' && !phone) return setError(`Enter a ${option === 'till' ? 'till' : 'phone'} number to continue.`)
+		if (withdrawal === 'mobile' && option !== 'paybill' && phone.length < 9) return setError(`Enter a valid nine-digit ${option === 'till' ? 'till' : 'phone'} number to continue.`)
 		if (withdrawal === 'mobile' && option === 'paybill' && (!paybillNumber || !accountNumber)) return setError('Enter both the Paybill and Account Numbers to continue.')
 		setError(''); setStep(2)
 	}
 
 	const submitTopUp = (event: React.FormEvent) => {
 		event.preventDefault()
-		if (topUpSource === 'mobile' && !phone) return setError('Enter a phone number to continue.')
+		if (topUpSource === 'mobile' && phone.length < 9) return setError('Enter a valid nine-digit phone number to continue.')
 		if (topUpSource === 'bank' && (!bankPaybill || !bankAccount)) return setError('Enter your bank payment and account numbers.')
 		setError(''); setStep(3)
 	}
-	const submitPin = (event: React.FormEvent) => {
+	const submitPin = async (event: React.FormEvent) => {
 		event.preventDefault()
-		if (pin.join('').length !== 6 || pin.join('') !== confirmation.join('')) return setError('Enter matching six-digit PINs to continue.')
-		window.sessionStorage.setItem('sqooli-teacher-wallet', JSON.stringify({ withdrawal, method, phone, bankPaybill, bankAccount, pinSet: true }))
-		onSaved()
+		const enteredPin = pin.join('')
+		const confirmedPin = confirmation.join('')
+		if (enteredPin.length !== 6 || confirmedPin.length !== 6) return setError('Enter all six digits in both PIN fields.')
+		if (enteredPin !== confirmedPin) return setError('The PINs do not match. Check both entries and try again.')
+		setError('')
+		setIsSaving(true)
+		try {
+			await setupWallet({
+				pin: enteredPin,
+				confirmPin: confirmedPin,
+				withdrawalMethodType: withdrawal === 'mobile' ? 'MOBILE_MONEY' : withdrawal === 'bank' ? 'BANK' : 'PESAPAL',
+				withdrawalMobileProvider: withdrawal === 'mobile' ? method === 'mpesa' ? 'MPESA' : 'AIRTEL' : null,
+				withdrawalMpesaOptionType: withdrawal === 'mobile' ? option.toUpperCase() : null,
+				withdrawalPhoneNumber: withdrawal === 'mobile' && option === 'phone' ? phone : null,
+				withdrawalTillNumber: withdrawal === 'mobile' && option === 'till' ? phone : null,
+				withdrawalPaybillNumber: withdrawal === 'mobile' && option === 'paybill' ? paybillNumber : null,
+				withdrawalPaybillAccountNumber: withdrawal === 'mobile' && option === 'paybill' ? accountNumber : null,
+				withdrawalBankPaybillNumber: withdrawal === 'bank' ? bankPaybill : null,
+				withdrawalBankAccountNumber: withdrawal === 'bank' ? bankAccount : null,
+				topUpMethodType: topUpSource === 'mobile' ? 'MOBILE_MONEY' : topUpSource === 'bank' ? 'BANK' : 'OTHER',
+				topUpPhoneNumber: topUpSource === 'mobile' ? phone : null,
+				topUpProvider: topUpSource === 'mobile' ? method === 'mpesa' ? 'MPESA' : 'AIRTEL' : null,
+			})
+			window.sessionStorage.setItem('sqooli-teacher-wallet', JSON.stringify({ withdrawal, method, phone, bankPaybill, bankAccount, pinSet: true }))
+			onSaved()
+		} catch (requestError) {
+			setError(requestError instanceof Error ? requestError.message : 'We could not activate your wallet. Please try again.')
+		} finally {
+			setIsSaving(false)
+		}
 	}
 
 	return <div className="teacher-wallet-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }}>
@@ -53,7 +82,7 @@ export default function TeacherWalletActivationModal({ onClose, onSaved }: Teach
 				<Choice selected={withdrawal === 'pesapal'} onClick={() => setWithdrawal('pesapal')} icon={<CreditCard />} title={withdrawal === 'pesapal' ? 'Pesapal' : 'Others'} description="Automatically withdraw your earnings through Pesapal checkout" />
 			</div></fieldset>{withdrawal === 'mobile' && <><fieldset><legend>Select method</legend><MethodButtons method={method} setMethod={setMethod} /></fieldset><fieldset><legend>Select option below</legend><div className="teacher-wallet-modal__radios">{[['phone', 'Phone Number'], ['till', 'Till Number'], ['paybill', 'Paybill Number']].map(([value, label]) => <label key={value}><input type="radio" name="withdrawal-option" checked={option === value} onChange={() => setOption(value as typeof option)} />{label}</label>)}</div></fieldset>{option === 'paybill' ? <><Field label="Paybill Number" value={paybillNumber} onChange={setPaybillNumber} /><Field label="Account Number" value={accountNumber} onChange={setAccountNumber} /></> : <Field label={`${method === 'mpesa' ? 'MPESA' : 'Airtel'} ${option === 'phone' ? 'Phone' : 'Till'} Number`} value={phone} onChange={setPhone} prefix={option === 'phone' ? '+254' : undefined} />}</>}{withdrawal === 'bank' && <><Field label="Bank Paybill Number" value={bankPaybill} onChange={setBankPaybill} /><Field label="Bank Account Number" value={bankAccount} onChange={setBankAccount} /></>}{error && <p className="teacher-wallet-modal__error" role="alert">{error}</p>}<button className="teacher-wallet-modal__submit" type="submit">Save &amp; Continue</button></form>}
 			{step === 2 && <form className="teacher-wallet-modal__body" onSubmit={submitTopUp}><fieldset><legend>Select top-up method</legend><div className="teacher-wallet-modal__cards teacher-wallet-modal__cards--compact"><Choice selected={topUpSource === 'mobile'} icon={<Smartphone />} title="Mobile Money" description="Top-up using a mobile money account" onClick={() => setTopUpSource('mobile')} /><Choice selected={topUpSource === 'bank'} icon={<Landmark />} title="Bank Account" description="Top-up directly from your bank account" onClick={() => setTopUpSource('bank')} /><Choice selected={topUpSource === 'other'} icon={<CreditCard />} title="Others" description="Use other methods to top-up your wallet" onClick={() => setTopUpSource('other')} /></div></fieldset>{topUpSource === 'mobile' && <><fieldset><legend>Select method</legend><MethodButtons method={method} setMethod={setMethod} /></fieldset><Field label={`${method === 'mpesa' ? 'MPESA' : 'Airtel'} Phone Number`} value={phone} onChange={setPhone} prefix="+254" /></>}{topUpSource === 'bank' && <><Field label="Bank Paybill Number" value={bankPaybill} onChange={setBankPaybill} /><Field label="Bank Account Number" value={bankAccount} onChange={setBankAccount} /></>}{error && <p className="teacher-wallet-modal__error" role="alert">{error}</p>}<button className="teacher-wallet-modal__submit" type="submit">Save &amp; Continue</button></form>}
-			{step === 3 && <form className="teacher-wallet-modal__body teacher-wallet-modal__pin" onSubmit={submitPin}><PinRow label="Enter PIN" value={pin} onChange={setPin} /><PinRow label="Confirm PIN" value={confirmation} onChange={setConfirmation} />{error && <p className="teacher-wallet-modal__error" role="alert">{error}</p>}<button className="teacher-wallet-modal__submit" type="submit">Submit</button></form>}
+			{step === 3 && <form className="teacher-wallet-modal__body teacher-wallet-modal__pin" onSubmit={submitPin}><PinRow label="Enter PIN" value={pin} onChange={setPin} /><PinRow label="Confirm PIN" value={confirmation} onChange={setConfirmation} />{error && <p className="teacher-wallet-modal__error" role="alert">{error}</p>}<button className="teacher-wallet-modal__submit" type="submit" disabled={isSaving}>{isSaving ? 'Activating…' : 'Activate Wallet'}</button></form>}
 		</section>
 	</div>
 }

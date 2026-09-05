@@ -1,16 +1,33 @@
 import { useQuery } from '@tanstack/react-query'
 import { useQueries } from '@tanstack/react-query'
 import { getCurricula, getEducationLevels, getGradeLevels, getLessonTypes, getPrograms, getSubjects, getTopics, type CatalogItem } from '../../api/catalogs'
-import { getLessons, type LessonListQuery } from '../../api/lessons'
+import { getLessonBookings, getLessons, type LessonBookingListQuery, type LessonListQuery } from '../../api/lessons'
+import { getTeacherProfile } from '../../api/teachers'
 
 export const teacherQueryKeys = {
+	profile: ['teacher', 'profile'] as const,
 	lessons: (query: LessonListQuery) => ['teacher', 'lessons', query] as const,
+	bookings: (query: LessonBookingListQuery) => ['teacher', 'bookings', query] as const,
+}
+
+export function useTeacherProfile() {
+	return useQuery({
+		queryKey: teacherQueryKeys.profile,
+		queryFn: async () => (await getTeacherProfile()).data as unknown,
+	})
 }
 
 export function useTeacherLessons(query: LessonListQuery = {}) {
 	return useQuery({
 		queryKey: teacherQueryKeys.lessons(query),
 		queryFn: async () => (await getLessons(query)).data as unknown,
+	})
+}
+
+export function useTeacherBookings(query: LessonBookingListQuery = {}) {
+	return useQuery({
+		queryKey: teacherQueryKeys.bookings(query),
+		queryFn: async () => (await getLessonBookings(query)).data as unknown,
 	})
 }
 

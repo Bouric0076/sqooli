@@ -24,6 +24,9 @@ export function isApiError(error: unknown): error is { status: number; message?:
 
 function messageForValidationError(message: string | undefined, fallback: string) {
 	const normalized = message?.toLowerCase() ?? ''
+	if (/entity changes|inner exception|duplicate key|unique constraint|unique index/.test(normalized)) {
+		return 'These details may already be saved. Please sign in again or contact support if the problem continues.'
+	}
 	if (/already exists|duplicate|already registered|email.*exist/.test(normalized)) {
 		return 'An account with this email already exists. Try signing in or use another email.'
 	}

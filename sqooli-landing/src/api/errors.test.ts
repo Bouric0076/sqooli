@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createApiError, createBusinessError } from './errors'
+import { getFriendlyError } from '../lib/notifications'
 
 describe('API error normalization', () => {
 	it('normalizes the backend error envelope', () => {
@@ -23,5 +24,12 @@ describe('API error normalization', () => {
 			message: 'Invalid credentials',
 			code: 'INVALID_CREDENTIALS',
 		})
+	})
+
+	it('does not expose database exception details to users', () => {
+		const error = createBusinessError({ status: false, message: 'An error occurred while saving the entity changes. See the inner exception for details.' })
+		const message = getFriendlyError(error, 'Could not save')
+		expect(message).toContain('may already be saved')
+		expect(message).not.toContain('inner exception')
 	})
 })

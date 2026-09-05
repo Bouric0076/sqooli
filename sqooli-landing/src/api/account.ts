@@ -20,6 +20,8 @@ export type RegistrationCompletion = {
 	gender?: string
 	dob?: string
 	address?: string
+	certificateLevelId?: number | string
+	teacherEnrollments?: Array<{ curriculumId?: number | string; gradeLevelId?: number | string; schoolId?: number | string | null; subjectIds?: Array<number | string> }>
 	studentEnrollments?: Array<{ curriculumId?: number | string; gradeLevelId?: number | string; schoolId?: number | string | null; subjectIds?: Array<number | string> }>
 }
 

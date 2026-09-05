@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getDashboardPath, getSafeReturnTo, hasAssignedDashboard, isDashboard } from './dashboard-routing'
+import { getDashboardPath, getPostAuthPath, getSafeReturnTo, hasAssignedDashboard, isDashboard } from './dashboard-routing'
 import type { AuthUser } from './auth.types'
 
 const user = (dashboard: AuthUser['dashboard']): AuthUser => ({ dashboard })
@@ -14,6 +14,16 @@ describe('dashboard routing', () => {
 		expect(getDashboardPath(user('teacher'))).toBe('/teacher/dashboard')
 		expect(getDashboardPath(user('school'))).toBe('/school/dashboard')
 		expect(getDashboardPath(user('admin'))).toBe('/admin/dashboard')
+	})
+
+	it('routes an incomplete teacher through onboarding', () => {
+		expect(getPostAuthPath({ ...user('teacher'), userType: 'Teacher', isProfileComplete: false })).toBe('/teacher/onboarding')
+	})
+
+	it('keeps completed and unknown-status accounts on their dashboard route', () => {
+		expect(getPostAuthPath({ ...user('teacher'), userType: 'Teacher', isProfileComplete: true })).toBe('/teacher/dashboard')
+		expect(getPostAuthPath(user('teacher'))).toBe('/teacher/dashboard')
+		expect(getPostAuthPath({ ...user('student'), isProfileComplete: false })).toBe('/student')
 	})
 
 	it('does not treat a different dashboard as authorized', () => {

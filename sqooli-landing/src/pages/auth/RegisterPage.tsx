@@ -12,7 +12,7 @@ import { toast } from 'sonner'
 import GoogleSignInButton from './GoogleSignInButton'
 import { loginWithGoogle } from '../../auth/auth.service'
 import { setSession } from '../../auth/auth.slice'
-import { getDashboardPath, hasAssignedDashboard } from '../../auth/dashboard-routing'
+import { getPostAuthPath, hasAssignedDashboard } from '../../auth/dashboard-routing'
 import { useAppDispatch } from '../../store'
 import '../../styles/pages/auth.css'
 
@@ -60,7 +60,7 @@ export default function RegisterPage() {
 			const session = await loginWithGoogle(idToken)
 			dispatch(setSession(session))
 			if (hasAssignedDashboard(session.user)) {
-				navigate(getDashboardPath(session.user), { replace: true })
+				navigate(getPostAuthPath(session.user), { replace: true })
 				return
 			}
 			navigate(`/onboarding/complete?email=${encodeURIComponent(session.user.email ?? '')}&role=${selectedRole}&source=google-login`, { replace: true })

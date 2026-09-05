@@ -6,6 +6,12 @@ export type LessonListQuery = {
 	search?: string
 }
 
+export type LessonBookingListQuery = {
+	page?: number
+	pageSize?: number
+	search?: string
+}
+
 export type CreateLessonBody = {
 	lessonTypeId: number | string
 	curriculumId: number | string
@@ -24,6 +30,10 @@ export type CreateLessonBody = {
 
 export async function getLessons(query: LessonListQuery = {}) {
 	return apiClient.GET('/api/Lesson', { params: { query: { ...query, ...apiQuery() } } })
+}
+
+export async function getLessonBookings(query: LessonBookingListQuery = {}) {
+	return apiClient.GET('/api/LessonBooking', { params: { query: { ...query, ...apiQuery() } } })
 }
 
 export async function getLesson(id: number | string) {

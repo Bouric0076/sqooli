@@ -20,6 +20,10 @@ export async function getCurricula(query: CatalogQuery = {}) {
 	return apiClient.GET('/api/Curricula', { params: { query: { ...query, ...apiQuery() } } })
 }
 
+export async function getCertificateLevels(query: Pick<CatalogQuery, 'page' | 'pageSize' | 'search'> = {}) {
+	return apiClient.GET('/api/CertificateLevel', { params: { query: { ...query, ...apiQuery() } } })
+}
+
 export async function getEducationLevels(query: CatalogQuery = {}) {
 	return apiClient.GET('/api/Educationlevels', { params: { query: { ...query, ...apiQuery() } } })
 }
